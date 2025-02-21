@@ -154,6 +154,13 @@
             transition: color 0.2s;
         }
 
+        .completion-date {
+            font-size: 0.9rem;
+            color: #888;
+            margin-right: 1rem;
+            white-space: nowrap;
+        }
+
         .todo-text.completed {
             text-decoration: line-through;
             color: #999;
@@ -213,7 +220,23 @@
 
     <script>
         let todos = [];
-        let draggedItem = null;
+
+        // Load todos from localStorage
+        function loadTodos() {
+            const savedTodos = localStorage.getItem('todos');
+            if (savedTodos) {
+                todos = JSON.parse(savedTodos).map(todo => ({
+                    ...todo,
+                    completedAt: todo.completedAt ? new Date(todo.completedAt) : null
+                }));
+                renderTodos();
+            }
+        }
+
+        // Save todos to localStorage
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
 
         function addTodo() {
             const input = document.getElementById('todoInput');
@@ -228,6 +251,7 @@
                     priority: todos.filter(t => !t.completed).length // Add to end of active todos
                 });
                 input.value = '';
+                saveTodos();
                 renderTodos();
             }
         }
@@ -241,6 +265,7 @@
                     priority: !todo.completed ? -1 : todo.priority // Reset priority when completed
                 } : todo
             );
+            saveTodos();
             renderTodos();
         }
 
@@ -257,7 +282,34 @@
                         : todo.priority
                 }));
             }
+            saveTodos();
             renderTodos();
+        }
+
+        function formatDate(date) {
+            if (!date) return '';
+            
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            const taskDate = new Date(date);
+            const taskDay = new Date(taskDate.getFullYear(), taskDate.getMonth(), taskDate.getDate());
+            
+            if (taskDay.getTime() === today.getTime()) {
+                return `Today at ${taskDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            } else if (taskDay.getTime() === yesterday.getTime()) {
+                return `Yesterday at ${taskDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            } else {
+                return taskDate.toLocaleDateString([], { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
         }
 
         function renderTodos() {
@@ -307,6 +359,7 @@
                        ${todo.completed ? 'checked' : ''}
                        onchange="toggleTodo(${todo.id})">
                 <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+                ${todo.completed ? `<span class="completion-date">${formatDate(todo.completedAt)}</span>` : ''}
                 <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
             `;
 
@@ -385,6 +438,7 @@
                 return todo;
             });
 
+            saveTodos();
             renderTodos();
         }
 
@@ -395,8 +449,8 @@
             }
         });
 
-        // Initial render
-        renderTodos();
+        // Load saved todos when page loads
+        loadTodos();
     </script>
 </body>
 </html>
