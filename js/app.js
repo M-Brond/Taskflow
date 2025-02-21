@@ -150,39 +150,78 @@ function formatDate(date) {
     }
 }
 
+function renderTodoItem(todo) {
+    const todoDiv = document.createElement('div');
+    todoDiv.className = `todo-item ${todo.project.toLowerCase()}`;
+    todoDiv.draggable = !todo.completed;
+    todoDiv.dataset.id = todo.id;
+    
+    todoDiv.innerHTML = `
+        <input type="checkbox" 
+               class="todo-checkbox" 
+               ${todo.completed ? 'checked' : ''}
+               onchange="toggleTodo(${todo.id})">
+        <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+        <span class="project-tag ${todo.project.toLowerCase()}">${todo.project}</span>
+        ${todo.completed ? `<span class="completion-date">${formatDate(todo.completedAt)}</span>` : ''}
+        <button class="delete-btn" onclick="deleteTodo(${todo.id})">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    
+    if (!todo.completed) {
+        todoDiv.addEventListener('dragstart', handleDragStart);
+        todoDiv.addEventListener('dragend', handleDragEnd);
+    }
+    
+    return todoDiv;
+}
+
 function renderAll() {
     const projectsContainer = document.getElementById('projectsContainer');
     projectsContainer.innerHTML = '';
 
-    // Always render Work project first
-    const sortedProjects = ['Work', ...projects.filter(p => p !== 'Work')];
-
-    sortedProjects.forEach(project => {
-        if (hiddenProjects.has(project)) return;
-
-        const projectTodos = todos.filter(todo => !todo.completed && todo.project === project);
+    // Filter out hidden projects
+    const visibleProjects = projects.filter(project => !hiddenProjects.has(project));
+    
+    visibleProjects.forEach(project => {
+        const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
+            .sort((a, b) => a.priority - b.priority);
+        
         const column = document.createElement('div');
         column.className = `project-column ${project.toLowerCase()}`;
-        column.innerHTML = `
-            <div class="project-header">
-                <div class="project-title-section">
-                    <h3 class="project-title">${project}</h3>
-                    <span class="project-counter ${project.toLowerCase()}">${projectTodos.length}</span>
-                </div>
-                ${project !== 'Work' ? `
-                    <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
-                        <span>${hiddenProjects.has(project) ? 'Show' : 'Hide'}</span>
-                        <i class="fas fa-eye${hiddenProjects.has(project) ? '-slash' : ''}"></i>
-                    </button>
-                ` : ''}
-            </div>
-            <div class="project-todos" data-project="${project}">
-                ${projectTodos.map(todo => renderTodoItem(todo)).join('')}
-            </div>
+        
+        const header = document.createElement('div');
+        header.className = 'project-header';
+        header.innerHTML = `
+            <h3 class="project-title">${project}</h3>
+            <span class="project-counter">${projectTodos.length}</span>
+            ${project !== 'Work' ? `
+                <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
+                    <i class="fas fa-eye-slash"></i>
+                </button>
+            ` : ''}
         `;
+        
+        const todoContainer = document.createElement('div');
+        todoContainer.className = 'project-todos';
+        todoContainer.dataset.project = project;
+        
+        // Add drag and drop event listeners to the container
+        todoContainer.addEventListener('dragover', handleDragOver);
+        todoContainer.addEventListener('dragenter', handleDragEnter);
+        todoContainer.addEventListener('dragleave', handleDragLeave);
+        todoContainer.addEventListener('drop', handleDrop);
+        
+        projectTodos.forEach(todo => {
+            todoContainer.appendChild(renderTodoItem(todo));
+        });
+        
+        column.appendChild(header);
+        column.appendChild(todoContainer);
         projectsContainer.appendChild(column);
     });
-
+    
     // Add button to show hidden projects
     const hiddenProjectsCount = hiddenProjects.size;
     if (hiddenProjectsCount > 0) {
@@ -206,32 +245,17 @@ function renderAll() {
     }
 
     // Render completed tasks
-    const completedTasks = todos.filter(todo => todo.completed)
+    const completedContainer = document.getElementById('completedTasks');
+    completedContainer.innerHTML = '';
+    
+    const completedTodos = todos.filter(todo => todo.completed)
         .sort((a, b) => b.completedAt - a.completedAt);
     
-    document.getElementById('completedCounter').textContent = completedTasks.length;
-    const completedContainer = document.getElementById('completedTasks');
-    completedContainer.innerHTML = completedTasks.map(todo => renderTodoItem(todo)).join('');
-
-    // Add drag and drop listeners
-    addDragAndDropListeners();
-}
-
-function renderTodoItem(todo) {
-    return `
-        <div class="todo-item ${todo.project.toLowerCase()}" draggable="${!todo.completed}" data-id="${todo.id}">
-            <input type="checkbox" 
-                   class="todo-checkbox" 
-                   ${todo.completed ? 'checked' : ''}
-                   onchange="toggleTodo(${todo.id})">
-            <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-            <span class="project-tag ${todo.project.toLowerCase()}">${todo.project}</span>
-            ${todo.completed ? `<span class="completion-date">${formatDate(todo.completedAt)}</span>` : ''}
-            <button class="delete-btn" onclick="deleteTodo(${todo.id})">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    `;
+    completedTodos.forEach(todo => {
+        completedContainer.appendChild(renderTodoItem(todo));
+    });
+    
+    document.getElementById('completedCounter').textContent = completedTodos.length;
 }
 
 function updateTodoPriorities(project) {
