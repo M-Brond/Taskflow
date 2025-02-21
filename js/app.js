@@ -173,7 +173,7 @@ function renderAll() {
     const hiddenProjectsCount = hiddenProjects.size;
     if (hiddenProjectsCount > 0) {
         const showHiddenButton = document.createElement('button');
-        showHiddenButton.className = 'project-visibility-toggle';
+        showHiddenButton.className = 'project-visibility-toggle show-hidden';
         showHiddenButton.innerHTML = `
             <span>Show ${hiddenProjectsCount} hidden project${hiddenProjectsCount > 1 ? 's' : ''}</span>
             <i class="fas fa-eye"></i>

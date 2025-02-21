@@ -36,12 +36,13 @@ body {
     overflow-x: auto;
     padding-bottom: 1rem;
     min-height: 300px;
+    width: 100%;
 }
 
 .project-column {
-    flex: 1;
+    flex: 1 1 0;
     min-width: 300px;
-    max-width: 500px;
+    max-width: none;
     background-color: #f8f9fa;
     border-radius: 12px;
     padding: 1.5rem;
@@ -108,6 +109,11 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.project-visibility-toggle.show-hidden {
+    flex: 0 0 auto;
+    margin-left: auto;
 }
 
 .project-visibility-toggle:hover {
