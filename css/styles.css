@@ -40,24 +40,29 @@ body {
 }
 
 /* Header styles */
-.author-header {
-    width: 100%;
-    max-width: 1200px;
-    text-align: right;
-    margin-bottom: 1rem;
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem 0;
+    background: linear-gradient(to bottom, var(--color-bg-gradient-start), transparent);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: var(--color-text);
+    margin: 0;
+    font-weight: 600;
+}
+
+header .subtitle {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--color-text-light);
+    margin: 0.5rem 0 0;
+    font-weight: 400;
 }
 
-.author-header a {
-    color: var(--color-work);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-}
-
-.author-header a:hover {
-    color: #2c3e50;
+.author-header {
+    display: none;
 }
 
 h1 {
