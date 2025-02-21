@@ -184,73 +184,66 @@ function renderAll() {
     // Remove any existing show hidden containers
     document.querySelectorAll('.show-hidden-container').forEach(container => container.remove());
 
-    // Filter out hidden projects
-    const visibleProjects = projects.filter(project => !hiddenProjects.has(project));
-    
-    // Create a container for all show/hide buttons
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'show-hidden-container';
-    
-    // Add buttons for each hidden project
+    // Create columns for both visible and hidden projects
     projects.forEach(project => {
-        if (project !== 'Work' && hiddenProjects.has(project)) {
-            const showHiddenButton = document.createElement('button');
-            showHiddenButton.className = 'project-visibility-toggle show-hidden';
-            showHiddenButton.innerHTML = `
-                <span>Show ${project}</span>
-                <i class="fas fa-eye"></i>
+        if (project === 'Work' || !hiddenProjects.has(project)) {
+            // Render visible project
+            const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
+                .sort((a, b) => a.priority - b.priority);
+            
+            const column = document.createElement('div');
+            column.className = `project-column ${project.toLowerCase()}`;
+            
+            const header = document.createElement('div');
+            header.className = 'project-header';
+            header.innerHTML = `
+                <h3 class="project-title">${project}</h3>
+                <span class="project-counter">${projectTodos.length}</span>
+                ${project !== 'Work' ? `
+                    <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                ` : ''}
             `;
-            showHiddenButton.onclick = () => {
+            
+            const todoContainer = document.createElement('div');
+            todoContainer.className = 'project-todos';
+            todoContainer.dataset.project = project;
+            
+            // Add drag and drop event listeners to the container
+            todoContainer.addEventListener('dragover', handleDragOver);
+            todoContainer.addEventListener('dragenter', handleDragEnter);
+            todoContainer.addEventListener('dragleave', handleDragLeave);
+            todoContainer.addEventListener('drop', handleDrop);
+            
+            projectTodos.forEach(todo => {
+                todoContainer.appendChild(renderTodoItem(todo));
+            });
+            
+            column.appendChild(header);
+            column.appendChild(todoContainer);
+            projectsContainer.appendChild(column);
+        } else {
+            // Render placeholder for hidden project with show button
+            const placeholder = document.createElement('div');
+            placeholder.className = 'project-placeholder';
+            
+            const showButton = document.createElement('button');
+            showButton.className = 'project-visibility-toggle show-hidden';
+            showButton.innerHTML = `
+                <i class="fas fa-eye"></i>
+                <span>Show ${project}</span>
+            `;
+            showButton.onclick = () => {
                 hiddenProjects.delete(project);
                 saveData();
                 renderAll();
             };
-            buttonContainer.appendChild(showHiddenButton);
+            
+            placeholder.appendChild(showButton);
+            projectsContainer.appendChild(placeholder);
         }
     });
-    
-    visibleProjects.forEach(project => {
-        const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
-            .sort((a, b) => a.priority - b.priority);
-        
-        const column = document.createElement('div');
-        column.className = `project-column ${project.toLowerCase()}`;
-        
-        const header = document.createElement('div');
-        header.className = 'project-header';
-        header.innerHTML = `
-            <h3 class="project-title">${project}</h3>
-            <span class="project-counter">${projectTodos.length}</span>
-            ${project !== 'Work' ? `
-                <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
-                    <i class="fas fa-eye-slash"></i>
-                </button>
-            ` : ''}
-        `;
-        
-        const todoContainer = document.createElement('div');
-        todoContainer.className = 'project-todos';
-        todoContainer.dataset.project = project;
-        
-        // Add drag and drop event listeners to the container
-        todoContainer.addEventListener('dragover', handleDragOver);
-        todoContainer.addEventListener('dragenter', handleDragEnter);
-        todoContainer.addEventListener('dragleave', handleDragLeave);
-        todoContainer.addEventListener('drop', handleDrop);
-        
-        projectTodos.forEach(todo => {
-            todoContainer.appendChild(renderTodoItem(todo));
-        });
-        
-        column.appendChild(header);
-        column.appendChild(todoContainer);
-        projectsContainer.appendChild(column);
-    });
-    
-    // Only add the button container if there are hidden projects
-    if (buttonContainer.children.length > 0) {
-        projectsContainer.after(buttonContainer);
-    }
 
     // Render completed tasks
     const completedContainer = document.getElementById('completedTasks');
