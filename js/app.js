@@ -181,6 +181,12 @@ function renderAll() {
     const projectsContainer = document.getElementById('projectsContainer');
     projectsContainer.innerHTML = '';
 
+    // Remove any existing show hidden container
+    const existingShowHiddenContainer = document.querySelector('.show-hidden-container');
+    if (existingShowHiddenContainer) {
+        existingShowHiddenContainer.remove();
+    }
+
     // Filter out hidden projects
     const visibleProjects = projects.filter(project => !hiddenProjects.has(project));
     
@@ -222,7 +228,7 @@ function renderAll() {
         projectsContainer.appendChild(column);
     });
     
-    // Add button to show hidden projects
+    // Add single button to show hidden projects
     const hiddenProjectsCount = hiddenProjects.size;
     if (hiddenProjectsCount > 0) {
         const showHiddenContainer = document.createElement('div');
