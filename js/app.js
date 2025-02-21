@@ -172,6 +172,9 @@ function renderAll() {
     // Add button to show hidden projects
     const hiddenProjectsCount = hiddenProjects.size;
     if (hiddenProjectsCount > 0) {
+        const showHiddenContainer = document.createElement('div');
+        showHiddenContainer.className = 'show-hidden-container';
+        
         const showHiddenButton = document.createElement('button');
         showHiddenButton.className = 'project-visibility-toggle show-hidden';
         showHiddenButton.innerHTML = `
@@ -183,7 +186,9 @@ function renderAll() {
             saveData();
             renderAll();
         };
-        projectsContainer.appendChild(showHiddenButton);
+        
+        showHiddenContainer.appendChild(showHiddenButton);
+        projectsContainer.after(showHiddenContainer);
     }
 
     // Render completed tasks
