@@ -32,6 +32,24 @@
             font-size: 2.5rem;
         }
 
+        h2 {
+            color: #555;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .counter {
+            background-color: #e8eeff;
+            color: #4169e1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
         .input-container {
             display: flex;
             gap: 10px;
@@ -45,6 +63,13 @@
             border-radius: 5px;
             font-size: 1rem;
             color: #333;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #todoInput:focus {
+            outline: none;
+            border-color: #4169e1;
+            box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.1);
         }
 
         #todoInput::placeholder {
@@ -60,29 +85,61 @@
             cursor: pointer;
             font-size: 1rem;
             font-weight: 500;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .add-btn:hover {
+            background-color: #3558c4;
+        }
+
+        .add-btn:active {
+            transform: scale(0.98);
+        }
+
+        .todo-section {
+            margin-bottom: 2rem;
         }
 
         .todo-item {
             display: flex;
             align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #f0f0f0;
+            transition: all 0.2s;
+            animation: slideIn 0.3s ease-out;
         }
 
-        .todo-item:last-child {
-            border-bottom: none;
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .todo-item:hover {
+            border-color: #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .todo-checkbox {
             margin-right: 1rem;
             width: 20px;
             height: 20px;
+            cursor: pointer;
         }
 
         .todo-text {
             flex-grow: 1;
             font-size: 1.1rem;
             color: #333;
+            transition: color 0.2s;
         }
 
         .todo-text.completed {
@@ -97,6 +154,27 @@
             cursor: pointer;
             font-size: 1rem;
             padding: 0.5rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        .completed-section {
+            opacity: 0.8;
+        }
+
+        .completed-section .todo-item {
+            background-color: #f8f9fa;
+        }
+
+        .no-tasks {
+            text-align: center;
+            color: #999;
+            padding: 1rem;
+            font-style: italic;
         }
     </style>
 </head>
@@ -107,7 +185,18 @@
             <input type="text" id="todoInput" placeholder="Add a new todo...">
             <button class="add-btn" onclick="addTodo()">Add</button>
         </div>
-        <div id="todoList"></div>
+        
+        <div class="todo-section">
+            <h2>Active Tasks <span class="counter" id="activeCounter">0</span></h2>
+            <div id="todoList"></div>
+            <div id="noActiveTasks" class="no-tasks">No active tasks</div>
+        </div>
+
+        <div class="completed-section">
+            <h2>Completed Tasks <span class="counter" id="completedCounter">0</span></h2>
+            <div id="completedList"></div>
+            <div id="noCompletedTasks" class="no-tasks">No completed tasks</div>
+        </div>
     </div>
 
     <script>
@@ -121,7 +210,8 @@
                 todos.push({
                     id: Date.now(),
                     text: text,
-                    completed: false
+                    completed: false,
+                    completedAt: null
                 });
                 input.value = '';
                 renderTodos();
@@ -130,7 +220,11 @@
 
         function toggleTodo(id) {
             todos = todos.map(todo => 
-                todo.id === id ? {...todo, completed: !todo.completed} : todo
+                todo.id === id ? {
+                    ...todo, 
+                    completed: !todo.completed,
+                    completedAt: !todo.completed ? new Date() : null
+                } : todo
             );
             renderTodos();
         }
@@ -141,24 +235,53 @@
         }
 
         function renderTodos() {
+            const activeTodos = todos.filter(todo => !todo.completed);
+            const completedTodos = todos.filter(todo => todo.completed)
+                .sort((a, b) => b.completedAt - a.completedAt);
+
+            // Update counters
+            document.getElementById('activeCounter').textContent = activeTodos.length;
+            document.getElementById('completedCounter').textContent = completedTodos.length;
+
+            // Render active todos
             const todoList = document.getElementById('todoList');
+            const noActiveTasks = document.getElementById('noActiveTasks');
             todoList.innerHTML = '';
             
-            todos.forEach(todo => {
-                const todoItem = document.createElement('div');
-                todoItem.className = 'todo-item';
-                
-                todoItem.innerHTML = `
-                    <input type="checkbox" 
-                           class="todo-checkbox" 
-                           ${todo.completed ? 'checked' : ''}
-                           onchange="toggleTodo(${todo.id})">
-                    <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-                    <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
-                `;
-                
-                todoList.appendChild(todoItem);
-            });
+            if (activeTodos.length === 0) {
+                noActiveTasks.style.display = 'block';
+            } else {
+                noActiveTasks.style.display = 'none';
+                activeTodos.forEach(todo => renderTodoItem(todo, todoList));
+            }
+
+            // Render completed todos
+            const completedList = document.getElementById('completedList');
+            const noCompletedTasks = document.getElementById('noCompletedTasks');
+            completedList.innerHTML = '';
+
+            if (completedTodos.length === 0) {
+                noCompletedTasks.style.display = 'block';
+            } else {
+                noCompletedTasks.style.display = 'none';
+                completedTodos.forEach(todo => renderTodoItem(todo, completedList));
+            }
+        }
+
+        function renderTodoItem(todo, container) {
+            const todoItem = document.createElement('div');
+            todoItem.className = 'todo-item';
+            
+            todoItem.innerHTML = `
+                <input type="checkbox" 
+                       class="todo-checkbox" 
+                       ${todo.completed ? 'checked' : ''}
+                       onchange="toggleTodo(${todo.id})">
+                <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+                <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
+            `;
+            
+            container.appendChild(todoItem);
         }
 
         // Add event listener for Enter key
@@ -167,6 +290,9 @@
                 addTodo();
             }
         });
+
+        // Initial render
+        renderTodos();
     </script>
 </body>
 </html>
