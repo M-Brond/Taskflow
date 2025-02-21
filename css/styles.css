@@ -1,0 +1,300 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.author-header {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.author-header a {
+    color: #4169e1;
+    text-decoration: none;
+}
+
+.author-header a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.projects-container {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    min-height: 300px;
+}
+
+.project-column {
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.project-column.work {
+    background-color: #f8f9fa;
+    border-left: 4px solid #4169e1;
+}
+
+.project-column.personal {
+    background-color: #fafafa;
+    border-left: 4px solid #38a169;
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.project-title-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.project-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.project-counter {
+    background-color: #e8eeff;
+    color: #4169e1;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.project-counter.work {
+    background-color: #e8eeff;
+    color: #4169e1;
+}
+
+.project-counter.personal {
+    background-color: #e6f6ed;
+    color: #38a169;
+}
+
+.project-visibility-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.project-visibility-toggle:hover {
+    color: #333;
+}
+
+.project-visibility-toggle span {
+    font-size: 0.9rem;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+    animation: slideIn 0.3s ease-out;
+    cursor: grab;
+}
+
+.todo-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.todo-item.work {
+    border-left: 3px solid #4169e1;
+}
+
+.todo-item.personal {
+    border-left: 3px solid #38a169;
+}
+
+.project-tag {
+    margin-left: auto;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.project-tag.work {
+    background-color: #e8eeff;
+    color: #4169e1;
+}
+
+.project-tag.personal {
+    background-color: #e6f6ed;
+    color: #38a169;
+}
+
+h1 {
+    color: #4169e1;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+#todoInput {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#projectSelect {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.add-btn {
+    padding: 10px 20px;
+    background-color: #4169e1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.add-btn:hover {
+    background-color: #254EDB;
+}
+
+.add-project-btn {
+    background: none;
+    border: none;
+    color: #4169e1;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px;
+    transition: color 0.2s;
+}
+
+.add-project-btn:hover {
+    color: #254EDB;
+}
+
+.todo-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.todo-checkbox {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+}
+
+.todo-text {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.todo-text.completed {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.completion-date {
+    font-size: 0.8rem;
+    color: #888;
+    margin-left: 10px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ff4444;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.todo-item:hover .delete-btn {
+    opacity: 1;
+}
+
+.completed-section {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.completed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.completed-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.completed-tasks {
+    transition: max-height 0.3s ease-out;
+    overflow: hidden;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
