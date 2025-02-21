@@ -110,6 +110,18 @@
             border: 1px solid #f0f0f0;
             transition: all 0.2s;
             animation: slideIn 0.3s ease-out;
+            cursor: grab;
+        }
+
+        .todo-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-item.drag-over {
+            border: 2px dashed #4169e1;
+            margin-top: 1rem;
         }
 
         @keyframes slideIn {
@@ -201,6 +213,7 @@
 
     <script>
         let todos = [];
+        let draggedItem = null;
 
         function addTodo() {
             const input = document.getElementById('todoInput');
@@ -211,7 +224,8 @@
                     id: Date.now(),
                     text: text,
                     completed: false,
-                    completedAt: null
+                    completedAt: null,
+                    priority: todos.filter(t => !t.completed).length // Add to end of active todos
                 });
                 input.value = '';
                 renderTodos();
@@ -223,19 +237,32 @@
                 todo.id === id ? {
                     ...todo, 
                     completed: !todo.completed,
-                    completedAt: !todo.completed ? new Date() : null
+                    completedAt: !todo.completed ? new Date() : null,
+                    priority: !todo.completed ? -1 : todo.priority // Reset priority when completed
                 } : todo
             );
             renderTodos();
         }
 
         function deleteTodo(id) {
+            const deletedTodo = todos.find(todo => todo.id === id);
             todos = todos.filter(todo => todo.id !== id);
+            
+            // Reorder priorities after deletion
+            if (!deletedTodo.completed) {
+                todos = todos.map(todo => ({
+                    ...todo,
+                    priority: !todo.completed && todo.priority > deletedTodo.priority 
+                        ? todo.priority - 1 
+                        : todo.priority
+                }));
+            }
             renderTodos();
         }
 
         function renderTodos() {
-            const activeTodos = todos.filter(todo => !todo.completed);
+            const activeTodos = todos.filter(todo => !todo.completed)
+                .sort((a, b) => a.priority - b.priority);
             const completedTodos = todos.filter(todo => todo.completed)
                 .sort((a, b) => b.completedAt - a.completedAt);
 
@@ -271,6 +298,8 @@
         function renderTodoItem(todo, container) {
             const todoItem = document.createElement('div');
             todoItem.className = 'todo-item';
+            todoItem.draggable = !todo.completed;
+            todoItem.dataset.id = todo.id;
             
             todoItem.innerHTML = `
                 <input type="checkbox" 
@@ -280,8 +309,83 @@
                 <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
                 <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
             `;
+
+            // Add drag and drop event listeners
+            if (!todo.completed) {
+                todoItem.addEventListener('dragstart', handleDragStart);
+                todoItem.addEventListener('dragend', handleDragEnd);
+                todoItem.addEventListener('dragover', handleDragOver);
+                todoItem.addEventListener('drop', handleDrop);
+                todoItem.addEventListener('dragenter', handleDragEnter);
+                todoItem.addEventListener('dragleave', handleDragLeave);
+            }
             
             container.appendChild(todoItem);
+        }
+
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+            document.querySelectorAll('.todo-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            if (e.target.classList.contains('todo-item') && e.target !== draggedItem) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('todo-item')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropTarget = e.target.closest('.todo-item');
+            if (!dropTarget || dropTarget === draggedItem) return;
+
+            const draggedId = parseInt(draggedItem.dataset.id);
+            const droppedId = parseInt(dropTarget.dataset.id);
+            
+            const draggedTodo = todos.find(t => t.id === draggedId);
+            const droppedTodo = todos.find(t => t.id === droppedId);
+
+            if (!draggedTodo || !droppedTodo || draggedTodo.completed || droppedTodo.completed) return;
+
+            // Update priorities
+            const oldPriority = draggedTodo.priority;
+            const newPriority = droppedTodo.priority;
+
+            todos = todos.map(todo => {
+                if (todo.id === draggedId) {
+                    return { ...todo, priority: newPriority };
+                }
+                if (!todo.completed && 
+                    ((oldPriority < newPriority && todo.priority <= newPriority && todo.priority > oldPriority) ||
+                     (oldPriority > newPriority && todo.priority >= newPriority && todo.priority < oldPriority))) {
+                    return { ...todo, priority: oldPriority < newPriority ? todo.priority - 1 : todo.priority + 1 };
+                }
+                return todo;
+            });
+
+            renderTodos();
         }
 
         // Add event listener for Enter key
