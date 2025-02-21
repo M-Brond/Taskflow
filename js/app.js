@@ -72,24 +72,38 @@ function addTodo() {
     const text = input.value.trim();
     const project = projectSelect.value;
     
+    if (!project) {
+        alert('Please select a project first');
+        projectSelect.focus();
+        return;
+    }
+    
     if (text && project) {
+        const projectTodos = todos.filter(t => !t.completed && t.project === project);
         todos.push({
             id: Date.now(),
             text: text,
             project: project,
             completed: false,
             completedAt: null,
-            priority: todos.filter(t => !t.completed && t.project === project).length
+            priority: projectTodos.length
         });
         
         input.value = '';
-        projectSelect.value = '';
+        projectSelect.value = project; // Keep the project selected
         saveData();
         renderAll();
-    } else {
-        alert('Please enter both a task and select a project');
+    } else if (!text) {
+        input.focus();
     }
 }
+
+// Add event listener for Enter key
+document.getElementById('todoInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        addTodo();
+    }
+});
 
 function toggleTodo(id) {
     const todo = todos.find(t => t.id === id);
@@ -220,13 +234,21 @@ function renderTodoItem(todo) {
     `;
 }
 
+function updateTodoPriorities(project) {
+    const projectTodos = todos.filter(t => !t.completed && t.project === project);
+    projectTodos.forEach((todo, index) => {
+        todo.priority = index;
+    });
+    saveData();
+}
+
 function addDragAndDropListeners() {
-    const todos = document.querySelectorAll('.todo-item');
+    const todoItems = document.querySelectorAll('.todo-item:not(.completed)');
     const containers = document.querySelectorAll('.project-todos');
     
-    todos.forEach(todo => {
-        todo.addEventListener('dragstart', handleDragStart);
-        todo.addEventListener('dragend', handleDragEnd);
+    todoItems.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
     });
     
     containers.forEach(container => {
@@ -238,15 +260,22 @@ function addDragAndDropListeners() {
 }
 
 let draggedItem = null;
+let originalContainer = null;
 
 function handleDragStart(e) {
     draggedItem = e.target;
+    originalContainer = e.target.closest('.project-todos');
     e.target.classList.add('dragging');
+    
+    // Set drag effect
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', ''); // Required for Firefox
 }
 
 function handleDragEnd(e) {
     e.target.classList.remove('dragging');
     draggedItem = null;
+    originalContainer = null;
     document.querySelectorAll('.project-todos').forEach(container => {
         container.classList.remove('drag-over');
     });
@@ -254,35 +283,85 @@ function handleDragEnd(e) {
 
 function handleDragOver(e) {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
 }
 
 function handleDragEnter(e) {
     e.preventDefault();
-    if (e.target.classList.contains('project-todos')) {
-        e.target.classList.add('drag-over');
+    const container = e.target.closest('.project-todos');
+    if (container) {
+        container.classList.add('drag-over');
     }
 }
 
 function handleDragLeave(e) {
-    if (e.target.classList.contains('project-todos')) {
-        e.target.classList.remove('drag-over');
+    const container = e.target.closest('.project-todos');
+    if (container) {
+        container.classList.remove('drag-over');
     }
 }
 
 function handleDrop(e) {
     e.preventDefault();
     const container = e.target.closest('.project-todos');
-    if (container && draggedItem) {
-        const todoId = parseInt(draggedItem.dataset.id);
-        const newProject = container.dataset.project;
-        const todo = todos.find(t => t.id === todoId);
-        if (todo) {
-            todo.project = newProject;
-            saveData();
-            renderAll();
-        }
+    if (!container || !draggedItem) return;
+
+    const newProject = container.dataset.project;
+    const todoId = parseInt(draggedItem.dataset.id);
+    const todo = todos.find(t => t.id === todoId);
+    
+    if (!todo) return;
+
+    // Get the drop target position
+    const dropTarget = e.target.closest('.todo-item');
+    const items = Array.from(container.querySelectorAll('.todo-item:not(.completed)'));
+    
+    // Remove the dragged item from its current position
+    const projectTodos = todos.filter(t => !t.completed && t.project === todo.project);
+    projectTodos.splice(todo.priority, 1);
+    
+    // Update project if changed
+    todo.project = newProject;
+    
+    if (dropTarget) {
+        // Get the index where to insert the dragged item
+        const dropTodo = todos.find(t => t.id === parseInt(dropTarget.dataset.id));
+        const dropIndex = dropTodo.priority;
+        
+        // Update priorities for all todos in the project
+        const targetProjectTodos = todos.filter(t => !t.completed && t.project === newProject);
+        targetProjectTodos.forEach(t => {
+            if (t.priority >= dropIndex) {
+                t.priority++;
+            }
+        });
+        
+        // Set the new priority for the dragged item
+        todo.priority = dropIndex;
+    } else {
+        // If dropped at the end of the list
+        const targetProjectTodos = todos.filter(t => !t.completed && t.project === newProject);
+        todo.priority = targetProjectTodos.length;
     }
+    
+    saveData();
+    renderAll();
 }
+
+// Add styles for drag and drop
+const style = document.createElement('style');
+style.textContent = `
+    .project-todos.drag-over {
+        background-color: rgba(65, 105, 225, 0.1);
+        border-radius: 8px;
+    }
+    
+    .todo-item.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
+`;
+document.head.appendChild(style);
 
 // Initialize the app when the DOM is loaded
 document.addEventListener('DOMContentLoaded', loadData);
