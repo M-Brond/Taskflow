@@ -316,10 +316,11 @@ h1 {
 .show-hidden-container {
     position: relative;
     margin-top: 1rem;
-    height: 40px;
     width: 100%;
     display: flex;
+    gap: 1rem;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .project-visibility-toggle {

@@ -181,14 +181,33 @@ function renderAll() {
     const projectsContainer = document.getElementById('projectsContainer');
     projectsContainer.innerHTML = '';
 
-    // Remove any existing show hidden container
-    const existingShowHiddenContainer = document.querySelector('.show-hidden-container');
-    if (existingShowHiddenContainer) {
-        existingShowHiddenContainer.remove();
-    }
+    // Remove any existing show hidden containers
+    document.querySelectorAll('.show-hidden-container').forEach(container => container.remove());
 
     // Filter out hidden projects
     const visibleProjects = projects.filter(project => !hiddenProjects.has(project));
+    
+    // Create a container for all show/hide buttons
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'show-hidden-container';
+    
+    // Add buttons for each hidden project
+    projects.forEach(project => {
+        if (project !== 'Work' && hiddenProjects.has(project)) {
+            const showHiddenButton = document.createElement('button');
+            showHiddenButton.className = 'project-visibility-toggle show-hidden';
+            showHiddenButton.innerHTML = `
+                <span>Show ${project}</span>
+                <i class="fas fa-eye"></i>
+            `;
+            showHiddenButton.onclick = () => {
+                hiddenProjects.delete(project);
+                saveData();
+                renderAll();
+            };
+            buttonContainer.appendChild(showHiddenButton);
+        }
+    });
     
     visibleProjects.forEach(project => {
         const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
@@ -228,26 +247,9 @@ function renderAll() {
         projectsContainer.appendChild(column);
     });
     
-    // Add single button to show hidden projects
-    const hiddenProjectsCount = hiddenProjects.size;
-    if (hiddenProjectsCount > 0) {
-        const showHiddenContainer = document.createElement('div');
-        showHiddenContainer.className = 'show-hidden-container';
-        
-        const showHiddenButton = document.createElement('button');
-        showHiddenButton.className = 'project-visibility-toggle show-hidden';
-        showHiddenButton.innerHTML = `
-            <span>Show ${hiddenProjectsCount} hidden project${hiddenProjectsCount > 1 ? 's' : ''}</span>
-            <i class="fas fa-eye"></i>
-        `;
-        showHiddenButton.onclick = () => {
-            hiddenProjects.clear();
-            saveData();
-            renderAll();
-        };
-        
-        showHiddenContainer.appendChild(showHiddenButton);
-        projectsContainer.after(showHiddenContainer);
+    // Only add the button container if there are hidden projects
+    if (buttonContainer.children.length > 0) {
+        projectsContainer.after(buttonContainer);
     }
 
     // Render completed tasks
