@@ -186,7 +186,7 @@ function renderAll() {
 
     // Create columns for both visible and hidden projects
     projects.forEach(project => {
-        if (project === 'Work' || !hiddenProjects.has(project)) {
+        if (!hiddenProjects.has(project)) {
             // Render visible project
             const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
                 .sort((a, b) => a.priority - b.priority);
@@ -199,11 +199,9 @@ function renderAll() {
             header.innerHTML = `
                 <h3 class="project-title">${project}</h3>
                 <span class="project-counter">${projectTodos.length}</span>
-                ${project !== 'Work' ? `
-                    <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
-                        <i class="fas fa-eye-slash"></i>
-                    </button>
-                ` : ''}
+                <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
+                    <i class="fas fa-eye-slash"></i>
+                </button>
             `;
             
             const todoContainer = document.createElement('div');
