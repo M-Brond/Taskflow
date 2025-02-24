@@ -41,7 +41,7 @@ body {
 
 /* Header styles */
 header {
-    text-align: left;
+    text-align: center;
     margin-bottom: 2rem;
     padding: 2rem 0;
     width: 100%;
@@ -54,6 +54,7 @@ header {
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 0.5rem;
+    justify-content: center;
 }
 
 header h1 {
@@ -77,6 +78,7 @@ header .subtitle {
     margin: 0;
     margin-top: 1rem;
     font-weight: 400;
+    text-align: center;
 }
 
 header .subtitle a {
