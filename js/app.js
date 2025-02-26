@@ -3,6 +3,8 @@ let projects = ['Work', 'Personal']; // Default projects
 let showCompleted = true;
 let hiddenProjects = new Set(); // Track hidden projects
 let projectColors = {};
+let newProjectPickr = null;
+let selectedProjectColor = null;
 
 // Load data from localStorage
 function loadData() {
@@ -30,6 +32,13 @@ function loadData() {
         projectColors = JSON.parse(savedProjectColors);
     }
 
+    // Ensure all projects have colors
+    projects.forEach(project => {
+        if (!projectColors[project]) {
+            projectColors[project] = getRandomColor();
+        }
+    });
+
     updateProjectSelect();
     renderAll();
 }
@@ -52,19 +61,82 @@ function toggleProjectVisibility(project) {
     renderAll();
 }
 
-function addNewProject() {
-    const projectName = prompt('Enter project name:');
+function openNewProjectModal() {
+    const modal = document.getElementById('newProjectModal');
+    const nameInput = document.getElementById('newProjectName');
+    
+    // Reset form
+    nameInput.value = '';
+    selectedProjectColor = getRandomColor();
+    
+    // Initialize color picker if not already done
+    if (!newProjectPickr) {
+        newProjectPickr = Pickr.create({
+            el: '#newProjectColorPicker',
+            theme: 'classic',
+            default: selectedProjectColor,
+            components: {
+                preview: true,
+                opacity: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    hsla: true,
+                    hsva: true,
+                    cmyk: true,
+                    input: true,
+                    clear: false,
+                    save: true
+                }
+            }
+        });
+        
+        newProjectPickr.on('save', (color) => {
+            selectedProjectColor = color.toHEXA().toString();
+            newProjectPickr.hide();
+        });
+    } else {
+        newProjectPickr.setColor(selectedProjectColor);
+    }
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+    // Focus on input
+    setTimeout(() => nameInput.focus(), 100);
+}
+
+function closeNewProjectModal() {
+    const modal = document.getElementById('newProjectModal');
+    modal.style.display = 'none';
+}
+
+function createNewProject() {
+    const nameInput = document.getElementById('newProjectName');
+    const projectName = nameInput.value.trim();
+    
     if (projectName && !projects.includes(projectName)) {
         projects.push(projectName);
-        projectColors[projectName] = getRandomColor();
+        projectColors[projectName] = selectedProjectColor || getRandomColor();
         saveData();
         updateProjectSelect();
         renderAll();
+        closeNewProjectModal();
+    } else if (!projectName) {
+        nameInput.focus();
+    } else {
+        alert('A project with this name already exists');
+        nameInput.focus();
     }
 }
 
 function getRandomColor() {
-    return '#' + Math.floor(Math.random()*16777215).toString(16);
+    // Generate a more pleasing random color
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = Math.floor(Math.random() * 30) + 70; // 70-100%
+    const lightness = Math.floor(Math.random() * 20) + 40; // 40-60%
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
 function updateProjectSelect() {
@@ -74,6 +146,8 @@ function updateProjectSelect() {
         const option = document.createElement('option');
         option.value = project;
         option.textContent = project;
+        option.style.backgroundColor = projectColors[project] || getRandomColor();
+        option.style.color = 'white';
         select.appendChild(option);
     });
 }
@@ -144,22 +218,15 @@ function toggleCompletedTasks() {
 function formatDate(date) {
     if (!date) return '';
     
-    const now = new Date();
-    const diff = now - date;
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+    const options = { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit', 
+        minute: '2-digit'
+    };
     
-    if (days > 0) {
-        return `${days} day${days > 1 ? 's' : ''} ago`;
-    } else if (hours > 0) {
-        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    } else if (minutes > 0) {
-        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    } else {
-        return 'just now';
-    }
+    return new Date(date).toLocaleDateString(undefined, options);
 }
 
 function renderTodoItem(todo) {
@@ -168,13 +235,23 @@ function renderTodoItem(todo) {
     todoDiv.draggable = !todo.completed;
     todoDiv.dataset.id = todo.id;
     
+    // Ensure project has a color
+    if (!projectColors[todo.project]) {
+        projectColors[todo.project] = getRandomColor();
+        saveData();
+    }
+    
+    // Apply project color to the todo item
+    const projectColor = projectColors[todo.project];
+    todoDiv.style.borderLeft = `4px solid ${projectColor}`;
+    
     todoDiv.innerHTML = `
         <input type="checkbox" 
                class="todo-checkbox" 
                ${todo.completed ? 'checked' : ''}
                onchange="toggleTodo(${todo.id})">
         <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-        <span class="project-tag" style="background-color: ${projectColors[todo.project] || getRandomColor()}">${todo.project}</span>
+        <span class="project-tag" style="background-color: ${projectColor}">${todo.project}</span>
         ${todo.completed ? `<span class="completion-date">${formatDate(todo.completedAt)}</span>` : ''}
         <button class="delete-btn" onclick="deleteTodo(${todo.id})">
             <i class="fas fa-trash"></i>
@@ -253,6 +330,7 @@ function renderAll() {
             
             const column = document.createElement('div');
             column.className = `project-column ${project.toLowerCase()}`;
+            column.style.borderTop = `4px solid ${projectColors[project] || getRandomColor()}`;
             
             const header = renderProjectHeader(project);
             
@@ -459,6 +537,28 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add event listener for dark mode toggle
     document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+    
+    // Add event listener for Enter key on project name input
+    document.getElementById('newProjectName').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            createNewProject();
+        }
+    });
+    
+    // Add event listener for ESC key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeNewProjectModal();
+        }
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('newProjectModal');
+        if (e.target === modal) {
+            closeNewProjectModal();
+        }
+    });
     
     addDragAndDropListeners();
 });

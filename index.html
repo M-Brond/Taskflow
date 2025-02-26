@@ -53,7 +53,7 @@
             <select id="projectSelect">
                 <option value="">Select Project</option>
             </select>
-            <button class="add-project-btn" onclick="addNewProject()">+ New Project</button>
+            <button class="add-project-btn" onclick="openNewProjectModal()">+ New Project</button>
             <button class="add-btn" onclick="addTodo()">Add</button>
         </div>
 
@@ -71,6 +71,29 @@
             </div>
         </div>
     </div>
+
+    <!-- New Project Modal -->
+    <div id="newProjectModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeNewProjectModal()">&times;</span>
+            <h2>Create New Project</h2>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="newProjectName">Project Name</label>
+                    <input type="text" id="newProjectName" placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label for="newProjectColor">Project Color</label>
+                    <div id="newProjectColorPicker" class="color-picker-large"></div>
+                </div>
+                <div class="modal-actions">
+                    <button class="cancel-btn" onclick="closeNewProjectModal()">Cancel</button>
+                    <button class="create-btn" onclick="createNewProject()">Create Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
     <!-- Custom JavaScript -->
     <script src="js/app.js"></script>
