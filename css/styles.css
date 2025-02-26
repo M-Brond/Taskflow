@@ -17,6 +17,7 @@
     --radius-md: 12px;
     --radius-lg: 16px;
     --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    --color-bg-hover: #f0f2f5;
 }
 
 /* Base styles */
@@ -39,6 +40,12 @@ body {
 body.dark-mode {
     background-color: #1a1a1a;
     color: #f0f0f0;
+    --color-bg: #1a1a1a;
+    --color-bg-light: #252525;
+    --color-bg-hover: #2d2d2d;
+    --color-text: #f0f0f0;
+    --color-text-light: #b0b0b0;
+    --color-border: #444444;
 }
 
 body.dark-mode .container {
@@ -244,14 +251,14 @@ h1 {
 
 /* Project columns */
 .projects-container {
-    display: flex;
-    gap: 2rem;
-    margin-top: 2rem;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-    min-height: 300px;
-    width: 100%;
-    scroll-behavior: smooth;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.projects-container.two-projects {
+    grid-template-columns: 1fr 1fr;
 }
 
 .project-column {
@@ -266,6 +273,24 @@ h1 {
     border-top-style: solid;
     border-top-left-radius: var(--radius-md);
     border-top-right-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.project-column:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-top-width: 6px;
+}
+
+body.dark-mode .project-column {
+    background-color: #333;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .project-column:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+    background-color: #3a3a3a;
 }
 
 .project-header {
@@ -314,62 +339,69 @@ h1 {
     color: var(--color-text);
 }
 
-/* Subtle pattern for project columns */
-.project-column::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        linear-gradient(135deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-        linear-gradient(225deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-        linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-        linear-gradient(315deg, rgba(255,255,255,0.1) 25%, transparent 25%);
-    background-position: 10px 0, 10px 0, 0 0, 0 0;
-    background-size: 20px 20px;
-    background-repeat: repeat;
-    opacity: 0.3;
-    z-index: 0;
-    pointer-events: none;
+.project-remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-light);
+    font-size: 1rem;
+    margin-left: 0.5rem;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.2s;
 }
 
-body.dark-mode .project-column::before {
-    background-image: 
-        linear-gradient(135deg, rgba(0,0,0,0.1) 25%, transparent 25%),
-        linear-gradient(225deg, rgba(0,0,0,0.1) 25%, transparent 25%),
-        linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%),
-        linear-gradient(315deg, rgba(0,0,0,0.1) 25%, transparent 25%);
+.project-remove-btn:hover {
+    color: var(--color-danger);
+    transform: scale(1.1);
+}
+
+body.dark-mode .project-remove-btn {
+    color: #aaa;
+}
+
+body.dark-mode .project-remove-btn:hover {
+    color: #ff6b6b;
+}
+
+/* Remove the subtle pattern for project columns */
+.project-column::before {
+    display: none; /* Hide the pattern */
+}
+
+/* Also remove any other patterns */
+.project-column::after {
+    display: none;
 }
 
 /* Todo items */
 .todo-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background-color: white;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--color-bg);
     border-radius: var(--radius-sm);
-    margin-bottom: 0.8rem;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.2s;
-    cursor: grab;
-    animation: fadeIn 0.3s ease-out;
+    box-shadow: var(--shadow-xs);
+    transition: all 0.2s ease;
     position: relative;
-    z-index: 1;
-    overflow: hidden;
+    border-left: 4px solid transparent;
 }
 
 .todo-item:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    transform: translateX(2px);
+    background-color: var(--color-bg-hover);
 }
 
-.todo-item.dragging {
-    opacity: 0.5;
-    cursor: grabbing;
-    box-shadow: var(--shadow-lg);
+body.dark-mode .todo-item {
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .todo-item:hover {
+    background-color: #3c3c3c;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
 
 .todo-checkbox {

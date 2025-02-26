@@ -75,37 +75,52 @@ function openNewProjectModal() {
     
     // Destroy previous color picker if it exists
     if (newProjectPickr) {
-        newProjectPickr.destroyAndRemove();
+        try {
+            newProjectPickr.destroyAndRemove();
+        } catch (e) {
+            console.log('Error destroying color picker:', e);
+        }
         newProjectPickr = null;
     }
     
-    // Create a new color picker instance
-    newProjectPickr = Pickr.create({
-        el: '#newProjectColorPicker',
-        theme: 'classic',
-        default: selectedProjectColor,
-        components: {
-            preview: true,
-            opacity: true,
-            hue: true,
-            interaction: {
-                hex: true,
-                rgba: true,
-                hsla: true,
-                hsva: true,
-                cmyk: true,
-                input: true,
-                clear: false,
-                save: true
-            }
+    // Create a new color picker instance with a small delay to ensure DOM is ready
+    setTimeout(() => {
+        try {
+            newProjectPickr = Pickr.create({
+                el: '#newProjectColorPicker',
+                theme: 'classic',
+                default: selectedProjectColor,
+                components: {
+                    preview: true,
+                    opacity: true,
+                    hue: true,
+                    interaction: {
+                        hex: true,
+                        rgba: true,
+                        hsla: true,
+                        hsva: true,
+                        cmyk: true,
+                        input: true,
+                        clear: false,
+                        save: true
+                    }
+                }
+            });
+            
+            newProjectPickr.on('save', (color) => {
+                selectedProjectColor = color.toHEXA().toString();
+                colorPickerEl.style.backgroundColor = selectedProjectColor;
+                newProjectPickr.hide();
+            });
+        } catch (e) {
+            console.error('Error creating color picker:', e);
+            // Fallback to a simple color input if pickr fails
+            colorPickerEl.innerHTML = '<input type="color" value="' + selectedProjectColor + '" style="width:100%;height:100%;border:none;padding:0;margin:0;">';
+            colorPickerEl.querySelector('input').addEventListener('change', function(e) {
+                selectedProjectColor = e.target.value;
+            });
         }
-    });
-    
-    newProjectPickr.on('save', (color) => {
-        selectedProjectColor = color.toHEXA().toString();
-        colorPickerEl.style.backgroundColor = selectedProjectColor;
-        newProjectPickr.hide();
-    });
+    }, 50);
     
     // Show modal
     modal.style.display = 'flex';
@@ -302,6 +317,9 @@ function renderProjectHeader(project) {
         <div class="color-picker-container">
             <div class="color-picker" id="color-picker-${project}" style="background-color: ${projectColors[project] || getRandomColor()}"></div>
         </div>
+        <button class="project-remove-btn" onclick="removeProject('${project}')">
+            <i class="fas fa-trash"></i>
+        </button>
     `;
     
     setTimeout(() => {
@@ -336,12 +354,49 @@ function renderProjectHeader(project) {
     return header;
 }
 
+function removeProject(project) {
+    if (confirm(`Are you sure you want to remove the project "${project}"?\nAll tasks in this project will also be deleted.`)) {
+        // Remove all todos associated with this project
+        todos = todos.filter(todo => todo.project !== project);
+        
+        // Remove the project from the projects array
+        const index = projects.indexOf(project);
+        if (index > -1) {
+            projects.splice(index, 1);
+        }
+        
+        // Remove from hiddenProjects if it's there
+        if (hiddenProjects.has(project)) {
+            hiddenProjects.delete(project);
+        }
+        
+        // Remove from projectColors
+        if (projectColors[project]) {
+            delete projectColors[project];
+        }
+        
+        saveData();
+        updateProjectSelect();
+        renderAll();
+    }
+}
+
 function renderAll() {
     const projectsContainer = document.getElementById('projectsContainer');
     projectsContainer.innerHTML = '';
 
     // Remove any existing show hidden containers
     document.querySelectorAll('.show-hidden-container').forEach(container => container.remove());
+
+    // Count visible projects
+    const visibleProjects = projects.filter(project => !hiddenProjects.has(project));
+    
+    // Add the two-projects class if there are exactly two visible projects
+    if (visibleProjects.length === 2) {
+        projectsContainer.classList.add('two-projects');
+    } else {
+        projectsContainer.classList.remove('two-projects');
+    }
 
     // Create columns for both visible and hidden projects
     projects.forEach(project => {
@@ -356,22 +411,22 @@ function renderAll() {
             
             const header = renderProjectHeader(project);
             
-            const todoContainer = document.createElement('div');
-            todoContainer.className = 'project-todos';
-            todoContainer.dataset.project = project;
+            const todosList = document.createElement('div');
+            todosList.className = 'project-todos';
+            todosList.dataset.project = project;
             
             // Add drag and drop event listeners to the container
-            todoContainer.addEventListener('dragover', handleDragOver);
-            todoContainer.addEventListener('dragenter', handleDragEnter);
-            todoContainer.addEventListener('dragleave', handleDragLeave);
-            todoContainer.addEventListener('drop', handleDrop);
+            todosList.addEventListener('dragover', handleDragOver);
+            todosList.addEventListener('dragenter', handleDragEnter);
+            todosList.addEventListener('dragleave', handleDragLeave);
+            todosList.addEventListener('drop', handleDrop);
             
             projectTodos.forEach(todo => {
-                todoContainer.appendChild(renderTodoItem(todo));
+                todosList.appendChild(renderTodoItem(todo));
             });
             
             column.appendChild(header);
-            column.appendChild(todoContainer);
+            column.appendChild(todosList);
             projectsContainer.appendChild(column);
         } else {
             // Render placeholder for hidden project with show button
