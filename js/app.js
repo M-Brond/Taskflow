@@ -73,37 +73,39 @@ function openNewProjectModal() {
     // Update the color picker background
     colorPickerEl.style.backgroundColor = selectedProjectColor;
     
-    // Initialize color picker if not already done
-    if (!newProjectPickr) {
-        newProjectPickr = Pickr.create({
-            el: '#newProjectColorPicker',
-            theme: 'classic',
-            default: selectedProjectColor,
-            components: {
-                preview: true,
-                opacity: true,
-                hue: true,
-                interaction: {
-                    hex: true,
-                    rgba: true,
-                    hsla: true,
-                    hsva: true,
-                    cmyk: true,
-                    input: true,
-                    clear: false,
-                    save: true
-                }
-            }
-        });
-        
-        newProjectPickr.on('save', (color) => {
-            selectedProjectColor = color.toHEXA().toString();
-            colorPickerEl.style.backgroundColor = selectedProjectColor;
-            newProjectPickr.hide();
-        });
-    } else {
-        newProjectPickr.setColor(selectedProjectColor);
+    // Destroy previous color picker if it exists
+    if (newProjectPickr) {
+        newProjectPickr.destroyAndRemove();
+        newProjectPickr = null;
     }
+    
+    // Create a new color picker instance
+    newProjectPickr = Pickr.create({
+        el: '#newProjectColorPicker',
+        theme: 'classic',
+        default: selectedProjectColor,
+        components: {
+            preview: true,
+            opacity: true,
+            hue: true,
+            interaction: {
+                hex: true,
+                rgba: true,
+                hsla: true,
+                hsva: true,
+                cmyk: true,
+                input: true,
+                clear: false,
+                save: true
+            }
+        }
+    });
+    
+    newProjectPickr.on('save', (color) => {
+        selectedProjectColor = color.toHEXA().toString();
+        colorPickerEl.style.backgroundColor = selectedProjectColor;
+        newProjectPickr.hide();
+    });
     
     // Show modal
     modal.style.display = 'flex';
@@ -115,6 +117,11 @@ function openNewProjectModal() {
 function closeNewProjectModal() {
     const modal = document.getElementById('newProjectModal');
     modal.style.display = 'none';
+    
+    // Make sure the color picker is hidden
+    if (newProjectPickr) {
+        newProjectPickr.hide();
+    }
 }
 
 function createNewProject() {
@@ -128,6 +135,9 @@ function createNewProject() {
         updateProjectSelect();
         renderAll();
         closeNewProjectModal();
+        
+        // Reset selectedProjectColor for next use
+        selectedProjectColor = null;
     } else if (!projectName) {
         nameInput.focus();
     } else {

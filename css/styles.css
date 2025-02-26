@@ -581,6 +581,27 @@ body.dark-mode .color-picker-large {
     border-color: #444;
 }
 
+/* Pickr component styling */
+.pcr-app {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+}
+
+body.dark-mode .pcr-app {
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+body.dark-mode .pcr-interaction input {
+    color: #f0f0f0;
+    background-color: #444;
+    border-color: #555;
+}
+
+body.dark-mode .pcr-button {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
 /* Modal styles */
 .modal {
     display: none;
