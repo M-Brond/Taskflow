@@ -36,6 +36,44 @@ body {
     line-height: 1.6;
 }
 
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+}
+
+body.dark-mode .container {
+    background-color: #2a2a2a;
+}
+
+body.dark-mode .input-container,
+body.dark-mode .project-column,
+body.dark-mode .completed-section,
+body.dark-mode .todo-item {
+    background-color: #333;
+}
+
+body.dark-mode #todoInput,
+body.dark-mode #projectSelect {
+    background-color: #444;
+    color: #f0f0f0;
+    border-color: #555;
+}
+
+body.dark-mode .add-project-btn {
+    background-color: #444;
+    color: #f0f0f0;
+    border-color: #555;
+}
+
+body.dark-mode .project-counter {
+    background-color: #444;
+    color: #f0f0f0;
+}
+
+body.dark-mode .completed-header:hover {
+    background-color: #3a3a3a;
+}
+
 .container {
     width: 100%;
     max-width: 1200px;
@@ -415,6 +453,38 @@ h1 {
 .project-visibility-toggle.show-hidden:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-1px);
+}
+
+/* Dark mode toggle button */
+.dark-mode-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .dark-mode-toggle {
+    color: #f0f0f0;
+}
+
+/* Custom color picker styles */
+.color-picker-wrapper {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.color-picker {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px #000;
+    cursor: pointer;
 }
 
 /* Scrollbar styling */

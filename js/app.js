@@ -2,12 +2,14 @@ let todos = [];
 let projects = ['Work', 'Personal']; // Default projects
 let showCompleted = true;
 let hiddenProjects = new Set(); // Track hidden projects
+let projectColors = {};
 
 // Load data from localStorage
 function loadData() {
     const savedTodos = localStorage.getItem('todos');
     const savedProjects = localStorage.getItem('projects');
     const savedHiddenProjects = localStorage.getItem('hiddenProjects');
+    const savedProjectColors = localStorage.getItem('projectColors');
     
     if (savedTodos) {
         todos = JSON.parse(savedTodos).map(todo => ({
@@ -24,6 +26,10 @@ function loadData() {
         hiddenProjects = new Set(JSON.parse(savedHiddenProjects));
     }
 
+    if (savedProjectColors) {
+        projectColors = JSON.parse(savedProjectColors);
+    }
+
     updateProjectSelect();
     renderAll();
 }
@@ -33,6 +39,7 @@ function saveData() {
     localStorage.setItem('todos', JSON.stringify(todos));
     localStorage.setItem('projects', JSON.stringify(projects));
     localStorage.setItem('hiddenProjects', JSON.stringify(Array.from(hiddenProjects)));
+    localStorage.setItem('projectColors', JSON.stringify(projectColors));
 }
 
 function toggleProjectVisibility(project) {
@@ -49,10 +56,15 @@ function addNewProject() {
     const projectName = prompt('Enter project name:');
     if (projectName && !projects.includes(projectName)) {
         projects.push(projectName);
+        projectColors[projectName] = getRandomColor();
         saveData();
         updateProjectSelect();
         renderAll();
     }
+}
+
+function getRandomColor() {
+    return '#' + Math.floor(Math.random()*16777215).toString(16);
 }
 
 function updateProjectSelect() {
@@ -162,7 +174,7 @@ function renderTodoItem(todo) {
                ${todo.completed ? 'checked' : ''}
                onchange="toggleTodo(${todo.id})">
         <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-        <span class="project-tag ${todo.project.toLowerCase()}">${todo.project}</span>
+        <span class="project-tag" style="background-color: ${projectColors[todo.project] || getRandomColor()}">${todo.project}</span>
         ${todo.completed ? `<span class="completion-date">${formatDate(todo.completedAt)}</span>` : ''}
         <button class="delete-btn" onclick="deleteTodo(${todo.id})">
             <i class="fas fa-trash"></i>
@@ -175,6 +187,54 @@ function renderTodoItem(todo) {
     }
     
     return todoDiv;
+}
+
+function renderProjectHeader(project) {
+    const header = document.createElement('div');
+    header.className = 'project-header';
+    const projectTodos = todos.filter(todo => !todo.completed && todo.project === project);
+    
+    header.innerHTML = `
+        <h3 class="project-title">${project}</h3>
+        <span class="project-counter">${projectTodos.length}</span>
+        <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
+            <i class="fas fa-eye-slash"></i>
+        </button>
+        <div class="color-picker-wrapper">
+            <div class="color-picker" id="color-picker-${project}" style="background-color: ${projectColors[project] || getRandomColor()}"></div>
+        </div>
+    `;
+    
+    setTimeout(() => {
+        const pickr = Pickr.create({
+            el: `#color-picker-${project}`,
+            theme: 'classic',
+            default: projectColors[project] || getRandomColor(),
+            components: {
+                preview: true,
+                opacity: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    hsla: true,
+                    hsva: true,
+                    cmyk: true,
+                    input: true,
+                    clear: false,
+                    save: true
+                }
+            }
+        });
+        
+        pickr.on('save', (color) => {
+            projectColors[project] = color.toHEXA().toString();
+            saveData();
+            renderAll();
+        });
+    }, 0);
+    
+    return header;
 }
 
 function renderAll() {
@@ -194,15 +254,7 @@ function renderAll() {
             const column = document.createElement('div');
             column.className = `project-column ${project.toLowerCase()}`;
             
-            const header = document.createElement('div');
-            header.className = 'project-header';
-            header.innerHTML = `
-                <h3 class="project-title">${project}</h3>
-                <span class="project-counter">${projectTodos.length}</span>
-                <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
-                    <i class="fas fa-eye-slash"></i>
-                </button>
-            `;
+            const header = renderProjectHeader(project);
             
             const todoContainer = document.createElement('div');
             todoContainer.className = 'project-todos';
@@ -386,5 +438,27 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// Add dark mode toggle functionality
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+}
+
+// Initialize dark mode
+function initDarkMode() {
+    const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
+    if (darkModeEnabled) {
+        document.body.classList.add('dark-mode');
+    }
+}
+
 // Initialize the app when the DOM is loaded
-document.addEventListener('DOMContentLoaded', loadData);
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    initDarkMode();
+    
+    // Add event listener for dark mode toggle
+    document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+    
+    addDragAndDropListeners();
+});
