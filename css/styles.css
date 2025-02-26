@@ -74,6 +74,26 @@ body.dark-mode .completed-header:hover {
     background-color: #3a3a3a;
 }
 
+body.dark-mode .project-title {
+    color: #f0f0f0;
+}
+
+body.dark-mode .project-header {
+    color: #f0f0f0;
+}
+
+body.dark-mode .project-column h2 {
+    color: #a8d8ff;
+}
+
+body.dark-mode .todo-text {
+    color: #f0f0f0;
+}
+
+body.dark-mode .todo-text.completed {
+    color: #aaa;
+}
+
 .container {
     width: 100%;
     max-width: 1200px;
@@ -527,17 +547,170 @@ body.dark-mode .dark-mode-toggle {
 
 /* Custom color picker styles */
 .color-picker-wrapper {
-    display: inline-block;
-    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .color-picker {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     border: 2px solid #fff;
-    box-shadow: 0 0 0 1px #000;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.color-picker:hover {
+    transform: scale(1.1);
+}
+
+.color-picker-large {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .color-picker,
+body.dark-mode .color-picker-large {
+    border-color: #444;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 500px;
+    padding: 2rem;
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+body.dark-mode .modal-content {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.close-modal:hover {
+    color: var(--color-danger);
+    transform: scale(1.1);
+}
+
+.modal-form {
+    margin-top: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+}
+
+body.dark-mode .form-group input {
+    background-color: #444;
+    color: #f0f0f0;
+    border-color: #555;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.cancel-btn, .create-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-btn {
+    background-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.create-btn {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.cancel-btn:hover, .create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+body.dark-mode .cancel-btn {
+    background-color: #444;
+    color: #f0f0f0;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Completion date styling */
+.completion-date {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-left: auto;
+    margin-right: 0.5rem;
+}
+
+body.dark-mode .completion-date {
+    color: #aaa;
 }
 
 /* Scrollbar styling */
@@ -628,143 +801,4 @@ select,
 /* Add smooth scrolling for the whole page */
 html {
     scroll-behavior: smooth;
-}
-
-/* Modal styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background-color: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    width: 90%;
-    max-width: 500px;
-    padding: 2rem;
-    position: relative;
-    animation: modalFadeIn 0.3s ease-out;
-}
-
-body.dark-mode .modal-content {
-    background-color: #2a2a2a;
-    color: #f0f0f0;
-}
-
-.close-modal {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.close-modal:hover {
-    color: var(--color-danger);
-    transform: scale(1.1);
-}
-
-.modal-form {
-    margin-top: 1.5rem;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-}
-
-body.dark-mode .form-group input {
-    background-color: #444;
-    color: #f0f0f0;
-    border-color: #555;
-}
-
-.color-picker-large {
-    width: 100%;
-    height: 40px;
-    border-radius: var(--radius-sm);
-    margin-top: 0.5rem;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.cancel-btn, .create-btn {
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.cancel-btn {
-    background-color: var(--color-border);
-    color: var(--color-text);
-}
-
-.create-btn {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.cancel-btn:hover, .create-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-body.dark-mode .cancel-btn {
-    background-color: #444;
-    color: #f0f0f0;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Completion date styling */
-.completion-date {
-    font-size: 0.8rem;
-    color: var(--color-text-light);
-    margin-left: auto;
-    margin-right: 0.5rem;
-}
-
-body.dark-mode .completion-date {
-    color: #aaa;
 }

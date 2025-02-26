@@ -64,10 +64,14 @@ function toggleProjectVisibility(project) {
 function openNewProjectModal() {
     const modal = document.getElementById('newProjectModal');
     const nameInput = document.getElementById('newProjectName');
+    const colorPickerEl = document.getElementById('newProjectColorPicker');
     
     // Reset form
     nameInput.value = '';
     selectedProjectColor = getRandomColor();
+    
+    // Update the color picker background
+    colorPickerEl.style.backgroundColor = selectedProjectColor;
     
     // Initialize color picker if not already done
     if (!newProjectPickr) {
@@ -94,6 +98,7 @@ function openNewProjectModal() {
         
         newProjectPickr.on('save', (color) => {
             selectedProjectColor = color.toHEXA().toString();
+            colorPickerEl.style.backgroundColor = selectedProjectColor;
             newProjectPickr.hide();
         });
     } else {
@@ -537,6 +542,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add event listener for dark mode toggle
     document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+    
+    // Add event listener for New Project button
+    document.querySelector('.add-project-btn').addEventListener('click', openNewProjectModal);
     
     // Add event listener for Enter key on project name input
     document.getElementById('newProjectName').addEventListener('keypress', function(e) {
