@@ -161,8 +161,15 @@ function updateProjectSelect() {
         const option = document.createElement('option');
         option.value = project;
         option.textContent = project;
-        option.style.backgroundColor = projectColors[project] || getRandomColor();
-        option.style.color = 'white';
+        
+        // Create a color indicator for the project
+        const colorIndicator = document.createElement('span');
+        colorIndicator.className = 'project-color-indicator';
+        colorIndicator.style.backgroundColor = projectColors[project] || getRandomColor();
+        
+        // We can't directly add HTML to options, so we'll use data attributes
+        option.dataset.color = projectColors[project] || getRandomColor();
+        option.textContent = project;
         select.appendChild(option);
     });
 }
@@ -246,7 +253,7 @@ function formatDate(date) {
 
 function renderTodoItem(todo) {
     const todoDiv = document.createElement('div');
-    todoDiv.className = `todo-item ${todo.project.toLowerCase()}`;
+    todoDiv.className = `todo-item ${todo.completed ? 'completed' : ''}`;
     todoDiv.draggable = !todo.completed;
     todoDiv.dataset.id = todo.id;
     
@@ -266,7 +273,7 @@ function renderTodoItem(todo) {
                ${todo.completed ? 'checked' : ''}
                onchange="toggleTodo(${todo.id})">
         <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-        <span class="project-tag" style="background-color: ${projectColor}">${todo.project}</span>
+        <span class="project-tag ${todo.project.toLowerCase()}" style="background-color: ${projectColor}">${todo.project}</span>
         ${todo.completed ? `<span class="completion-date">${formatDate(todo.completedAt)}</span>` : ''}
         <button class="delete-btn" onclick="deleteTodo(${todo.id})">
             <i class="fas fa-trash"></i>
@@ -292,7 +299,7 @@ function renderProjectHeader(project) {
         <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
             <i class="fas fa-eye-slash"></i>
         </button>
-        <div class="color-picker-wrapper">
+        <div class="color-picker-container">
             <div class="color-picker" id="color-picker-${project}" style="background-color: ${projectColors[project] || getRandomColor()}"></div>
         </div>
     `;
