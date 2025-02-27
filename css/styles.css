@@ -106,10 +106,10 @@ body.dark-mode .todo-text.completed {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--color-bg);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-md);
+    overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 /* Header styles */
@@ -849,19 +849,57 @@ body.dark-mode .completion-date {
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
+        max-width: 100%;
     }
-
+    
+    .projects-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .project-column {
+        min-width: auto;
+        width: 100%;
+        margin-right: 0;
+        transform: none !important; /* Prevent transform on mobile to avoid overflow */
+    }
+    
+    .project-column:hover {
+        transform: none !important; /* Disable the transform on hover for mobile */
+        box-shadow: var(--shadow-sm);
+        border-top-width: 4px; /* Keep original border width */
+    }
+    
     .input-container {
         flex-direction: column;
+        align-items: stretch;
     }
-
-    .add-btn,
-    .add-project-btn {
+    
+    .input-container input,
+    .input-container select,
+    .input-container button {
+        margin-bottom: 0.5rem;
         width: 100%;
     }
-
-    .project-column {
-        min-width: 250px;
+    
+    .todo-item {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .todo-item:hover {
+        transform: none; /* Disable transform on hover for mobile */
+    }
+    
+    .project-header {
+        flex-wrap: wrap;
+    }
+    
+    .project-title {
+        font-size: 1rem;
     }
 }
 
@@ -902,4 +940,54 @@ select,
 /* Add smooth scrolling for the whole page */
 html {
     scroll-behavior: smooth;
+}
+
+/* Additional mobile fixes */
+@media (max-width: 480px) {
+    body {
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+    }
+    
+    .container {
+        padding: 0.75rem;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .project-column {
+        padding: 0.75rem;
+        border-radius: var(--radius-sm);
+    }
+    
+    .project-tag {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .todo-text {
+        font-size: 0.9rem;
+        max-width: 60%; /* Limit width to prevent overflow */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .delete-btn, 
+    .project-remove-btn, 
+    .project-visibility-toggle {
+        padding: 0.15rem;
+        font-size: 0.9rem;
+    }
+    
+    .color-picker {
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* Fix for completed tasks section */
+    .completed-container {
+        width: 100%;
+        overflow-x: hidden;
+    }
 }
