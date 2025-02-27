@@ -381,89 +381,6 @@ function removeProject(project) {
     }
 }
 
-function renderAll() {
-    const projectsContainer = document.getElementById('projectsContainer');
-    projectsContainer.innerHTML = '';
-
-    // Remove any existing show hidden containers
-    document.querySelectorAll('.show-hidden-container').forEach(container => container.remove());
-
-    // Count visible projects
-    const visibleProjects = projects.filter(project => !hiddenProjects.has(project));
-    
-    // Add the two-projects class if there are exactly two visible projects
-    if (visibleProjects.length === 2) {
-        projectsContainer.classList.add('two-projects');
-    } else {
-        projectsContainer.classList.remove('two-projects');
-    }
-
-    // Create columns for both visible and hidden projects
-    projects.forEach(project => {
-        if (!hiddenProjects.has(project)) {
-            // Render visible project
-            const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
-                .sort((a, b) => a.priority - b.priority);
-            
-            const column = document.createElement('div');
-            column.className = `project-column ${project.toLowerCase()}`;
-            column.style.borderTop = `4px solid ${projectColors[project] || getRandomColor()}`;
-            
-            const header = renderProjectHeader(project);
-            
-            const todosList = document.createElement('div');
-            todosList.className = 'project-todos';
-            todosList.dataset.project = project;
-            
-            // Add drag and drop event listeners to the container
-            todosList.addEventListener('dragover', handleDragOver);
-            todosList.addEventListener('dragenter', handleDragEnter);
-            todosList.addEventListener('dragleave', handleDragLeave);
-            todosList.addEventListener('drop', handleDrop);
-            
-            projectTodos.forEach(todo => {
-                todosList.appendChild(renderTodoItem(todo));
-            });
-            
-            column.appendChild(header);
-            column.appendChild(todosList);
-            projectsContainer.appendChild(column);
-        } else {
-            // Render placeholder for hidden project with show button
-            const placeholder = document.createElement('div');
-            placeholder.className = 'project-placeholder';
-            
-            const showButton = document.createElement('button');
-            showButton.className = 'project-visibility-toggle show-hidden';
-            showButton.innerHTML = `
-                <i class="fas fa-eye"></i>
-                <span>Show ${project}</span>
-            `;
-            showButton.onclick = () => {
-                hiddenProjects.delete(project);
-                saveData();
-                renderAll();
-            };
-            
-            placeholder.appendChild(showButton);
-            projectsContainer.appendChild(placeholder);
-        }
-    });
-
-    // Render completed tasks
-    const completedContainer = document.getElementById('completedTasks');
-    completedContainer.innerHTML = '';
-    
-    const completedTodos = todos.filter(todo => todo.completed)
-        .sort((a, b) => b.completedAt - a.completedAt);
-    
-    completedTodos.forEach(todo => {
-        completedContainer.appendChild(renderTodoItem(todo));
-    });
-    
-    document.getElementById('completedCounter').textContent = completedTodos.length;
-}
-
 function updateTodoPriorities(project) {
     const projectTodos = todos.filter(t => !t.completed && t.project === project);
     projectTodos.forEach((todo, index) => {
@@ -599,7 +516,6 @@ function toggleDarkMode() {
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 }
 
-// Initialize dark mode
 function initDarkMode() {
     const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
     if (darkModeEnabled) {
@@ -607,10 +523,35 @@ function initDarkMode() {
     }
 }
 
+function initDataStorageNotice() {
+    const noticeKey = 'taskflow_notice_dismissed';
+    const notice = document.getElementById('dataStorageNotice');
+    const closeBtn = document.getElementById('closeNoticeBtn');
+    
+    // Check if user has previously dismissed the notice
+    const noticeDismissed = localStorage.getItem(noticeKey) === 'true';
+    
+    if (noticeDismissed) {
+        notice.style.display = 'none';
+    }
+    
+    closeBtn.addEventListener('click', () => {
+        notice.classList.add('hiding');
+        
+        // After animation completes, hide the notice
+        setTimeout(() => {
+            notice.style.display = 'none';
+            // Remember that user dismissed the notice
+            localStorage.setItem(noticeKey, 'true');
+        }, 300);
+    });
+}
+
 // Initialize the app when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     loadData();
     initDarkMode();
+    initDataStorageNotice();
     
     // Add event listener for dark mode toggle
     document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
