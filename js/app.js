@@ -587,9 +587,15 @@ function renderAll() {
             todosList.addEventListener('dragleave', handleDragLeave);
             todosList.addEventListener('drop', handleDrop);
             
-            projectTodos.forEach(todo => {
-                todosList.appendChild(renderTodoItem(todo));
-            });
+            // Check if project has any todos
+            if (projectTodos.length > 0) {
+                projectTodos.forEach(todo => {
+                    todosList.appendChild(renderTodoItem(todo));
+                });
+            } else {
+                // Render empty state
+                todosList.appendChild(renderEmptyState(project));
+            }
             
             column.appendChild(header);
             column.appendChild(todosList);
@@ -616,6 +622,19 @@ function renderAll() {
         }
     });
 
+    // Render empty state if no projects exist
+    if (projects.length === 0) {
+        const emptyProjectsState = document.createElement('div');
+        emptyProjectsState.className = 'empty-state';
+        emptyProjectsState.innerHTML = `
+            <i class="fas fa-tasks"></i>
+            <h3>No Projects Yet</h3>
+            <p>Create your first project to get started organizing your tasks.</p>
+            <button class="empty-state-action" onclick="openNewProjectModal()">+ Create Project</button>
+        `;
+        projectsContainer.appendChild(emptyProjectsState);
+    }
+
     // Render completed tasks
     const completedContainer = document.getElementById('completedTasks');
     completedContainer.innerHTML = '';
@@ -623,11 +642,162 @@ function renderAll() {
     const completedTodos = todos.filter(todo => todo.completed)
         .sort((a, b) => b.completedAt - a.completedAt);
     
-    completedTodos.forEach(todo => {
-        completedContainer.appendChild(renderTodoItem(todo));
-    });
+    if (completedTodos.length > 0) {
+        completedTodos.forEach(todo => {
+            completedContainer.appendChild(renderTodoItem(todo));
+        });
+    } else {
+        // Render empty state for completed tasks
+        const emptyCompletedState = document.createElement('div');
+        emptyCompletedState.className = 'empty-state';
+        emptyCompletedState.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <h3>No Completed Tasks</h3>
+            <p>Tasks you complete will appear here.</p>
+        `;
+        completedContainer.appendChild(emptyCompletedState);
+    }
     
     document.getElementById('completedCounter').textContent = completedTodos.length;
+    
+    // Add tooltips to elements
+    addTooltips();
+}
+
+// Render empty state for a project
+function renderEmptyState(project) {
+    const emptyState = document.createElement('div');
+    emptyState.className = 'empty-state';
+    emptyState.innerHTML = `
+        <i class="fas fa-clipboard"></i>
+        <h3>No Tasks Yet</h3>
+        <p>Add a task to ${project} to get started.</p>
+        <button class="empty-state-action" onclick="focusAddTaskInput('${project}')">+ Add Task</button>
+    `;
+    return emptyState;
+}
+
+// Focus the add task input and select the project
+function focusAddTaskInput(project) {
+    const todoInput = document.getElementById('todoInput');
+    const projectSelect = document.getElementById('projectSelect');
+    
+    // Set the project in the dropdown
+    for (let i = 0; i < projectSelect.options.length; i++) {
+        if (projectSelect.options[i].value === project) {
+            projectSelect.selectedIndex = i;
+            break;
+        }
+    }
+    
+    // Focus the input
+    todoInput.focus();
+}
+
+// Add tooltips to elements
+function addTooltips() {
+    // Add tooltip to project visibility toggle
+    document.querySelectorAll('.project-visibility-toggle').forEach(button => {
+        if (!button.querySelector('.tooltip')) {
+            const tooltipSpan = document.createElement('span');
+            tooltipSpan.className = 'tooltip';
+            tooltipSpan.innerHTML = `
+                <span class="tooltip-text">Hide this project from view. You can show it again later.</span>
+            `;
+            button.appendChild(tooltipSpan);
+        }
+    });
+    
+    // Add tooltip to drag handle
+    document.querySelectorAll('.drag-handle').forEach(handle => {
+        if (!handle.querySelector('.tooltip')) {
+            const tooltipSpan = document.createElement('span');
+            tooltipSpan.className = 'tooltip';
+            tooltipSpan.innerHTML = `
+                <span class="tooltip-text">Drag to reorder or move to another project</span>
+            `;
+            handle.appendChild(tooltipSpan);
+        }
+    });
+    
+    // Add tooltip to dark mode toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle && !darkModeToggle.querySelector('.tooltip')) {
+        const tooltipSpan = document.createElement('span');
+        tooltipSpan.className = 'tooltip';
+        tooltipSpan.innerHTML = `
+            <span class="tooltip-text">Toggle dark mode</span>
+        `;
+        darkModeToggle.appendChild(tooltipSpan);
+    }
+}
+
+// Tutorial functions
+function initTutorial() {
+    const tutorialKey = 'taskflow_tutorial_completed';
+    const tutorialCompleted = localStorage.getItem(tutorialKey) === 'true';
+    
+    if (!tutorialCompleted) {
+        showTutorial();
+    }
+    
+    // Set up tutorial navigation
+    const prevBtn = document.getElementById('tutorialPrev');
+    const nextBtn = document.getElementById('tutorialNext');
+    const finishBtn = document.getElementById('tutorialFinish');
+    
+    let currentStep = 1;
+    const totalSteps = document.querySelectorAll('.tutorial-step').length;
+    
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 1) {
+            navigateToStep(--currentStep);
+        }
+    });
+    
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < totalSteps) {
+            navigateToStep(++currentStep);
+        }
+    });
+    
+    finishBtn.addEventListener('click', () => {
+        closeTutorial();
+        localStorage.setItem(tutorialKey, 'true');
+    });
+    
+    function navigateToStep(step) {
+        // Update active step
+        document.querySelectorAll('.tutorial-step').forEach(s => {
+            s.classList.remove('active');
+        });
+        document.querySelector(`.tutorial-step[data-step="${step}"]`).classList.add('active');
+        
+        // Update dots
+        document.querySelectorAll('.tutorial-dot').forEach(dot => {
+            dot.classList.remove('active');
+        });
+        document.querySelector(`.tutorial-dot[data-step="${step}"]`).classList.add('active');
+        
+        // Update buttons
+        prevBtn.disabled = step === 1;
+        
+        if (step === totalSteps) {
+            nextBtn.style.display = 'none';
+            finishBtn.style.display = 'block';
+        } else {
+            nextBtn.style.display = 'block';
+            finishBtn.style.display = 'none';
+        }
+    }
+}
+
+function showTutorial() {
+    document.getElementById('tutorialOverlay').style.display = 'flex';
+}
+
+function closeTutorial() {
+    document.getElementById('tutorialOverlay').style.display = 'none';
 }
 
 // Initialize the app when the DOM is loaded
@@ -635,21 +805,29 @@ document.addEventListener('DOMContentLoaded', function() {
     loadData();
     initDarkMode();
     initDataStorageNotice();
+    initTutorial();
     
     // Add event listener for dark mode toggle
     document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
     
-    // Add event listener for New Project button
+    // Set up event listeners
+    document.getElementById('todoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTodo();
+        }
+    });
+    
+    document.getElementById('addBtn').addEventListener('click', addTodo);
+    
     document.querySelector('.add-project-btn').addEventListener('click', openNewProjectModal);
     
-    // Add event listener for Enter key on project name input
     document.getElementById('newProjectName').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             createNewProject();
         }
     });
     
-    // Add event listener for ESC key to close modal
+    // Close modal with escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeNewProjectModal();

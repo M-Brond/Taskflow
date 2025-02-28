@@ -1079,3 +1079,244 @@ body.dark-mode .close-notice-btn:hover {
         padding: 10px 12px;
     }
 }
+
+/* Empty State Styles */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-text-light);
+    height: 100%;
+    min-height: 150px;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-primary-light);
+}
+
+.empty-state h3 {
+    margin: 0.5rem 0;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.empty-state p {
+    margin: 0.5rem 0 1rem;
+    font-size: 0.9rem;
+}
+
+.empty-state-action {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.empty-state-action:hover {
+    background-color: var(--color-primary-dark);
+}
+
+/* Tutorial Styles */
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tutorial-container {
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.tutorial-header {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.tutorial-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.tutorial-content {
+    padding: 1.5rem;
+}
+
+.tutorial-step {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.tutorial-step.active {
+    display: block;
+}
+
+.tutorial-step h3 {
+    margin-top: 0;
+    color: var(--color-primary);
+}
+
+.tutorial-step p {
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.tutorial-step img {
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-border);
+}
+
+.tutorial-navigation {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.tutorial-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tutorial-prev {
+    background-color: var(--color-bg-light);
+    color: var(--color-text);
+}
+
+.tutorial-next, .tutorial-finish {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.tutorial-prev:hover {
+    background-color: var(--color-border);
+}
+
+.tutorial-next:hover, .tutorial-finish:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.tutorial-progress {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.tutorial-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-border);
+    margin: 0 4px;
+    transition: background-color 0.2s;
+}
+
+.tutorial-dot.active {
+    background-color: var(--color-primary);
+}
+
+/* Tooltip Styles */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltip-icon {
+    cursor: pointer;
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+    margin-left: 0.25rem;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--color-bg-dark);
+    color: white;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+}
+
+.tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--color-bg-dark) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .tutorial-container {
+    background-color: #333;
+}
+
+body.dark-mode .tutorial-prev {
+    background-color: #444;
+    color: #eee;
+}
+
+body.dark-mode .tutorial-prev:hover {
+    background-color: #555;
+}
+
+body.dark-mode .tooltip .tooltip-text {
+    background-color: #555;
+}
+
+body.dark-mode .tooltip .tooltip-text::after {
+    border-color: #555 transparent transparent transparent;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

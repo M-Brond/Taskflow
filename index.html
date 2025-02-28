@@ -109,5 +109,47 @@
             <button id="closeNoticeBtn" class="close-notice-btn"><i class="fas fa-times"></i></button>
         </div>
     </div>
+    
+    <!-- Tutorial Overlay -->
+    <div class="tutorial-overlay" id="tutorialOverlay" style="display: none;">
+        <div class="tutorial-container">
+            <div class="tutorial-header">
+                <h2>Welcome to TaskFlow!</h2>
+            </div>
+            <div class="tutorial-content">
+                <div class="tutorial-step active" data-step="1">
+                    <h3>Getting Started</h3>
+                    <p>TaskFlow helps you organize your tasks into projects. Let's learn how to use it effectively.</p>
+                    <img src="https://via.placeholder.com/400x200?text=TaskFlow+Overview" alt="TaskFlow Overview">
+                </div>
+                <div class="tutorial-step" data-step="2">
+                    <h3>Creating Projects</h3>
+                    <p>Click the "+ New Project" button to create a project. Each project has its own column where you can add tasks.</p>
+                    <img src="https://via.placeholder.com/400x200?text=Creating+Projects" alt="Creating Projects">
+                </div>
+                <div class="tutorial-step" data-step="3">
+                    <h3>Adding Tasks</h3>
+                    <p>Type your task in the input field at the top, select a project from the dropdown, and click "Add" or press Enter.</p>
+                    <img src="https://via.placeholder.com/400x200?text=Adding+Tasks" alt="Adding Tasks">
+                </div>
+                <div class="tutorial-step" data-step="4">
+                    <h3>Managing Tasks</h3>
+                    <p>You can drag and drop tasks between projects. Click the checkbox to mark a task as complete. Use the menu to edit or delete tasks.</p>
+                    <img src="https://via.placeholder.com/400x200?text=Managing+Tasks" alt="Managing Tasks">
+                </div>
+                <div class="tutorial-progress">
+                    <span class="tutorial-dot active" data-step="1"></span>
+                    <span class="tutorial-dot" data-step="2"></span>
+                    <span class="tutorial-dot" data-step="3"></span>
+                    <span class="tutorial-dot" data-step="4"></span>
+                </div>
+            </div>
+            <div class="tutorial-navigation">
+                <button class="tutorial-btn tutorial-prev" id="tutorialPrev" disabled>Previous</button>
+                <button class="tutorial-btn tutorial-next" id="tutorialNext">Next</button>
+                <button class="tutorial-btn tutorial-finish" id="tutorialFinish" style="display: none;">Get Started</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
