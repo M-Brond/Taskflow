@@ -1190,6 +1190,14 @@ body.dark-mode .close-notice-btn:hover {
     border-radius: var(--radius-sm);
     margin-bottom: 1rem;
     border: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: block;
+    height: auto;
+}
+
+body.dark-mode .tutorial-step img {
+    border-color: #444;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .tutorial-navigation {
