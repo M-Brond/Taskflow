@@ -1221,13 +1221,34 @@ body.dark-mode .tutorial-step img {
     color: var(--color-text);
 }
 
+.tutorial-skip {
+    background-color: var(--color-bg-light);
+    color: var(--color-text-light);
+}
+
 .tutorial-next, .tutorial-finish {
     background-color: var(--color-primary);
     color: white;
 }
 
+body.dark-mode .tutorial-prev,
+body.dark-mode .tutorial-skip {
+    background-color: #444;
+    color: #eee;
+}
+
+body.dark-mode .tutorial-prev:hover,
+body.dark-mode .tutorial-skip:hover {
+    background-color: #555;
+}
+
 .tutorial-prev:hover {
     background-color: var(--color-border);
+}
+
+.tutorial-skip:hover {
+    background-color: var(--color-border);
+    color: var(--color-text);
 }
 
 .tutorial-next:hover, .tutorial-finish:hover {
@@ -1247,6 +1268,7 @@ body.dark-mode .tutorial-step img {
     background-color: var(--color-border);
     margin: 0 4px;
     transition: background-color 0.2s;
+    cursor: pointer;
 }
 
 .tutorial-dot.active {
@@ -1305,15 +1327,6 @@ body.dark-mode .tutorial-step img {
 /* Dark mode adjustments */
 body.dark-mode .tutorial-container {
     background-color: #333;
-}
-
-body.dark-mode .tutorial-prev {
-    background-color: #444;
-    color: #eee;
-}
-
-body.dark-mode .tutorial-prev:hover {
-    background-color: #555;
 }
 
 body.dark-mode .tooltip .tooltip-text {

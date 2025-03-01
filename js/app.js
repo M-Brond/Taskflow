@@ -745,6 +745,7 @@ function initTutorial() {
     const prevBtn = document.getElementById('tutorialPrev');
     const nextBtn = document.getElementById('tutorialNext');
     const finishBtn = document.getElementById('tutorialFinish');
+    const skipBtn = document.getElementById('tutorialSkip');
     
     let currentStep = 1;
     const totalSteps = document.querySelectorAll('.tutorial-step').length;
@@ -764,6 +765,20 @@ function initTutorial() {
     finishBtn.addEventListener('click', () => {
         closeTutorial();
         localStorage.setItem(tutorialKey, 'true');
+    });
+    
+    skipBtn.addEventListener('click', () => {
+        closeTutorial();
+        localStorage.setItem(tutorialKey, 'true');
+    });
+    
+    // Make dots clickable
+    document.querySelectorAll('.tutorial-dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+            const step = parseInt(dot.getAttribute('data-step'));
+            currentStep = step;
+            navigateToStep(step);
+        });
     });
     
     function navigateToStep(step) {
