@@ -1008,17 +1008,43 @@ html {
 
 .notice-content {
     display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    font-size: 0.85rem;
+    align-items: flex-start;
+    padding: 15px;
+    gap: 10px;
+}
+
+.notice-content i {
+    color: var(--color-primary);
+    font-size: 1.2rem;
+    margin-top: 2px;
+}
+
+.notice-content span {
+    flex: 1;
+    font-size: 0.9rem;
     color: var(--color-text);
 }
 
-.notice-content i.fa-info-circle {
-    color: var(--color-warning);
-    font-size: 1.2rem;
-    margin-right: 12px;
-    flex-shrink: 0;
+.data-actions {
+    display: flex;
+    margin-top: 8px;
+    margin-left: 24px;
+}
+
+.data-action-btn {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.data-action-btn:hover {
+    background-color: var(--color-primary);
+    color: white;
 }
 
 .close-notice-btn {
@@ -1026,58 +1052,105 @@ html {
     border: none;
     color: var(--color-text-light);
     cursor: pointer;
-    margin-left: 12px;
-    padding: 4px;
-    border-radius: 50%;
-    transition: all 0.2s;
-    flex-shrink: 0;
+    font-size: 0.9rem;
+    padding: 0;
+    margin-left: 10px;
+    align-self: flex-start;
 }
 
 .close-notice-btn:hover {
     color: var(--color-text);
-    background-color: rgba(0, 0, 0, 0.05);
 }
 
+/* Export/Import Modal Styles */
+.modal-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.modal-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-section p {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    margin-bottom: 15px;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.export-btn {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.export-btn:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.import-btn {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+.import-btn:hover {
+    background-color: #3bc9a9; /* Darker shade of secondary */
+}
+
+.import-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.import-status {
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.import-status.success {
+    color: var(--color-success);
+}
+
+.import-status.error {
+    color: var(--color-danger);
+}
+
+/* Dark mode adjustments */
 body.dark-mode .data-storage-notice {
     background-color: #333;
-    border-left-color: #f39c12;
+    border-left-color: var(--color-primary);
 }
 
-body.dark-mode .notice-content i.fa-info-circle {
-    color: #f39c12;
+body.dark-mode .notice-content span {
+    color: #f0f0f0;
 }
 
-body.dark-mode .close-notice-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+body.dark-mode .modal-section {
+    border-bottom-color: #444;
 }
 
-@keyframes slideIn {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(100%); opacity: 0; }
-}
-
-.data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
-}
-
-/* Responsive adjustments for the notice */
-@media (max-width: 480px) {
-    .data-storage-notice {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        max-width: calc(100% - 20px);
-    }
-    
-    .notice-content {
-        font-size: 0.8rem;
-        padding: 10px 12px;
-    }
+body.dark-mode .modal-section p {
+    color: #b0b0b0;
 }
 
 /* Empty State Styles */
@@ -1340,4 +1413,33 @@ body.dark-mode .tooltip .tooltip-text::after {
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100%); opacity: 0; }
+}
+
+.data-storage-notice.hiding {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+/* Responsive adjustments for the notice */
+@media (max-width: 480px) {
+    .data-storage-notice {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .notice-content {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
 }

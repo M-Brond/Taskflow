@@ -525,26 +525,150 @@ function initDarkMode() {
 
 function initDataStorageNotice() {
     const noticeKey = 'taskflow_notice_dismissed';
-    const notice = document.getElementById('dataStorageNotice');
-    const closeBtn = document.getElementById('closeNoticeBtn');
-    
-    // Check if user has previously dismissed the notice
     const noticeDismissed = localStorage.getItem(noticeKey) === 'true';
+    const notice = document.getElementById('dataStorageNotice');
     
-    if (noticeDismissed) {
+    if (!noticeDismissed) {
+        notice.style.display = 'block';
+    } else {
         notice.style.display = 'none';
     }
     
-    closeBtn.addEventListener('click', () => {
+    document.getElementById('closeNoticeBtn').addEventListener('click', function() {
         notice.classList.add('hiding');
-        
-        // After animation completes, hide the notice
         setTimeout(() => {
             notice.style.display = 'none';
-            // Remember that user dismissed the notice
-            localStorage.setItem(noticeKey, 'true');
+            notice.classList.remove('hiding');
         }, 300);
+        localStorage.setItem(noticeKey, 'true');
     });
+    
+    // Add event listener for export/import button
+    document.getElementById('exportImportBtn').addEventListener('click', function() {
+        openExportImportModal();
+    });
+}
+
+// Export/Import functions
+function openExportImportModal() {
+    const modal = document.getElementById('exportImportModal');
+    modal.style.display = 'flex';
+    
+    // Clear any previous import status
+    document.getElementById('importStatus').textContent = '';
+    document.getElementById('importStatus').className = 'import-status';
+}
+
+function closeExportImportModal() {
+    const modal = document.getElementById('exportImportModal');
+    modal.style.display = 'none';
+}
+
+function exportData() {
+    // Create a data object with all the app data
+    const appData = {
+        todos: todos,
+        projects: projects,
+        hiddenProjects: Array.from(hiddenProjects),
+        projectColors: projectColors,
+        version: '1.0' // For future compatibility checks
+    };
+    
+    // Convert to JSON string
+    const jsonData = JSON.stringify(appData, null, 2);
+    
+    // Create a blob and download link
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create a temporary download link
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    
+    // Generate filename with date
+    const date = new Date();
+    const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    downloadLink.download = `taskflow-backup-${dateStr}.json`;
+    
+    // Trigger download
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    
+    // Clean up
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(url);
+}
+
+function importData() {
+    const fileInput = document.getElementById('importFileInput');
+    fileInput.click();
+}
+
+function handleFileImport(event) {
+    const file = event.target.files[0];
+    const statusEl = document.getElementById('importStatus');
+    
+    if (!file) {
+        return;
+    }
+    
+    // Check if it's a JSON file
+    if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+        statusEl.textContent = 'Error: Please select a valid JSON file.';
+        statusEl.className = 'import-status error';
+        return;
+    }
+    
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            
+            // Validate the imported data
+            if (!importedData.todos || !importedData.projects || !importedData.projectColors) {
+                throw new Error('Invalid backup file format.');
+            }
+            
+            // Import the data
+            todos = importedData.todos.map(todo => ({
+                ...todo,
+                completedAt: todo.completedAt ? new Date(todo.completedAt) : null
+            }));
+            
+            projects = importedData.projects;
+            
+            if (importedData.hiddenProjects) {
+                hiddenProjects = new Set(importedData.hiddenProjects);
+            }
+            
+            projectColors = importedData.projectColors;
+            
+            // Save to localStorage and refresh UI
+            saveData();
+            updateProjectSelect();
+            renderAll();
+            
+            // Show success message
+            statusEl.textContent = 'Tasks imported successfully!';
+            statusEl.className = 'import-status success';
+            
+            // Reset file input
+            event.target.value = '';
+            
+        } catch (error) {
+            console.error('Import error:', error);
+            statusEl.textContent = `Error: ${error.message || 'Failed to import data.'}`;
+            statusEl.className = 'import-status error';
+        }
+    };
+    
+    reader.onerror = function() {
+        statusEl.textContent = 'Error: Failed to read the file.';
+        statusEl.className = 'import-status error';
+    };
+    
+    reader.readAsText(file);
 }
 
 function renderAll() {
@@ -820,21 +944,29 @@ document.addEventListener('DOMContentLoaded', function() {
     loadData();
     initDarkMode();
     initDataStorageNotice();
+    
+    // Add event listener for the add project button
+    document.querySelector('.add-project-btn').addEventListener('click', openNewProjectModal);
+    
+    // Add event listeners for export/import
+    document.getElementById('exportDataBtn').addEventListener('click', exportData);
+    document.getElementById('importDataBtn').addEventListener('click', importData);
+    document.getElementById('importFileInput').addEventListener('change', handleFileImport);
+    
+    // Show tutorial if it's the first visit
     initTutorial();
     
     // Add event listener for dark mode toggle
-    document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+    document.getElementById('darkModeToggle').addEventListener('click', function() {
+        toggleDarkMode();
+    });
     
-    // Set up event listeners
+    // Set up input event listeners
     document.getElementById('todoInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             addTodo();
         }
     });
-    
-    document.getElementById('addBtn').addEventListener('click', addTodo);
-    
-    document.querySelector('.add-project-btn').addEventListener('click', openNewProjectModal);
     
     document.getElementById('newProjectName').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
@@ -846,16 +978,42 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeNewProjectModal();
+            closeExportImportModal();
         }
     });
     
     // Close modal when clicking outside
     window.addEventListener('click', function(e) {
-        const modal = document.getElementById('newProjectModal');
-        if (e.target === modal) {
+        const newProjectModal = document.getElementById('newProjectModal');
+        const exportImportModal = document.getElementById('exportImportModal');
+        
+        if (e.target === newProjectModal) {
             closeNewProjectModal();
+        }
+        
+        if (e.target === exportImportModal) {
+            closeExportImportModal();
         }
     });
     
+    // Add drag and drop functionality
     addDragAndDropListeners();
+    
+    // Add tooltips
+    addTooltips();
+    
+    // Check if there's a hash in the URL for deep linking
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#project-')) {
+        const projectName = decodeURIComponent(hash.substring(9));
+        if (projects.includes(projectName)) {
+            // Scroll to the project
+            setTimeout(() => {
+                const projectEl = document.getElementById(`project-${projectName}`);
+                if (projectEl) {
+                    projectEl.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+    }
 });

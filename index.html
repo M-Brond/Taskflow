@@ -97,18 +97,43 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
-    <!-- Custom JavaScript -->
-    <script src="js/app.js"></script>
-    
     <!-- Data Storage Notice -->
     <div class="data-storage-notice" id="dataStorageNotice">
         <div class="notice-content">
             <i class="fas fa-info-circle"></i>
             <span>Your tasks are stored in your browser's local storage. Clearing your browser data will delete all tasks.</span>
+            <div class="data-actions">
+                <button id="exportImportBtn" class="data-action-btn"><i class="fas fa-download"></i> Backup & Restore</button>
+            </div>
             <button id="closeNoticeBtn" class="close-notice-btn"><i class="fas fa-times"></i></button>
         </div>
     </div>
+
+    <!-- Export/Import Modal -->
+    <div id="exportImportModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeExportImportModal()">&times;</span>
+            <h2>Backup & Restore Tasks</h2>
+            <div class="modal-section">
+                <h3><i class="fas fa-download"></i> Export Tasks</h3>
+                <p>Save a backup of all your tasks and projects to your device. Use this file to restore your data if browser storage is cleared.</p>
+                <button id="exportDataBtn" class="action-btn export-btn">Export Data</button>
+            </div>
+            <div class="modal-section">
+                <h3><i class="fas fa-upload"></i> Import Tasks</h3>
+                <p>Restore your tasks and projects from a previously exported file.</p>
+                <div class="import-container">
+                    <input type="file" id="importFileInput" accept=".json" style="display: none;">
+                    <button id="importDataBtn" class="action-btn import-btn">Select File to Import</button>
+                </div>
+                <div id="importStatus" class="import-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/app.js"></script>
     
     <!-- Tutorial Overlay -->
     <div class="tutorial-overlay" id="tutorialOverlay" style="display: none;">
