@@ -101,11 +101,11 @@
     <div class="data-storage-notice" id="dataStorageNotice">
         <div class="notice-content">
             <i class="fas fa-info-circle"></i>
-            <span>Your tasks are stored in your browser's local storage. Clearing your browser data will delete all tasks.</span>
-            <div class="data-actions">
-                <button id="exportImportBtn" class="data-action-btn"><i class="fas fa-download"></i> Backup & Restore</button>
-            </div>
+            <span>Your tasks are stored in your browser's local storage. Clearing your browser data will delete all tasks. We recommend occasionally backing up your data.</span>
             <button id="closeNoticeBtn" class="close-notice-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="data-actions">
+            <button id="exportImportBtn" class="data-action-btn"><i class="fas fa-download"></i> Backup & Restore (includes all tasks, completed tasks, and projects)</button>
         </div>
     </div>
 
@@ -116,12 +116,12 @@
             <h2>Backup & Restore Tasks</h2>
             <div class="modal-section">
                 <h3><i class="fas fa-download"></i> Export Tasks</h3>
-                <p>Save a backup of all your tasks and projects to your device. Use this file to restore your data if browser storage is cleared.</p>
+                <p>Save a backup of all your data to your device. The backup includes all active tasks, completed tasks, projects, and their settings.</p>
                 <button id="exportDataBtn" class="action-btn export-btn">Export Data</button>
             </div>
             <div class="modal-section">
                 <h3><i class="fas fa-upload"></i> Import Tasks</h3>
-                <p>Restore your tasks and projects from a previously exported file.</p>
+                <p>Restore your tasks and projects from a previously exported file. This will replace your current data with the data from the backup file.</p>
                 <div class="import-container">
                     <input type="file" id="importFileInput" accept=".json" style="display: none;">
                     <button id="importDataBtn" class="action-btn import-btn">Select File to Import</button>
