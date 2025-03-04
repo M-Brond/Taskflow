@@ -525,22 +525,53 @@ function initDarkMode() {
 
 function initDataStorageNotice() {
     const noticeKey = 'taskflow_notice_dismissed';
+    const minimizedKey = 'taskflow_notice_minimized';
     const noticeDismissed = localStorage.getItem(noticeKey) === 'true';
-    const notice = document.getElementById('dataStorageNotice');
+    const noticeMinimized = localStorage.getItem(minimizedKey) === 'true';
     
-    if (!noticeDismissed) {
-        notice.style.display = 'block';
-    } else {
+    const notice = document.getElementById('dataStorageNotice');
+    const minimizedNotice = document.getElementById('minimizedNotice');
+    
+    // Initial state based on localStorage
+    if (noticeDismissed) {
         notice.style.display = 'none';
+        minimizedNotice.style.display = 'none';
+    } else if (noticeMinimized) {
+        notice.style.display = 'none';
+        minimizedNotice.style.display = 'block';
+    } else {
+        notice.style.display = 'block';
+        minimizedNotice.style.display = 'none';
     }
     
+    // Close button - completely hides the notice
     document.getElementById('closeNoticeBtn').addEventListener('click', function() {
         notice.classList.add('hiding');
         setTimeout(() => {
             notice.style.display = 'none';
             notice.classList.remove('hiding');
+            minimizedNotice.style.display = 'none';
         }, 300);
         localStorage.setItem(noticeKey, 'true');
+        localStorage.removeItem(minimizedKey);
+    });
+    
+    // Minimize button - collapses to small icon
+    document.getElementById('minimizeNoticeBtn').addEventListener('click', function() {
+        notice.classList.add('hiding');
+        setTimeout(() => {
+            notice.style.display = 'none';
+            notice.classList.remove('hiding');
+            minimizedNotice.style.display = 'block';
+        }, 300);
+        localStorage.setItem(minimizedKey, 'true');
+    });
+    
+    // Expand button - restores from small icon
+    document.getElementById('expandNoticeBtn').addEventListener('click', function() {
+        minimizedNotice.style.display = 'none';
+        notice.style.display = 'block';
+        localStorage.removeItem(minimizedKey);
     });
     
     // Add event listener for export/import button
