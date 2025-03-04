@@ -233,26 +233,43 @@ document.getElementById('todoInput').addEventListener('keypress', function(e) {
 function toggleTodo(id) {
     const todo = todos.find(t => t.id === id);
     if (todo) {
-        todo.completed = !todo.completed;
-        todo.completedAt = todo.completed ? new Date() : null;
-        
-        saveData();
-        renderAll();
-        
-        // Show confetti animation when a task is completed
-        if (todo.completed) {
-            playCompletionAnimation(id);
+        // If the task is being completed (not uncompleted)
+        if (!todo.completed) {
+            // Play confetti animation before changing the state
+            const todoElement = document.getElementById(`todo-${id}`);
+            if (todoElement) {
+                playConfettiAtElement(todoElement);
+                
+                // Delay the state change and rendering to allow the animation to be seen
+                setTimeout(() => {
+                    todo.completed = true;
+                    todo.completedAt = new Date();
+                    saveData();
+                    renderAll();
+                }, 800); // Delay the completion to allow confetti to be seen
+            } else {
+                // If element not found, just complete the task
+                todo.completed = true;
+                todo.completedAt = new Date();
+                saveData();
+                renderAll();
+            }
+        } else {
+            // If uncompleting a task, do it immediately
+            todo.completed = false;
+            todo.completedAt = null;
+            saveData();
+            renderAll();
         }
     }
 }
 
-// Play confetti animation when a task is completed
-function playCompletionAnimation(todoId) {
-    const todoElement = document.getElementById(`todo-${todoId}`);
-    if (!todoElement) return;
+// Play confetti directly from the task position
+function playConfettiAtElement(element) {
+    if (!element) return;
     
-    // Get the position of the todo element
-    const rect = todoElement.getBoundingClientRect();
+    // Get the position of the element
+    const rect = element.getBoundingClientRect();
     const x = rect.left + rect.width / 2;
     const y = rect.top + rect.height / 2;
     
@@ -260,20 +277,46 @@ function playCompletionAnimation(todoId) {
     const xPercent = x / window.innerWidth;
     const yPercent = y / window.innerHeight;
     
-    // Play the confetti animation
+    // Add a subtle pop animation to the element
+    element.classList.add('pop-animation');
+    
+    // Play multiple confetti bursts for a more dramatic effect
+    // First burst - centered on the task
     confetti({
-        particleCount: 100,
-        spread: 70,
+        particleCount: 80,
+        spread: 100,
         origin: { x: xPercent, y: yPercent },
         colors: ['#5cb85c', '#4a90e2', '#50e3c2', '#f0ad4e'],
         zIndex: 9999
     });
     
-    // Add a small "poof" animation to the todo item
-    todoElement.classList.add('poof-animation');
+    // Second burst - slightly delayed
     setTimeout(() => {
-        todoElement.classList.remove('poof-animation');
-    }, 700);
+        confetti({
+            particleCount: 60,
+            spread: 80,
+            origin: { x: xPercent, y: yPercent },
+            colors: ['#ff9f43', '#ee5253', '#0abde3', '#10ac84'],
+            zIndex: 9999
+        });
+    }, 150);
+    
+    // Third burst - with different settings
+    setTimeout(() => {
+        confetti({
+            particleCount: 40,
+            spread: 60,
+            origin: { x: xPercent, y: yPercent },
+            colors: ['#ffffff', '#f1c40f', '#e74c3c', '#3498db'],
+            zIndex: 9999,
+            gravity: 1.5
+        });
+    }, 300);
+    
+    // Remove the pop animation after it completes
+    setTimeout(() => {
+        element.classList.remove('pop-animation');
+    }, 500);
 }
 
 function deleteTodo(id) {
