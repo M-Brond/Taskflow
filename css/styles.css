@@ -811,7 +811,7 @@ body.dark-mode .cancel-btn {
 }
 
 body.dark-mode .completion-date {
-    color: #aaa;
+    color: var(--color-text-light-dark);
 }
 
 /* Scrollbar styling */
@@ -1543,6 +1543,9 @@ body.dark-mode .tooltip .tooltip-text::after {
     font-size: 0.75rem;
     color: var(--color-text-light);
     margin-left: auto;
+    font-style: italic;
+    padding-left: 10px;
+    opacity: 0.8;
 }
 
 .todo-actions {

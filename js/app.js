@@ -311,6 +311,10 @@ function renderTodoItem(todo) {
     todoItem.draggable = !todo.completed;
     todoItem.dataset.id = todo.id;
     
+    // Apply project color to the task
+    const projectColor = projectColors[todo.project] || getRandomColor();
+    todoItem.style.borderLeftColor = projectColor;
+    
     // Create the main todo content
     const todoContent = document.createElement('div');
     todoContent.className = 'todo-content';
@@ -327,17 +331,16 @@ function renderTodoItem(todo) {
     todoText.className = `todo-text${todo.completed ? ' completed' : ''}`;
     todoText.textContent = todo.text;
     
-    // Create date display
-    const todoDate = document.createElement('span');
+    // Create date display with subtle styling
+    const todoDate = document.createElement('small');
     todoDate.className = 'todo-date';
     todoDate.textContent = todo.completed 
         ? `Completed ${formatDate(todo.completedAt)}` 
-        : `Created ${formatDate(todo.createdAt)}`;
+        : formatDate(todo.createdAt);
     
     // Add elements to todo content
     todoContent.appendChild(checkbox);
     todoContent.appendChild(todoText);
-    todoContent.appendChild(todoDate);
     
     // Create actions container
     const todoActions = document.createElement('div');
@@ -369,6 +372,7 @@ function renderTodoItem(todo) {
     todoActions.appendChild(deleteBtn);
     
     // Add content and actions to todo item
+    todoContent.appendChild(todoDate); // Move date to the end of content
     todoItem.appendChild(todoContent);
     todoItem.appendChild(todoActions);
     
