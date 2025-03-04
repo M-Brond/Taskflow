@@ -16,7 +16,8 @@ function loadData() {
     if (savedTodos) {
         todos = JSON.parse(savedTodos).map(todo => ({
             ...todo,
-            completedAt: todo.completedAt ? new Date(todo.completedAt) : null
+            completedAt: todo.completedAt ? new Date(todo.completedAt) : null,
+            comments: todo.comments || [] // Ensure comments array exists
         }));
     }
     
@@ -201,22 +202,23 @@ function addTodo() {
         return;
     }
     
-    if (text && project) {
-        const projectTodos = todos.filter(t => !t.completed && t.project === project);
-        todos.push({
-            id: Date.now(),
+    if (text) {
+        const newTodo = {
+            id: Date.now().toString(),
             text: text,
-            project: project,
             completed: false,
-            completedAt: null,
-            priority: projectTodos.length
-        });
+            project: project,
+            createdAt: new Date(),
+            priority: 0, // Default priority
+            comments: [] // Initialize empty comments array
+        };
         
-        input.value = '';
-        projectSelect.value = project; // Keep the project selected
+        todos.push(newTodo);
         saveData();
         renderAll();
-    } else if (!text) {
+        
+        // Reset input
+        input.value = '';
         input.focus();
     }
 }
@@ -233,9 +235,45 @@ function toggleTodo(id) {
     if (todo) {
         todo.completed = !todo.completed;
         todo.completedAt = todo.completed ? new Date() : null;
+        
         saveData();
         renderAll();
+        
+        // Show confetti animation when a task is completed
+        if (todo.completed) {
+            playCompletionAnimation(id);
+        }
     }
+}
+
+// Play confetti animation when a task is completed
+function playCompletionAnimation(todoId) {
+    const todoElement = document.getElementById(`todo-${todoId}`);
+    if (!todoElement) return;
+    
+    // Get the position of the todo element
+    const rect = todoElement.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    
+    // Calculate position as percentage of the window
+    const xPercent = x / window.innerWidth;
+    const yPercent = y / window.innerHeight;
+    
+    // Play the confetti animation
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { x: xPercent, y: yPercent },
+        colors: ['#5cb85c', '#4a90e2', '#50e3c2', '#f0ad4e'],
+        zIndex: 9999
+    });
+    
+    // Add a small "poof" animation to the todo item
+    todoElement.classList.add('poof-animation');
+    setTimeout(() => {
+        todoElement.classList.remove('poof-animation');
+    }, 700);
 }
 
 function deleteTodo(id) {
@@ -267,40 +305,205 @@ function formatDate(date) {
 }
 
 function renderTodoItem(todo) {
-    const todoDiv = document.createElement('div');
-    todoDiv.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-    todoDiv.draggable = !todo.completed;
-    todoDiv.dataset.id = todo.id;
+    const todoItem = document.createElement('div');
+    todoItem.className = `todo-item${todo.completed ? ' completed' : ''}`;
+    todoItem.id = `todo-${todo.id}`;
+    todoItem.draggable = !todo.completed;
+    todoItem.dataset.id = todo.id;
     
-    // Ensure project has a color
-    if (!projectColors[todo.project]) {
-        projectColors[todo.project] = getRandomColor();
+    // Create the main todo content
+    const todoContent = document.createElement('div');
+    todoContent.className = 'todo-content';
+    
+    // Create checkbox
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'todo-checkbox';
+    checkbox.checked = todo.completed;
+    checkbox.addEventListener('change', () => toggleTodo(todo.id));
+    
+    // Create todo text
+    const todoText = document.createElement('span');
+    todoText.className = `todo-text${todo.completed ? ' completed' : ''}`;
+    todoText.textContent = todo.text;
+    
+    // Create date display
+    const todoDate = document.createElement('span');
+    todoDate.className = 'todo-date';
+    todoDate.textContent = todo.completed 
+        ? `Completed ${formatDate(todo.completedAt)}` 
+        : `Created ${formatDate(todo.createdAt)}`;
+    
+    // Add elements to todo content
+    todoContent.appendChild(checkbox);
+    todoContent.appendChild(todoText);
+    todoContent.appendChild(todoDate);
+    
+    // Create actions container
+    const todoActions = document.createElement('div');
+    todoActions.className = 'todo-actions';
+    
+    // Create comments button with counter
+    const commentsCount = todo.comments ? todo.comments.length : 0;
+    const commentsBtn = document.createElement('button');
+    commentsBtn.className = 'todo-action-btn comments-btn';
+    commentsBtn.innerHTML = `<i class="fas fa-comment"></i>${commentsCount > 0 ? ` <span class="comments-count">${commentsCount}</span>` : ''}`;
+    commentsBtn.title = 'View/Add Comments';
+    commentsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleComments(todo.id);
+    });
+    
+    // Create delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'todo-action-btn delete-btn';
+    deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+    deleteBtn.title = 'Delete Task';
+    deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteTodo(todo.id);
+    });
+    
+    // Add buttons to actions
+    todoActions.appendChild(commentsBtn);
+    todoActions.appendChild(deleteBtn);
+    
+    // Add content and actions to todo item
+    todoItem.appendChild(todoContent);
+    todoItem.appendChild(todoActions);
+    
+    // Create comments section
+    const commentsSection = document.createElement('div');
+    commentsSection.className = 'comments-section';
+    commentsSection.id = `comments-${todo.id}`;
+    
+    // Create comments list
+    const commentsList = document.createElement('div');
+    commentsList.className = 'comments-list';
+    
+    // Add existing comments
+    if (todo.comments && todo.comments.length > 0) {
+        todo.comments.forEach(comment => {
+            const commentItem = document.createElement('div');
+            commentItem.className = 'comment-item';
+            
+            const commentText = document.createElement('div');
+            commentText.className = 'comment-text';
+            commentText.textContent = comment.text;
+            
+            const commentMeta = document.createElement('div');
+            commentMeta.className = 'comment-meta';
+            
+            const commentDate = document.createElement('span');
+            commentDate.className = 'comment-date';
+            commentDate.textContent = formatDate(new Date(comment.createdAt));
+            
+            const deleteCommentBtn = document.createElement('button');
+            deleteCommentBtn.className = 'delete-comment-btn';
+            deleteCommentBtn.innerHTML = '<i class="fas fa-times"></i>';
+            deleteCommentBtn.title = 'Delete Comment';
+            deleteCommentBtn.addEventListener('click', () => deleteComment(todo.id, comment.id));
+            
+            commentMeta.appendChild(commentDate);
+            commentMeta.appendChild(deleteCommentBtn);
+            
+            commentItem.appendChild(commentText);
+            commentItem.appendChild(commentMeta);
+            
+            commentsList.appendChild(commentItem);
+        });
+    } else {
+        const emptyComments = document.createElement('div');
+        emptyComments.className = 'empty-comments';
+        emptyComments.textContent = 'No comments yet';
+        commentsList.appendChild(emptyComments);
+    }
+    
+    // Create comment input
+    const commentForm = document.createElement('div');
+    commentForm.className = 'comment-form';
+    
+    const commentInput = document.createElement('input');
+    commentInput.type = 'text';
+    commentInput.className = 'comment-input';
+    commentInput.id = `comment-input-${todo.id}`;
+    commentInput.placeholder = 'Add a comment...';
+    
+    const addCommentBtn = document.createElement('button');
+    addCommentBtn.className = 'add-comment-btn';
+    addCommentBtn.innerHTML = '<i class="fas fa-plus"></i>';
+    addCommentBtn.title = 'Add Comment';
+    
+    // Handle comment submission
+    const submitComment = () => {
+        const text = commentInput.value.trim();
+        if (text) {
+            addComment(todo.id, text);
+            commentInput.value = '';
+        }
+    };
+    
+    addCommentBtn.addEventListener('click', submitComment);
+    commentInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            submitComment();
+        }
+    });
+    
+    commentForm.appendChild(commentInput);
+    commentForm.appendChild(addCommentBtn);
+    
+    commentsSection.appendChild(commentsList);
+    commentsSection.appendChild(commentForm);
+    
+    todoItem.appendChild(commentsSection);
+    
+    return todoItem;
+}
+
+// Add or update a comment to a todo
+function addComment(todoId, commentText) {
+    if (!commentText.trim()) return;
+    
+    const todo = todos.find(todo => todo.id === todoId);
+    if (todo) {
+        // Add the new comment
+        todo.comments = todo.comments || [];
+        todo.comments.push({
+            id: Date.now().toString(),
+            text: commentText.trim(),
+            createdAt: new Date()
+        });
+        
         saveData();
+        renderAll();
     }
-    
-    // Apply project color to the todo item
-    const projectColor = projectColors[todo.project];
-    todoDiv.style.borderLeft = `4px solid ${projectColor}`;
-    
-    todoDiv.innerHTML = `
-        <input type="checkbox" 
-               class="todo-checkbox" 
-               ${todo.completed ? 'checked' : ''}
-               onchange="toggleTodo(${todo.id})">
-        <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-        <span class="project-tag ${todo.project.toLowerCase()}" style="background-color: ${projectColor}">${todo.project}</span>
-        ${todo.completed ? `<span class="completion-date">${formatDate(todo.completedAt)}</span>` : ''}
-        <button class="delete-btn" onclick="deleteTodo(${todo.id})">
-            <i class="fas fa-trash"></i>
-        </button>
-    `;
-    
-    if (!todo.completed) {
-        todoDiv.addEventListener('dragstart', handleDragStart);
-        todoDiv.addEventListener('dragend', handleDragEnd);
+}
+
+// Delete a comment from a todo
+function deleteComment(todoId, commentId) {
+    const todo = todos.find(todo => todo.id === todoId);
+    if (todo && todo.comments) {
+        todo.comments = todo.comments.filter(comment => comment.id !== commentId);
+        saveData();
+        renderAll();
     }
-    
-    return todoDiv;
+}
+
+// Toggle the comments section for a todo
+function toggleComments(todoId) {
+    const commentsSection = document.getElementById(`comments-${todoId}`);
+    if (commentsSection) {
+        commentsSection.classList.toggle('show-comments');
+        
+        // Focus the input if showing comments
+        if (commentsSection.classList.contains('show-comments')) {
+            const commentInput = document.getElementById(`comment-input-${todoId}`);
+            if (commentInput) {
+                commentInput.focus();
+            }
+        }
+    }
 }
 
 function renderProjectHeader(project) {

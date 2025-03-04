@@ -1493,3 +1493,242 @@ body.dark-mode .tooltip .tooltip-text::after {
         padding: 10px 12px;
     }
 }
+
+/* Todo item styles */
+.todo-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s, transform 0.1s;
+    border-left: 4px solid var(--color-primary);
+    position: relative;
+    cursor: grab;
+}
+
+.todo-item.completed {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.todo-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.todo-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.todo-checkbox {
+    margin-right: 1rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+
+.todo-text {
+    flex: 1;
+    font-size: 1rem;
+    margin-right: 1rem;
+    word-break: break-word;
+}
+
+.todo-text.completed {
+    text-decoration: line-through;
+    color: var(--color-text-light);
+}
+
+.todo-date {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    margin-left: auto;
+}
+
+.todo-actions {
+    display: flex;
+    margin-left: auto;
+    gap: 0.5rem;
+}
+
+.todo-action-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.todo-action-btn:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-primary);
+}
+
+.comments-btn {
+    position: relative;
+}
+
+.comments-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 0.7rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Comments section styles */
+.comments-section {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    margin-top: 0.5rem;
+    width: 100%;
+    border-top: 1px solid transparent;
+}
+
+.comments-section.show-comments {
+    max-height: 500px;
+    border-top: 1px solid var(--color-border);
+    padding-top: 0.5rem;
+}
+
+.comments-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 0.5rem;
+}
+
+.comment-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--color-bg-hover);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+}
+
+.comment-text {
+    margin-bottom: 0.25rem;
+    word-break: break-word;
+}
+
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+}
+
+.delete-comment-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    padding: 0.1rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.delete-comment-btn:hover {
+    opacity: 1;
+    color: var(--color-danger);
+}
+
+.empty-comments {
+    text-align: center;
+    color: var(--color-text-light);
+    font-style: italic;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.comment-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+}
+
+.comment-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.add-comment-btn {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-comment-btn:hover {
+    background-color: #3557c0;
+}
+
+/* Poof animation for completed tasks */
+@keyframes poof {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    20% {
+        transform: scale(1.1);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.poof-animation {
+    animation: poof 0.7s ease-in-out;
+}
+
+/* Dark mode styles for comments */
+body.dark-mode .comments-section.show-comments {
+    border-top-color: var(--color-border);
+}
+
+body.dark-mode .comment-item {
+    background-color: #3a3a3a;
+}
+
+body.dark-mode .comment-input {
+    background-color: #444;
+    color: #f0f0f0;
+    border-color: #555;
+}
+
+body.dark-mode .empty-comments {
+    color: #aaa;
+}
