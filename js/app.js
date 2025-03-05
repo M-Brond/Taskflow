@@ -962,6 +962,43 @@ function initDataStorageNotice() {
         // Add fresh listener
         newExportImportBtn.addEventListener('click', function() {
             openExportImportModal();
+            
+            // Setup the export/import buttons in the modal
+            const exportDataBtn = document.getElementById('exportDataBtn');
+            if (exportDataBtn) {
+                // Remove any existing listeners
+                const newExportDataBtn = exportDataBtn.cloneNode(true);
+                exportDataBtn.parentNode.replaceChild(newExportDataBtn, exportDataBtn);
+                
+                // Add fresh listener
+                newExportDataBtn.addEventListener('click', exportData);
+            }
+            
+            const importDataBtn = document.getElementById('importDataBtn');
+            if (importDataBtn) {
+                // Remove any existing listeners
+                const newImportDataBtn = importDataBtn.cloneNode(true);
+                importDataBtn.parentNode.replaceChild(newImportDataBtn, importDataBtn);
+                
+                // Add fresh listener
+                newImportDataBtn.addEventListener('click', importData);
+            }
+            
+            const importFileInput = document.getElementById('importFileInput');
+            if (importFileInput) {
+                // Remove any existing listeners
+                const newImportFileInput = importFileInput.cloneNode(true);
+                importFileInput.parentNode.replaceChild(newImportFileInput, importFileInput);
+                
+                // Add fresh listener
+                newImportFileInput.addEventListener('change', handleFileImport);
+            }
+            
+            // Add event listener to the close button
+            const closeModalBtn = document.querySelector('#exportImportModal .close-modal');
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', closeExportImportModal);
+            }
         });
     }
     
@@ -1215,32 +1252,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Add todo form
-    document.getElementById('newTodoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        addTodo();
+    // Add event listener for Enter key on todoInput
+    document.getElementById('todoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTodo();
+        }
     });
     
-    // Add project form
-    document.getElementById('newProjectForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        addProject();
-    });
+    // Add event listener for the Add button if it exists
+    const addBtn = document.querySelector('.add-btn');
+    if (addBtn) {
+        // Remove the inline onclick handler if it exists
+        addBtn.removeAttribute('onclick');
+        addBtn.addEventListener('click', addTodo);
+    }
+    
+    // Add event listener for the New Project button
+    const addProjectBtn = document.querySelector('.add-project-btn');
+    if (addProjectBtn) {
+        addProjectBtn.addEventListener('click', openNewProjectModal);
+    }
     
     // Export/Import buttons
     const exportDataBtn = document.getElementById('exportDataBtn');
     if (exportDataBtn) {
-        exportDataBtn.addEventListener('click', exportData);
+        // Remove any existing listeners
+        const newExportDataBtn = exportDataBtn.cloneNode(true);
+        exportDataBtn.parentNode.replaceChild(newExportDataBtn, exportDataBtn);
+        
+        // Add fresh listener
+        newExportDataBtn.addEventListener('click', exportData);
     }
     
     const importDataBtn = document.getElementById('importDataBtn');
     if (importDataBtn) {
-        importDataBtn.addEventListener('click', importData);
+        // Remove any existing listeners
+        const newImportDataBtn = importDataBtn.cloneNode(true);
+        importDataBtn.parentNode.replaceChild(newImportDataBtn, importDataBtn);
+        
+        // Add fresh listener
+        newImportDataBtn.addEventListener('click', importData);
     }
     
     const importFileInput = document.getElementById('importFileInput');
     if (importFileInput) {
-        importFileInput.addEventListener('change', handleFileImport);
+        // Remove any existing listeners
+        const newImportFileInput = importFileInput.cloneNode(true);
+        importFileInput.parentNode.replaceChild(newImportFileInput, importFileInput);
+        
+        // Add fresh listener
+        newImportFileInput.addEventListener('change', handleFileImport);
     }
     
     // Other event listeners...
