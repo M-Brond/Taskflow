@@ -864,10 +864,25 @@ function initDataStorageNotice() {
             this.classList.add('active');
             setTimeout(() => this.classList.remove('active'), 200);
             
-            notice.classList.add('hiding');
+            // Get the position of the minimized button for animation
+            const minimizedRect = minimizedNotice.getBoundingClientRect();
+            const noticeRect = notice.getBoundingClientRect();
+            
+            // Calculate the distance to animate
+            const distanceX = (minimizedRect.left - noticeRect.left) || -100;
+            const distanceY = (minimizedRect.top - noticeRect.top) || 0;
+            
+            // Apply custom animation
+            notice.style.transition = 'opacity 0.3s, transform 0.3s';
+            notice.style.transformOrigin = 'bottom left';
+            notice.style.transform = `translate(${distanceX}px, ${distanceY}px) scale(0.2)`;
+            notice.style.opacity = '0';
+            
             setTimeout(() => {
                 notice.style.display = 'none';
-                notice.classList.remove('hiding');
+                notice.style.transform = '';
+                notice.style.opacity = '';
+                
                 minimizedNotice.style.display = 'block';
                 minimizedNotice.classList.add('showing');
                 setTimeout(() => minimizedNotice.classList.remove('showing'), 300);
@@ -894,13 +909,42 @@ function initDataStorageNotice() {
             this.classList.add('active');
             setTimeout(() => this.classList.remove('active'), 200);
             
-            minimizedNotice.classList.add('hiding');
+            // Get the position of the elements for animation
+            const minimizedRect = minimizedNotice.getBoundingClientRect();
+            
+            // Set a flag to prevent multiple clicks
+            let isExpanding = true;
+            
+            // Apply custom animation
+            minimizedNotice.style.transition = 'opacity 0.3s, transform 0.3s';
+            minimizedNotice.style.transformOrigin = 'center';
+            minimizedNotice.style.transform = 'scale(0.8)';
+            minimizedNotice.style.opacity = '0';
+            
             setTimeout(() => {
                 minimizedNotice.style.display = 'none';
-                minimizedNotice.classList.remove('hiding');
-                notice.style.display = 'block';
-                notice.classList.add('showing');
-                setTimeout(() => notice.classList.remove('showing'), 300);
+                minimizedNotice.style.transform = '';
+                minimizedNotice.style.opacity = '';
+                
+                // Only show the notice if we're still in the expanding state
+                if (isExpanding) {
+                    notice.style.display = 'block';
+                    notice.style.opacity = '0';
+                    notice.style.transform = 'translateX(-20px) scale(0.9)';
+                    
+                    // Force a reflow to ensure the animation works
+                    notice.offsetHeight;
+                    
+                    notice.style.transition = 'opacity 0.3s, transform 0.3s';
+                    notice.style.opacity = '1';
+                    notice.style.transform = 'translateX(0) scale(1)';
+                    
+                    setTimeout(() => {
+                        notice.style.transition = '';
+                    }, 300);
+                    
+                    isExpanding = false;
+                }
             }, 300);
             localStorage.removeItem(minimizedKey);
         };

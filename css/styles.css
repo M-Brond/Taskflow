@@ -575,7 +575,7 @@ body.dark-mode .completed-section::before {
 .dark-mode-toggle {
     position: fixed;
     top: 20px;
-    left: calc(50% - 400px); /* Align with the left side of the container */
+    right: 20px;
     background: none;
     border: none;
     color: var(--color-text);
@@ -998,6 +998,30 @@ html {
     max-width: 400px;
     animation: slideIn 0.3s ease-out;
     border-left: 4px solid var(--color-primary);
+    transform-origin: bottom left;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.data-storage-notice.hiding {
+    opacity: 0;
+    transform: translateX(-100px) scale(0.8);
+    transform-origin: bottom left;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.data-storage-notice.showing {
+    animation: slideInFromLeft 0.3s ease-out;
+}
+
+.minimized-notice.hiding {
+    opacity: 0;
+    transform: translateX(20px) scale(0.8);
+    transform-origin: bottom left;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.minimized-notice.showing {
+    animation: slideInFromButton 0.3s ease-out;
 }
 
 .notice-content {
@@ -1236,7 +1260,7 @@ body.dark-mode .modal-section p {
 @keyframes slideInFromLeft {
     from {
         opacity: 0;
-        transform: translateX(-20px) scale(0.8);
+        transform: translateX(-100px) scale(0.8);
     }
     to {
         opacity: 1;
@@ -1247,7 +1271,7 @@ body.dark-mode .modal-section p {
 @keyframes slideInFromButton {
     from {
         opacity: 0;
-        transform: translateX(20px) scale(0.8);
+        transform: translateX(-100px) scale(0.8);
     }
     to {
         opacity: 1;
