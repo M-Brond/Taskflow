@@ -2,7 +2,10 @@ let todos = [];
 let projects = ['Work', 'Personal']; // Default projects
 let showCompleted = true;
 let hiddenProjects = new Set(); // Track hidden projects
-let projectColors = {};
+let projectColors = {
+    'Work': '#1e88e5', // Default blue color for Work
+    'Personal': '#00a884'  // Default teal color for Personal
+};
 let newProjectPickr = null;
 let selectedProjectColor = null;
 
@@ -29,8 +32,26 @@ function loadData() {
         hiddenProjects = new Set(JSON.parse(savedHiddenProjects));
     }
 
+    // Default colors for standard projects
+    const defaultColors = {
+        'Work': '#1e88e5', // Blue
+        'Personal': '#00a884' // Teal
+    };
+
     if (savedProjectColors) {
-        projectColors = JSON.parse(savedProjectColors);
+        const savedColors = JSON.parse(savedProjectColors);
+        
+        // Merge saved colors with defaults, preserving user customizations
+        projectColors = { ...projectColors, ...savedColors };
+        
+        // Ensure Work and Personal have their default colors if they exist but weren't customized
+        if (projects.includes('Work') && !savedColors['Work']) {
+            projectColors['Work'] = defaultColors['Work'];
+        }
+        
+        if (projects.includes('Personal') && !savedColors['Personal']) {
+            projectColors['Personal'] = defaultColors['Personal'];
+        }
     }
 
     // Ensure all projects have colors
@@ -1203,81 +1224,103 @@ function closeTutorial() {
     document.getElementById('tutorialOverlay').style.display = 'none';
 }
 
+// Reset project colors to defaults
+function resetProjectColors() {
+    // Set default colors
+    projectColors = {
+        'Work': '#1e88e5', // Blue
+        'Personal': '#00a884' // Teal
+    };
+    
+    // Ensure all projects have colors
+    projects.forEach(project => {
+        if (!projectColors[project]) {
+            projectColors[project] = getRandomColor();
+        }
+    });
+    
+    // Save to localStorage
+    saveData();
+    
+    // Re-render the UI
+    renderAll();
+}
+
 // Initialize the app when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     loadData();
+    renderAll();
     initDarkMode();
     initDataStorageNotice();
     
-    // Add event listener for the add project button
-    document.querySelector('.add-project-btn').addEventListener('click', openNewProjectModal);
+    // Initialize the project filter
+    updateProjectFilter();
     
-    // Add event listeners for export/import
-    document.getElementById('exportDataBtn').addEventListener('click', exportData);
-    document.getElementById('importDataBtn').addEventListener('click', importData);
-    document.getElementById('importFileInput').addEventListener('change', handleFileImport);
+    // Initialize the project select in the new todo form
+    updateProjectSelect();
     
-    // Show tutorial if it's the first visit
-    initTutorial();
+    // Setup event listeners
+    setupEventListeners();
     
-    // Add event listener for dark mode toggle
-    document.getElementById('darkModeToggle').addEventListener('click', function() {
-        toggleDarkMode();
-    });
-    
-    // Set up input event listeners
-    document.getElementById('todoInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            addTodo();
-        }
-    });
-    
-    document.getElementById('newProjectName').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            createNewProject();
-        }
-    });
-    
-    // Close modal with escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeNewProjectModal();
-            closeExportImportModal();
-        }
-    });
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(e) {
-        const newProjectModal = document.getElementById('newProjectModal');
-        const exportImportModal = document.getElementById('exportImportModal');
-        
-        if (e.target === newProjectModal) {
-            closeNewProjectModal();
-        }
-        
-        if (e.target === exportImportModal) {
-            closeExportImportModal();
-        }
-    });
-    
-    // Add drag and drop functionality
-    addDragAndDropListeners();
-    
-    // Add tooltips
-    addTooltips();
-    
-    // Check if there's a hash in the URL for deep linking
-    const hash = window.location.hash;
-    if (hash && hash.startsWith('#project-')) {
-        const projectName = decodeURIComponent(hash.substring(9));
+    // Check if there's a hash in the URL to show a specific project
+    if (window.location.hash) {
+        const projectName = decodeURIComponent(window.location.hash.substring(1));
         if (projects.includes(projectName)) {
-            // Scroll to the project
-            setTimeout(() => {
-                const projectEl = document.getElementById(`project-${projectName}`);
-                if (projectEl) {
-                    projectEl.scrollIntoView({ behavior: 'smooth' });
+            // Show only this project
+            projects.forEach(p => {
+                if (p !== projectName) {
+                    hiddenProjects.add(p);
+                } else {
+                    hiddenProjects.delete(p);
                 }
-            }, 100);
+            });
+            updateProjectFilter();
+            renderAll();
         }
     }
+    
+    // Set up drag and drop
+    setupDragAndDrop();
+    
+    // Check if we should show the welcome message
+    if (!localStorage.getItem('hasSeenWelcome')) {
+        setTimeout(() => {
+            document.getElementById('welcomeModal').style.display = 'flex';
+            localStorage.setItem('hasSeenWelcome', 'true');
+        }, 1000);
+    }
+    
+    // Check if we should show the tutorial
+    if (!localStorage.getItem('hasSeenTutorial')) {
+        setTimeout(() => {
+            showTutorial();
+            localStorage.setItem('hasSeenTutorial', 'true');
+        }, 100);
+    }
+    
+    // Reset project colors to defaults (temporary for development)
+    resetProjectColors();
 });
+
+// Setup event listeners
+function setupEventListeners() {
+    // Add todo form
+    document.getElementById('newTodoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addTodo();
+    });
+    
+    // Add project form
+    document.getElementById('newProjectForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addProject();
+    });
+    
+    // Reset colors button (hidden by default, for development)
+    const resetColorsBtn = document.getElementById('resetColorsBtn');
+    if (resetColorsBtn) {
+        resetColorsBtn.addEventListener('click', resetProjectColors);
+    }
+    
+    // Other event listeners...
+}
