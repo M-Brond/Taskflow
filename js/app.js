@@ -783,7 +783,27 @@ document.head.appendChild(style);
 
 // Add dark mode toggle functionality
 function toggleDarkMode() {
+    // Get the button
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    
+    // Add clicked class for animation
+    darkModeToggle.classList.add('clicked');
+    setTimeout(() => darkModeToggle.classList.remove('clicked'), 500);
+    
+    // Toggle dark mode class on body
     document.body.classList.toggle('dark-mode');
+    
+    // Update icon if needed
+    const moonIcon = darkModeToggle.querySelector('i');
+    if (document.body.classList.contains('dark-mode')) {
+        // We're in dark mode now
+        moonIcon.classList.add('active');
+    } else {
+        // We're in light mode now
+        moonIcon.classList.remove('active');
+    }
+    
+    // Save preference to localStorage
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 }
 
@@ -792,14 +812,31 @@ function initDarkMode() {
     if (darkModeEnabled) {
         document.body.classList.add('dark-mode');
     }
+    
+    // Add event listener to the dark mode toggle button
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
 }
 
+// Global variables for data storage notice
+let minimizeNoticeHandler, expandNoticeHandler;
+let dataStorageNoticeInitialized = false;
+
 function initDataStorageNotice() {
+    // Prevent multiple initializations
+    if (dataStorageNoticeInitialized) return;
+    
     const minimizedKey = 'taskflow_notice_minimized';
     const noticeMinimized = localStorage.getItem(minimizedKey) === 'true';
     
     const notice = document.getElementById('dataStorageNotice');
     const minimizedNotice = document.getElementById('minimizedNotice');
+    const minimizeBtn = document.getElementById('minimizeNoticeBtn');
+    const expandBtn = document.getElementById('expandNoticeBtn');
+    
+    if (!notice || !minimizedNotice) return;
     
     // Initial state based on localStorage
     if (noticeMinimized) {
@@ -810,28 +847,165 @@ function initDataStorageNotice() {
         minimizedNotice.style.display = 'none';
     }
     
-    // Minimize button - collapses to small icon
-    document.getElementById('minimizeNoticeBtn').addEventListener('click', function() {
-        notice.classList.add('hiding');
-        setTimeout(() => {
-            notice.style.display = 'none';
-            notice.classList.remove('hiding');
-            minimizedNotice.style.display = 'block';
-        }, 300);
-        localStorage.setItem(minimizedKey, 'true');
-    });
+    // Clear any existing event listeners
+    if (minimizeBtn) {
+        if (minimizeNoticeHandler) {
+            minimizeBtn.removeEventListener('click', minimizeNoticeHandler);
+        }
+        
+        minimizeNoticeHandler = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Prevent multiple clicks
+            if (notice.classList.contains('hiding')) return;
+            
+            // Add visual feedback
+            this.classList.add('active');
+            setTimeout(() => this.classList.remove('active'), 200);
+            
+            notice.classList.add('hiding');
+            setTimeout(() => {
+                notice.style.display = 'none';
+                notice.classList.remove('hiding');
+                minimizedNotice.style.display = 'block';
+                minimizedNotice.classList.add('showing');
+                setTimeout(() => minimizedNotice.classList.remove('showing'), 300);
+            }, 300);
+            localStorage.setItem(minimizedKey, 'true');
+        };
+        
+        minimizeBtn.addEventListener('click', minimizeNoticeHandler);
+    }
     
-    // Expand button - restores from small icon
-    document.getElementById('expandNoticeBtn').addEventListener('click', function() {
-        minimizedNotice.style.display = 'none';
-        notice.style.display = 'block';
-        localStorage.removeItem(minimizedKey);
-    });
+    if (expandBtn) {
+        if (expandNoticeHandler) {
+            expandBtn.removeEventListener('click', expandNoticeHandler);
+        }
+        
+        expandNoticeHandler = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Prevent multiple clicks
+            if (minimizedNotice.classList.contains('hiding')) return;
+            
+            // Add visual feedback
+            this.classList.add('active');
+            setTimeout(() => this.classList.remove('active'), 200);
+            
+            minimizedNotice.classList.add('hiding');
+            setTimeout(() => {
+                minimizedNotice.style.display = 'none';
+                minimizedNotice.classList.remove('hiding');
+                notice.style.display = 'block';
+                notice.classList.add('showing');
+                setTimeout(() => notice.classList.remove('showing'), 300);
+            }, 300);
+            localStorage.removeItem(minimizedKey);
+        };
+        
+        expandBtn.addEventListener('click', expandNoticeHandler);
+    }
     
     // Add event listener for export/import button
-    document.getElementById('exportImportBtn').addEventListener('click', function() {
-        openExportImportModal();
+    const exportImportBtn = document.getElementById('exportImportBtn');
+    if (exportImportBtn) {
+        // Remove any existing listeners
+        const newExportImportBtn = exportImportBtn.cloneNode(true);
+        exportImportBtn.parentNode.replaceChild(newExportImportBtn, exportImportBtn);
+        
+        // Add fresh listener
+        newExportImportBtn.addEventListener('click', function() {
+            openExportImportModal();
+        });
+    }
+    
+    // Mark as initialized
+    dataStorageNoticeInitialized = true;
+}
+
+// Tutorial functions
+function initTutorial() {
+    const tutorialKey = 'taskflow_tutorial_completed';
+    const tutorialCompleted = localStorage.getItem(tutorialKey) === 'true';
+    
+    if (!tutorialCompleted) {
+        showTutorial();
+    }
+    
+    // Set up tutorial navigation
+    const prevBtn = document.getElementById('tutorialPrev');
+    const nextBtn = document.getElementById('tutorialNext');
+    const finishBtn = document.getElementById('tutorialFinish');
+    const skipBtn = document.getElementById('tutorialSkip');
+    
+    let currentStep = 1;
+    const totalSteps = document.querySelectorAll('.tutorial-step').length;
+    
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 1) {
+            navigateToStep(--currentStep);
+        }
     });
+    
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < totalSteps) {
+            navigateToStep(++currentStep);
+        }
+    });
+    
+    finishBtn.addEventListener('click', () => {
+        closeTutorial();
+        localStorage.setItem(tutorialKey, 'true');
+    });
+    
+    skipBtn.addEventListener('click', () => {
+        closeTutorial();
+        localStorage.setItem(tutorialKey, 'true');
+    });
+    
+    // Make dots clickable
+    document.querySelectorAll('.tutorial-dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+            const step = parseInt(dot.getAttribute('data-step'));
+            currentStep = step;
+            navigateToStep(step);
+        });
+    });
+    
+    function navigateToStep(step) {
+        // Update active step
+        document.querySelectorAll('.tutorial-step').forEach(s => {
+            s.classList.remove('active');
+        });
+        document.querySelector(`.tutorial-step[data-step="${step}"]`).classList.add('active');
+        
+        // Update dots
+        document.querySelectorAll('.tutorial-dot').forEach(dot => {
+            dot.classList.remove('active');
+        });
+        document.querySelector(`.tutorial-dot[data-step="${step}"]`).classList.add('active');
+        
+        // Update buttons
+        prevBtn.disabled = step === 1;
+        
+        if (step === totalSteps) {
+            nextBtn.style.display = 'none';
+            finishBtn.style.display = 'block';
+        } else {
+            nextBtn.style.display = 'block';
+            finishBtn.style.display = 'none';
+        }
+    }
+}
+
+function showTutorial() {
+    document.getElementById('tutorialOverlay').style.display = 'flex';
+}
+
+function closeTutorial() {
+    document.getElementById('tutorialOverlay').style.display = 'none';
 }
 
 // Export/Import functions
@@ -954,6 +1128,78 @@ function handleFileImport(event) {
     };
     
     reader.readAsText(file);
+}
+
+// Initialize the app when the DOM is loaded
+let appInitialized = false;
+
+function initApp() {
+    if (appInitialized) return;
+    
+    // Initialize dark mode
+    initDarkMode();
+    
+    // Initialize data storage notice
+    initDataStorageNotice();
+    
+    // Load todos from localStorage
+    loadData();
+    
+    // Initialize the project filter
+    updateProjectFilter();
+    
+    // Update the project select dropdown
+    updateProjectSelect();
+    
+    // Set up event listeners
+    setupEventListeners();
+    
+    // Mark as initialized
+    appInitialized = true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initApp();
+    renderAll();
+    
+    // Check if there's a hash in the URL to show a specific project
+    if (window.location.hash) {
+        const projectName = decodeURIComponent(window.location.hash.substring(1));
+        filterByProject(projectName);
+    }
+});
+
+// Setup event listeners
+function setupEventListeners() {
+    // Add todo form
+    document.getElementById('newTodoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addTodo();
+    });
+    
+    // Add project form
+    document.getElementById('newProjectForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addProject();
+    });
+    
+    // Export/Import buttons
+    const exportDataBtn = document.getElementById('exportDataBtn');
+    if (exportDataBtn) {
+        exportDataBtn.addEventListener('click', exportData);
+    }
+    
+    const importDataBtn = document.getElementById('importDataBtn');
+    if (importDataBtn) {
+        importDataBtn.addEventListener('click', importData);
+    }
+    
+    const importFileInput = document.getElementById('importFileInput');
+    if (importFileInput) {
+        importFileInput.addEventListener('change', handleFileImport);
+    }
+    
+    // Other event listeners...
 }
 
 function renderAll() {
@@ -1135,192 +1381,69 @@ function addTooltips() {
         const tooltipSpan = document.createElement('span');
         tooltipSpan.className = 'tooltip';
         tooltipSpan.innerHTML = `
-            <span class="tooltip-text">Toggle dark mode</span>
+                <span class="tooltip-text">Toggle dark mode</span>
         `;
         darkModeToggle.appendChild(tooltipSpan);
     }
 }
 
-// Tutorial functions
-function initTutorial() {
-    const tutorialKey = 'taskflow_tutorial_completed';
-    const tutorialCompleted = localStorage.getItem(tutorialKey) === 'true';
-    
-    if (!tutorialCompleted) {
-        showTutorial();
-    }
-    
-    // Set up tutorial navigation
-    const prevBtn = document.getElementById('tutorialPrev');
-    const nextBtn = document.getElementById('tutorialNext');
-    const finishBtn = document.getElementById('tutorialFinish');
-    const skipBtn = document.getElementById('tutorialSkip');
-    
-    let currentStep = 1;
-    const totalSteps = document.querySelectorAll('.tutorial-step').length;
-    
-    prevBtn.addEventListener('click', () => {
-        if (currentStep > 1) {
-            navigateToStep(--currentStep);
-        }
-    });
-    
-    nextBtn.addEventListener('click', () => {
-        if (currentStep < totalSteps) {
-            navigateToStep(++currentStep);
-        }
-    });
-    
-    finishBtn.addEventListener('click', () => {
-        closeTutorial();
-        localStorage.setItem(tutorialKey, 'true');
-    });
-    
-    skipBtn.addEventListener('click', () => {
-        closeTutorial();
-        localStorage.setItem(tutorialKey, 'true');
-    });
-    
-    // Make dots clickable
-    document.querySelectorAll('.tutorial-dot').forEach(dot => {
-        dot.addEventListener('click', () => {
-            const step = parseInt(dot.getAttribute('data-step'));
-            currentStep = step;
-            navigateToStep(step);
+// Filter to show only a specific project
+function filterByProject(projectName) {
+    if (projects.includes(projectName)) {
+        // Show only this project
+        projects.forEach(p => {
+            if (p !== projectName) {
+                hiddenProjects.add(p);
+            } else {
+                hiddenProjects.delete(p);
+            }
         });
-    });
-    
-    function navigateToStep(step) {
-        // Update active step
-        document.querySelectorAll('.tutorial-step').forEach(s => {
-            s.classList.remove('active');
-        });
-        document.querySelector(`.tutorial-step[data-step="${step}"]`).classList.add('active');
-        
-        // Update dots
-        document.querySelectorAll('.tutorial-dot').forEach(dot => {
-            dot.classList.remove('active');
-        });
-        document.querySelector(`.tutorial-dot[data-step="${step}"]`).classList.add('active');
-        
-        // Update buttons
-        prevBtn.disabled = step === 1;
-        
-        if (step === totalSteps) {
-            nextBtn.style.display = 'none';
-            finishBtn.style.display = 'block';
-        } else {
-            nextBtn.style.display = 'block';
-            finishBtn.style.display = 'none';
-        }
+        updateProjectFilter();
+        renderAll();
     }
 }
 
-function showTutorial() {
-    document.getElementById('tutorialOverlay').style.display = 'flex';
-}
-
-function closeTutorial() {
-    document.getElementById('tutorialOverlay').style.display = 'none';
-}
-
-// Reset project colors to defaults
-function resetProjectColors() {
-    // Set default colors
-    projectColors = {
-        'Work': '#1e88e5', // Blue
-        'Personal': '#00a884' // Teal
-    };
+// Update the project filter dropdown
+function updateProjectFilter() {
+    const filterSelect = document.getElementById('projectFilter');
+    if (!filterSelect) return;
     
-    // Ensure all projects have colors
+    // Clear existing options
+    filterSelect.innerHTML = '';
+    
+    // Add "All Projects" option
+    const allOption = document.createElement('option');
+    allOption.value = 'all';
+    allOption.textContent = 'All Projects';
+    filterSelect.appendChild(allOption);
+    
+    // Add options for each project
     projects.forEach(project => {
-        if (!projectColors[project]) {
-            projectColors[project] = getRandomColor();
-        }
+        const option = document.createElement('option');
+        option.value = project;
+        option.textContent = project;
+        filterSelect.appendChild(option);
     });
     
-    // Save to localStorage
-    saveData();
-    
-    // Re-render the UI
-    renderAll();
-}
-
-// Initialize the app when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    loadData();
-    renderAll();
-    initDarkMode();
-    initDataStorageNotice();
-    
-    // Initialize the project filter
-    updateProjectFilter();
-    
-    // Initialize the project select in the new todo form
-    updateProjectSelect();
-    
-    // Setup event listeners
-    setupEventListeners();
-    
-    // Check if there's a hash in the URL to show a specific project
-    if (window.location.hash) {
-        const projectName = decodeURIComponent(window.location.hash.substring(1));
-        if (projects.includes(projectName)) {
-            // Show only this project
+    // Add event listener
+    filterSelect.addEventListener('change', function() {
+        const selectedProject = this.value;
+        
+        if (selectedProject === 'all') {
+            // Show all projects
+            projects.forEach(p => hiddenProjects.delete(p));
+        } else {
+            // Show only the selected project
             projects.forEach(p => {
-                if (p !== projectName) {
+                if (p !== selectedProject) {
                     hiddenProjects.add(p);
                 } else {
                     hiddenProjects.delete(p);
                 }
             });
-            updateProjectFilter();
-            renderAll();
         }
-    }
-    
-    // Set up drag and drop
-    setupDragAndDrop();
-    
-    // Check if we should show the welcome message
-    if (!localStorage.getItem('hasSeenWelcome')) {
-        setTimeout(() => {
-            document.getElementById('welcomeModal').style.display = 'flex';
-            localStorage.setItem('hasSeenWelcome', 'true');
-        }, 1000);
-    }
-    
-    // Check if we should show the tutorial
-    if (!localStorage.getItem('hasSeenTutorial')) {
-        setTimeout(() => {
-            showTutorial();
-            localStorage.setItem('hasSeenTutorial', 'true');
-        }, 100);
-    }
-    
-    // Reset project colors to defaults (temporary for development)
-    resetProjectColors();
-});
-
-// Setup event listeners
-function setupEventListeners() {
-    // Add todo form
-    document.getElementById('newTodoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        addTodo();
+        
+        saveData();
+        renderAll();
     });
-    
-    // Add project form
-    document.getElementById('newProjectForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        addProject();
-    });
-    
-    // Reset colors button (hidden by default, for development)
-    const resetColorsBtn = document.getElementById('resetColorsBtn');
-    if (resetColorsBtn) {
-        resetColorsBtn.addEventListener('click', resetProjectColors);
-    }
-    
-    // Other event listeners...
 }

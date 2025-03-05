@@ -117,6 +117,7 @@ header {
     text-align: center;
     margin-bottom: 2rem;
     padding: 1rem 0;
+    position: relative;
 }
 
 .title-container {
@@ -160,17 +161,38 @@ header .subtitle a:hover {
     color: var(--color-secondary);
 }
 
-.author-header {
-    display: none;
+/* Header controls */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
 }
 
-h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-    color: var(--color-text);
-    text-align: center;
-    letter-spacing: -0.5px;
+#resetColorsBtn {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#resetColorsBtn:hover {
+    background-color: #e9ecef;
+}
+
+body.dark-mode #resetColorsBtn {
+    background-color: #343a40;
+    border-color: #495057;
+    color: #f8f9fa;
+}
+
+body.dark-mode #resetColorsBtn:hover {
+    background-color: #495057;
 }
 
 /* Input container styles */
@@ -551,19 +573,54 @@ body.dark-mode .completed-section::before {
 
 /* Dark mode toggle button */
 .dark-mode-toggle {
-    position: absolute;
+    position: fixed;
     top: 20px;
-    right: 20px;
+    left: calc(50% - 400px); /* Align with the left side of the container */
     background: none;
     border: none;
     color: var(--color-text);
-    font-size: 1.5rem;
     cursor: pointer;
-    transition: color 0.3s ease;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    z-index: 1000;
 }
 
-body.dark-mode .dark-mode-toggle {
-    color: #f0f0f0;
+.dark-mode-toggle i {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+body.dark-mode .dark-mode-toggle i.fas.fa-moon {
+    transform: rotate(360deg);
+    color: #ffd700; /* Gold color for moon in dark mode */
+}
+
+.dark-mode-toggle.clicked i {
+    animation: spin 0.5s ease-in-out;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+body.dark-mode .dark-mode-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.05);
+}
+
+.dark-mode-toggle:active {
+    transform: scale(0.95);
 }
 
 /* Custom color picker styles */
@@ -742,7 +799,9 @@ body.dark-mode .cancel-btn {
     font-size: 0.8rem;
     color: var(--color-text-light);
     margin-left: auto;
-    margin-right: 0.5rem;
+    font-style: italic;
+    padding-left: 10px;
+    opacity: 0.8;
 }
 
 body.dark-mode .completion-date {
@@ -996,11 +1055,17 @@ html {
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    position: relative;
+    z-index: 1001; /* Ensure it's above other elements */
 }
 
 .minimize-notice-btn:hover {
     background-color: rgba(0, 0, 0, 0.05);
     color: var(--color-primary);
+}
+
+.minimize-notice-btn:active {
+    transform: scale(0.95);
 }
 
 /* Minimized Notice Button */
@@ -1027,11 +1092,16 @@ html {
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    position: relative;
+    z-index: 1001; /* Ensure it's above other elements */
 }
 
 .minimized-notice button:hover {
-    transform: scale(1.1);
-    background-color: var(--color-primary-dark);
+    transform: scale(1.05);
+}
+
+.minimized-notice button:active {
+    transform: scale(0.95);
 }
 
 /* Dark mode adjustments */
@@ -1134,6 +1204,83 @@ body.dark-mode .modal-section p {
     color: #b0b0b0;
 }
 
+/* Animation classes for data storage notice */
+.data-storage-notice.hiding {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.8);
+    transform-origin: bottom left;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.data-storage-notice.showing {
+    animation: slideInFromLeft 0.3s ease-out;
+}
+
+.minimized-notice.hiding {
+    opacity: 0;
+    transform: translateX(20px) scale(0.8);
+    transform-origin: bottom left;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.minimized-notice.showing {
+    animation: slideInFromButton 0.3s ease-out;
+}
+
+.minimize-notice-btn.active, 
+.minimized-notice button.active {
+    transform: scale(0.9);
+    transition: transform 0.2s;
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes slideInFromButton {
+    from {
+        opacity: 0;
+        transform: translateX(20px) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments for the notice */
+@media (max-width: 480px) {
+    .data-storage-notice {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .notice-content {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
+}
+
 /* Empty State Styles */
 .empty-state {
     display: flex;
@@ -1178,251 +1325,6 @@ body.dark-mode .modal-section p {
 
 .empty-state-action:hover {
     background-color: var(--color-primary-dark);
-}
-
-/* Tutorial Styles */
-.tutorial-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tutorial-container {
-    position: relative;
-    width: 90%;
-    max-width: 500px;
-    background-color: var(--color-bg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-}
-
-.tutorial-header {
-    background-color: var(--color-primary);
-    color: white;
-    padding: 1rem;
-    text-align: center;
-}
-
-.tutorial-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.tutorial-content {
-    padding: 1.5rem;
-}
-
-.tutorial-step {
-    display: none;
-    animation: fadeIn 0.5s;
-}
-
-.tutorial-step.active {
-    display: block;
-}
-
-.tutorial-step h3 {
-    margin-top: 0;
-    color: var(--color-primary);
-}
-
-.tutorial-step p {
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-}
-
-.tutorial-step img {
-    max-width: 100%;
-    border-radius: var(--radius-sm);
-    margin-bottom: 1rem;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: block;
-    height: auto;
-}
-
-body.dark-mode .tutorial-step img {
-    border-color: #444;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.tutorial-navigation {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-    border-top: 1px solid var(--color-border);
-}
-
-.tutorial-btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.tutorial-prev {
-    background-color: var(--color-bg-light);
-    color: var(--color-text);
-}
-
-.tutorial-skip {
-    background-color: var(--color-bg-light);
-    color: var(--color-text-light);
-}
-
-.tutorial-next, .tutorial-finish {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-body.dark-mode .tutorial-prev,
-body.dark-mode .tutorial-skip {
-    background-color: #444;
-    color: #eee;
-}
-
-body.dark-mode .tutorial-prev:hover,
-body.dark-mode .tutorial-skip:hover {
-    background-color: #555;
-}
-
-.tutorial-prev:hover {
-    background-color: var(--color-border);
-}
-
-.tutorial-skip:hover {
-    background-color: var(--color-border);
-    color: var(--color-text);
-}
-
-.tutorial-next:hover, .tutorial-finish:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.tutorial-progress {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
-.tutorial-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--color-border);
-    margin: 0 4px;
-    transition: background-color 0.2s;
-    cursor: pointer;
-}
-
-.tutorial-dot.active {
-    background-color: var(--color-primary);
-}
-
-/* Tooltip Styles */
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip .tooltip-icon {
-    cursor: pointer;
-    color: var(--color-text-light);
-    font-size: 0.85rem;
-    margin-left: 0.25rem;
-}
-
-.tooltip .tooltip-text {
-    visibility: hidden;
-    width: 200px;
-    background-color: var(--color-bg-dark);
-    color: white;
-    text-align: center;
-    border-radius: var(--radius-sm);
-    padding: 0.5rem;
-    position: absolute;
-    z-index: 100;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-size: 0.8rem;
-    box-shadow: var(--shadow-md);
-    pointer-events: none;
-}
-
-.tooltip .tooltip-text::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--color-bg-dark) transparent transparent transparent;
-}
-
-.tooltip:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Dark mode adjustments */
-body.dark-mode .tutorial-container {
-    background-color: #333;
-}
-
-body.dark-mode .tooltip .tooltip-text {
-    background-color: #555;
-}
-
-body.dark-mode .tooltip .tooltip-text::after {
-    border-color: #555 transparent transparent transparent;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(100%); opacity: 0; }
-}
-
-.data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
-}
-
-/* Responsive adjustments for the notice */
-@media (max-width: 480px) {
-    .data-storage-notice {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        max-width: calc(100% - 20px);
-    }
-    
-    .notice-content {
-        font-size: 0.8rem;
-        padding: 10px 12px;
-    }
 }
 
 /* Todo item styles */
@@ -1761,7 +1663,6 @@ body.dark-mode .empty-comments {
 
 .pop-animation {
     animation: pop 0.5s ease-in-out;
-    z-index: 100;
 }
 
 /* Header controls */
@@ -1769,30 +1670,9 @@ body.dark-mode .empty-comments {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-#resetColorsBtn {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-#resetColorsBtn:hover {
-    background-color: #e9ecef;
-}
-
-body.dark-mode #resetColorsBtn {
-    background-color: #343a40;
-    border-color: #495057;
-    color: #f8f9fa;
-}
-
-body.dark-mode #resetColorsBtn:hover {
-    background-color: #495057;
+    position: absolute;
+    top: 20px;
+    left: 20px;
 }
 
 /* Make all project color markers round */
@@ -1907,4 +1787,295 @@ body.dark-mode .pcr-button {
 body.dark-mode .color-picker,
 body.dark-mode .color-picker-large {
     border-color: #444;
+}
+
+/* Tutorial Styles */
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tutorial-container {
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.tutorial-header {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.tutorial-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.tutorial-content {
+    padding: 1.5rem;
+}
+
+.tutorial-step {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.tutorial-step.active {
+    display: block;
+}
+
+.tutorial-step h3 {
+    margin-top: 0;
+    color: var(--color-primary);
+}
+
+.tutorial-step p {
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.tutorial-step img {
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: block;
+    height: auto;
+}
+
+body.dark-mode .tutorial-step img {
+    border-color: #444;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tutorial-navigation {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.tutorial-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tutorial-prev {
+    background-color: var(--color-bg-light);
+    color: var(--color-text);
+}
+
+.tutorial-skip {
+    background-color: var(--color-bg-light);
+    color: var(--color-text-light);
+}
+
+.tutorial-next, .tutorial-finish {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+body.dark-mode .tutorial-prev,
+body.dark-mode .tutorial-skip {
+    background-color: #444;
+    color: #eee;
+}
+
+body.dark-mode .tutorial-prev:hover,
+body.dark-mode .tutorial-skip:hover {
+    background-color: #555;
+}
+
+.tutorial-prev:hover {
+    background-color: var(--color-border);
+}
+
+.tutorial-skip:hover {
+    background-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.tutorial-next:hover, .tutorial-finish:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.tutorial-progress {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.tutorial-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-border);
+    margin: 0 4px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.tutorial-dot.active {
+    background-color: var(--color-primary);
+}
+
+/* Tooltip Styles */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltip-icon {
+    cursor: pointer;
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+    margin-left: 0.25rem;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--color-bg-dark);
+    color: white;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+}
+
+.tooltip .tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--color-bg-dark) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .tutorial-container {
+    background-color: #333;
+}
+
+body.dark-mode .tooltip .tooltip-text {
+    background-color: #555;
+}
+
+body.dark-mode .tooltip .tooltip-text::after {
+    border-color: #555 transparent transparent transparent;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100%); opacity: 0; }
+}
+
+.data-storage-notice.hiding {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+/* Responsive adjustments for the notice */
+@media (max-width: 480px) {
+    .data-storage-notice {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .notice-content {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
+}
+
+/* Empty State Styles */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-text-light);
+    height: 100%;
+    min-height: 150px;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-primary-light);
+}
+
+.empty-state h3 {
+    margin: 0.5rem 0;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.empty-state p {
+    margin: 0.5rem 0 1rem;
+    font-size: 0.9rem;
+}
+
+.empty-state-action {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.empty-state-action:hover {
+    background-color: var(--color-primary-dark);
 }
