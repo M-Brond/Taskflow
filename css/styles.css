@@ -1,7 +1,9 @@
 /* Modern color variables */
 :root {
     --color-primary: #4a90e2;
+    --color-primary-dark: #3a7bc2; /* Darker shade of primary */
     --color-secondary: #50e3c2;
+    --color-secondary-dark: #3bc9a9; /* Darker shade of secondary */
     --color-bg: #f8f9fa;
     --color-text: #2c3e50;
     --color-text-light: #6c757d;
@@ -1064,7 +1066,7 @@ html {
 
 .data-action-btn:hover {
     background-color: var(--color-primary);
-    color: white;
+    color: #f0f0f0; /* Light grey instead of white */
 }
 
 .minimize-notice-btn {
@@ -1180,6 +1182,7 @@ body.dark-mode .minimize-notice-btn:hover {
 
 .export-btn:hover {
     background-color: var(--color-primary-dark);
+    color: #f0f0f0; /* Light grey instead of white */
 }
 
 .import-btn {
@@ -1188,7 +1191,8 @@ body.dark-mode .minimize-notice-btn:hover {
 }
 
 .import-btn:hover {
-    background-color: #3bc9a9; /* Darker shade of secondary */
+    background-color: var(--color-secondary-dark);
+    color: #f0f0f0; /* Light grey instead of white */
 }
 
 .import-container {
