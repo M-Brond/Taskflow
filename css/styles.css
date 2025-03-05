@@ -682,6 +682,55 @@ body.dark-mode .pcr-button {
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
+/* Override Pickr button styles to make color pickers round */
+.pickr .pcr-button {
+    border-radius: 50% !important;
+    width: 2em !important;
+    height: 2em !important;
+}
+
+.pickr .pcr-button::before {
+    border-radius: 50% !important;
+}
+
+.pickr .pcr-button::after {
+    border-radius: 50% !important;
+}
+
+/* Ensure our own color pickers are also round */
+.color-picker {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.color-picker:hover {
+    transform: scale(1.1);
+}
+
+.color-picker-large {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+.color-picker-large:hover {
+    transform: scale(1.05);
+}
+
+body.dark-mode .color-picker,
+body.dark-mode .color-picker-large {
+    border-color: #444;
+}
+
 /* Modal styles */
 .modal {
     display: none;
