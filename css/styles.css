@@ -197,6 +197,58 @@ body.dark-mode #resetColorsBtn:hover {
     background-color: #495057;
 }
 
+/* Dark mode toggle button */
+.dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.dark-mode-toggle i {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+body.dark-mode .dark-mode-toggle i.fas.fa-moon {
+    transform: rotate(360deg);
+    color: #ffd700; /* Gold color for moon in dark mode */
+}
+
+.dark-mode-toggle.clicked i {
+    animation: spin 0.5s ease-in-out;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+body.dark-mode .dark-mode-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.05);
+}
+
+.dark-mode-toggle:active {
+    transform: scale(0.95);
+}
+
 /* Input container styles */
 .input-container {
     display: flex;
@@ -1275,6 +1327,7 @@ body.dark-mode .modal-section p {
         transform: scale(1.1);
     }
     50% {
+        opacity: 0.8;
         transform: scale(0.95);
     }
     100% {
