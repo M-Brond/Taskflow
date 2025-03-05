@@ -383,6 +383,13 @@ function renderTodoItem(todo) {
     const todoContent = document.createElement('div');
     todoContent.className = 'todo-content';
     
+    // Create date display with subtle styling
+    const todoDate = document.createElement('small');
+    todoDate.className = 'todo-date';
+    todoDate.textContent = todo.completed 
+        ? `Completed ${formatDate(todo.completedAt)}` 
+        : formatDate(todo.createdAt);
+    
     // Create checkbox
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -395,14 +402,8 @@ function renderTodoItem(todo) {
     todoText.className = `todo-text${todo.completed ? ' completed' : ''}`;
     todoText.textContent = todo.text;
     
-    // Create date display with subtle styling
-    const todoDate = document.createElement('small');
-    todoDate.className = 'todo-date';
-    todoDate.textContent = todo.completed 
-        ? `Completed ${formatDate(todo.completedAt)}` 
-        : formatDate(todo.createdAt);
-    
     // Add elements to todo content
+    todoContent.appendChild(todoDate);
     todoContent.appendChild(checkbox);
     todoContent.appendChild(todoText);
     
@@ -436,7 +437,6 @@ function renderTodoItem(todo) {
     todoActions.appendChild(deleteBtn);
     
     // Add content and actions to todo item
-    todoContent.appendChild(todoDate); // Move date to the end of content
     todoItem.appendChild(todoContent);
     todoItem.appendChild(todoActions);
     

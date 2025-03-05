@@ -402,7 +402,7 @@ body.dark-mode .project-remove-btn:hover {
 .todo-item {
     display: flex;
     align-items: center;
-    padding: 0.75rem;
+    padding: 0.65rem 0.75rem; /* Reduced vertical padding from 0.75rem to 0.65rem */
     margin-bottom: 0.5rem;
     background-color: var(--color-bg);
     border-radius: var(--radius-sm);
@@ -436,9 +436,26 @@ body.dark-mode .todo-item:hover {
     accent-color: var(--color-success);
 }
 
+.todo-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    padding: 0.05rem 0; /* Added minimal vertical padding */
+}
+
+.todo-checkbox {
+    margin-right: 0.75rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    cursor: pointer;
+}
+
 .todo-text {
     flex: 1;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    margin-right: 0.75rem;
+    word-break: break-word;
 }
 
 .todo-text.completed {
@@ -477,333 +494,17 @@ body.dark-mode .todo-item:hover {
     transform: scale(1.1);
 }
 
-/* Completed section */
-.completed-section {
-    margin-top: 3rem;
-    padding: 1.5rem;
-    background-color: white;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Add subtle pattern to completed section */
-.completed-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(circle at 10px 10px, rgba(0,0,0,0.05) 2px, transparent 0);
-    background-size: 20px 20px;
-    opacity: 0.5;
-    z-index: 0;
-    pointer-events: none;
-}
-
-body.dark-mode .completed-section::before {
-    background-image: 
-        radial-gradient(circle at 10px 10px, rgba(255,255,255,0.05) 2px, transparent 0);
-}
-
-.completed-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: var(--radius-sm);
-    transition: background-color 0.2s;
-    position: relative;
-    z-index: 1;
-}
-
-.completed-header h2 {
-    margin: 0;
-    font-size: 1.3rem;
-    color: var(--color-text);
-}
-
-#completedToggle {
-    font-size: 1.2rem;
-    color: var(--color-text-light);
-    transition: transform 0.3s;
-}
-
-.completed-tasks {
-    margin-top: 1rem;
-    transition: all 0.3s;
-}
-
-/* Show hidden projects button */
-.show-hidden-container {
-    display: none;
-}
-
-.project-visibility-toggle {
-    background: none;
-    border: none;
-    color: #666;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm);
-    transition: all 0.2s;
-}
-
-.project-visibility-toggle:hover {
-    color: var(--color-text);
-    background-color: var(--color-hover);
-}
-
-.project-visibility-toggle.show-hidden {
-    background-color: white;
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
-    padding: 0.8rem 1.2rem;
-}
-
-.project-visibility-toggle.show-hidden:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-}
-
-/* Dark mode toggle button */
-.dark-mode-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: var(--color-text);
-    cursor: pointer;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    z-index: 1000;
-}
-
-.dark-mode-toggle i {
-    font-size: 1.2rem;
-    transition: transform 0.3s ease, opacity 0.2s ease;
-}
-
-body.dark-mode .dark-mode-toggle i.fas.fa-moon {
-    transform: rotate(360deg);
-    color: #ffd700; /* Gold color for moon in dark mode */
-}
-
-.dark-mode-toggle.clicked i {
-    animation: spin 0.5s ease-in-out;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-body.dark-mode .dark-mode-toggle:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode-toggle:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    transform: scale(1.05);
-}
-
-.dark-mode-toggle:active {
-    transform: scale(0.95);
-}
-
-/* Custom color picker styles */
-.color-picker-container {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-
-.color-picker-hint {
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-    font-style: italic;
-}
-
-body.dark-mode .color-picker-hint {
-    color: #aaa;
-}
-
-.color-picker {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.color-picker:hover {
-    transform: scale(1.1);
-}
-
-.color-picker-large {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s;
-}
-
-.color-picker-large:hover {
-    transform: scale(1.05);
-}
-
-body.dark-mode .color-picker,
-body.dark-mode .color-picker-large {
-    border-color: #444;
-}
-
-/* Modal styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background-color: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    width: 90%;
-    max-width: 500px;
-    padding: 2rem;
-    position: relative;
-    animation: modalFadeIn 0.3s ease-out;
-}
-
-body.dark-mode .modal-content {
-    background-color: #2a2a2a;
-    color: #f0f0f0;
-}
-
-.close-modal {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.close-modal:hover {
-    color: var(--color-danger);
-    transform: scale(1.1);
-}
-
-.modal-form {
-    margin-top: 1.5rem;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-}
-
-body.dark-mode .form-group input {
-    background-color: #444;
-    color: #f0f0f0;
-    border-color: #555;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.cancel-btn, .create-btn {
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.cancel-btn {
-    background-color: var(--color-border);
-    color: var(--color-text);
-}
-
-.create-btn {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.cancel-btn:hover, .create-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-body.dark-mode .cancel-btn {
-    background-color: #444;
-    color: #f0f0f0;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Completion date styling */
 .completion-date {
-    font-size: 0.8rem;
+    font-size: 0.65rem;
     color: var(--color-text-light);
-    margin-left: auto;
     font-style: italic;
-    padding-left: 10px;
-    opacity: 0.8;
+    position: absolute;
+    top: -0.5rem;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 0 0.25rem;
+    border-radius: var(--radius-xs);
 }
 
 body.dark-mode .completion-date {
@@ -1360,7 +1061,7 @@ body.dark-mode .modal-section p {
     display: flex;
     flex-direction: column;
     margin-bottom: 0.75rem;
-    padding: 1rem;
+    padding: 0.65rem 0.75rem; /* Reduced vertical padding from 0.75rem to 0.65rem */
     background-color: white;
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-sm);
@@ -1383,6 +1084,8 @@ body.dark-mode .modal-section p {
     display: flex;
     align-items: center;
     width: 100%;
+    position: relative;
+    padding: 0.05rem 0; /* Added minimal vertical padding */
 }
 
 .todo-checkbox {
@@ -1405,18 +1108,23 @@ body.dark-mode .modal-section p {
 }
 
 .todo-date {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--color-text-light);
-    margin-left: auto;
     font-style: italic;
-    padding-left: 10px;
-    opacity: 0.8;
+    position: absolute;
+    top: -0.5rem;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 0 0.25rem;
+    border-radius: var(--radius-xs);
 }
 
 .todo-actions {
     display: flex;
     margin-left: auto;
-    gap: 0.5rem;
+    gap: 0.25rem;
+    align-items: flex-start;
+    margin-top: -0.75rem;
 }
 
 .todo-action-btn {
@@ -1424,12 +1132,13 @@ body.dark-mode .modal-section p {
     border: none;
     color: var(--color-text-light);
     cursor: pointer;
-    padding: 0.25rem;
+    padding: 0.2rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    font-size: 0.9rem;
 }
 
 .todo-action-btn:hover {
@@ -1443,13 +1152,13 @@ body.dark-mode .modal-section p {
 
 .comments-count {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -3px;
+    right: -3px;
     background-color: var(--color-primary);
     color: white;
-    font-size: 0.7rem;
-    width: 1rem;
-    height: 1rem;
+    font-size: 0.65rem;
+    width: 0.9rem;
+    height: 0.9rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1461,7 +1170,7 @@ body.dark-mode .modal-section p {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out;
-    margin-top: 0.5rem;
+    margin-top: 0.3rem;
     width: 100%;
     border-top: 1px solid transparent;
 }
@@ -1469,21 +1178,21 @@ body.dark-mode .modal-section p {
 .comments-section.show-comments {
     max-height: 500px;
     border-top: 1px solid var(--color-border);
-    padding-top: 0.5rem;
+    padding-top: 0.3rem;
 }
 
 .comments-list {
     max-height: 200px;
     overflow-y: auto;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
 }
 
 .comment-item {
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
+    padding: 0.4rem;
+    margin-bottom: 0.4rem;
     background-color: var(--color-bg-hover);
     border-radius: var(--radius-sm);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .comment-text {
