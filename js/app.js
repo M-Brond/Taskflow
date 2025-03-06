@@ -383,12 +383,14 @@ function renderTodoItem(todo) {
     const todoContent = document.createElement('div');
     todoContent.className = 'todo-content';
     
-    // Create date display with subtle styling
+    // Create date display only for completed tasks
     const todoDate = document.createElement('small');
     todoDate.className = 'todo-date';
-    todoDate.textContent = todo.completed 
-        ? `Completed ${formatDate(todo.completedAt)}` 
-        : formatDate(todo.createdAt);
+    
+    if (todo.completed) {
+        todoDate.textContent = `Completed ${formatDate(todo.completedAt)}`;
+        todoContent.appendChild(todoDate);
+    }
     
     // Create checkbox
     const checkbox = document.createElement('input');
@@ -403,9 +405,15 @@ function renderTodoItem(todo) {
     todoText.textContent = todo.text;
     
     // Add elements to todo content
-    todoContent.appendChild(todoDate);
-    todoContent.appendChild(checkbox);
-    todoContent.appendChild(todoText);
+    if (!todo.completed) {
+        // For incomplete tasks, just add checkbox and text
+        todoContent.appendChild(checkbox);
+        todoContent.appendChild(todoText);
+    } else {
+        // For completed tasks, date is already added above
+        todoContent.appendChild(checkbox);
+        todoContent.appendChild(todoText);
+    }
     
     // Create actions container
     const todoActions = document.createElement('div');

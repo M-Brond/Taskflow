@@ -557,9 +557,11 @@ body.dark-mode .todo-item:hover {
     background-color: rgba(255, 255, 255, 0.8);
     padding: 0 0.25rem;
     border-radius: var(--radius-xs);
+    z-index: 1; /* Ensure it appears above other elements */
 }
 
 body.dark-mode .completion-date {
+    background-color: rgba(50, 50, 50, 0.8);
     color: var(--color-text-light-dark);
 }
 
@@ -1169,52 +1171,43 @@ body.dark-mode .modal-section p {
     background-color: rgba(255, 255, 255, 0.8);
     padding: 0 0.25rem;
     border-radius: var(--radius-xs);
+    z-index: 1; /* Ensure it appears above other elements */
 }
 
-.todo-actions {
-    display: flex;
+body.dark-mode .todo-date {
+    background-color: rgba(50, 50, 50, 0.8);
+    color: var(--color-text-light-dark);
+}
+
+.project-tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    color: white;
     margin-left: auto;
-    gap: 0.25rem;
-    align-items: flex-start;
-    margin-top: -0.75rem;
+    white-space: nowrap;
 }
 
-.todo-action-btn {
+.project-tag.work, .project-tag.personal {
+    background-color: inherit;
+}
+
+.delete-btn {
     background: none;
     border: none;
-    color: var(--color-text-light);
+    color: var(--color-danger);
     cursor: pointer;
-    padding: 0.2rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    opacity: 0;
     transition: all 0.2s;
-    font-size: 0.9rem;
 }
 
-.todo-action-btn:hover {
-    background-color: var(--color-bg-hover);
-    color: var(--color-primary);
+.todo-item:hover .delete-btn {
+    opacity: 1;
 }
 
-.comments-btn {
-    position: relative;
-}
-
-.comments-count {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    background-color: var(--color-primary);
-    color: white;
-    font-size: 0.65rem;
-    width: 0.9rem;
-    height: 0.9rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.delete-btn:hover {
+    color: #c82333;
+    transform: scale(1.1);
 }
 
 /* Comments section styles */
@@ -1868,4 +1861,50 @@ body.dark-mode .tooltip .tooltip-text::after {
 
 .empty-state-action:hover {
     background-color: var(--color-primary-dark);
+}
+
+.todo-actions {
+    display: flex;
+    margin-left: auto;
+    gap: 0.25rem;
+    align-items: flex-start;
+    margin-top: -0.75rem;
+}
+
+.todo-action-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    padding: 0.2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.todo-action-btn:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-primary);
+}
+
+.comments-btn {
+    position: relative;
+}
+
+.comments-count {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 0.65rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
