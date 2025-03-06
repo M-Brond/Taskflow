@@ -989,7 +989,9 @@ function initDataStorageNotice() {
                 importDataBtn.parentNode.replaceChild(newImportDataBtn, importDataBtn);
                 
                 // Add fresh listener
-                newImportDataBtn.addEventListener('click', importData);
+                newImportDataBtn.addEventListener('click', function() {
+                    document.getElementById('importFileInput').click();
+                });
             }
             
             const importFileInput = document.getElementById('importFileInput');
@@ -1105,6 +1107,51 @@ function openExportImportModal() {
     // Clear any previous import status
     document.getElementById('importStatus').textContent = '';
     document.getElementById('importStatus').className = 'import-status';
+    
+    // Setup the export button
+    setupExportButton();
+    
+    // Setup the import button
+    setupImportButton();
+}
+
+// Setup the export button with proper event listener
+function setupExportButton() {
+    const exportDataBtn = document.getElementById('exportDataBtn');
+    if (exportDataBtn) {
+        // Remove any existing listeners
+        const newExportDataBtn = exportDataBtn.cloneNode(true);
+        exportDataBtn.parentNode.replaceChild(newExportDataBtn, exportDataBtn);
+        
+        // Add fresh listener
+        newExportDataBtn.addEventListener('click', exportData);
+    }
+}
+
+// Setup the import button with proper event listener
+function setupImportButton() {
+    const importDataBtn = document.getElementById('importDataBtn');
+    if (importDataBtn) {
+        // Remove any existing listeners
+        const newImportDataBtn = importDataBtn.cloneNode(true);
+        importDataBtn.parentNode.replaceChild(newImportDataBtn, importDataBtn);
+        
+        // Add fresh listener
+        newImportDataBtn.addEventListener('click', function() {
+            document.getElementById('importFileInput').click();
+        });
+    }
+    
+    // Setup file input change listener
+    const importFileInput = document.getElementById('importFileInput');
+    if (importFileInput) {
+        // Remove any existing listeners
+        const newImportFileInput = importFileInput.cloneNode(true);
+        importFileInput.parentNode.replaceChild(newImportFileInput, importFileInput);
+        
+        // Add fresh listener
+        newImportFileInput.addEventListener('change', handleFileImport);
+    }
 }
 
 function closeExportImportModal() {
@@ -1141,79 +1188,59 @@ function exportData() {
     // Trigger download
     document.body.appendChild(downloadLink);
     downloadLink.click();
+    document.body.removeChild(downloadLink);
     
     // Clean up
-    document.body.removeChild(downloadLink);
     URL.revokeObjectURL(url);
 }
 
 function importData() {
+    // Trigger file input click
     const fileInput = document.getElementById('importFileInput');
     fileInput.click();
 }
 
-function handleFileImport(event) {
-    const file = event.target.files[0];
-    const statusEl = document.getElementById('importStatus');
-    
+function handleFileImport(e) {
+    const file = e.target.files[0];
     if (!file) {
         return;
     }
     
-    // Check if it's a JSON file
-    if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-        statusEl.textContent = 'Error: Please select a valid JSON file.';
-        statusEl.className = 'import-status error';
-        return;
-    }
-    
     const reader = new FileReader();
-    
-    reader.onload = function(e) {
+    reader.onload = function(event) {
         try {
-            const importedData = JSON.parse(e.target.result);
+            const data = JSON.parse(event.target.result);
             
-            // Validate the imported data
-            if (!importedData.todos || !importedData.projects || !importedData.projectColors) {
+            // Validate the data
+            if (!data.todos || !data.projects || !data.projectColors) {
                 throw new Error('Invalid backup file format.');
             }
             
             // Import the data
-            todos = importedData.todos.map(todo => ({
-                ...todo,
-                completedAt: todo.completedAt ? new Date(todo.completedAt) : null
-            }));
+            todos = data.todos;
+            projects = data.projects;
+            projectColors = data.projectColors;
+            hiddenProjects = new Set(data.hiddenProjects || []);
             
-            projects = importedData.projects;
-            
-            if (importedData.hiddenProjects) {
-                hiddenProjects = new Set(importedData.hiddenProjects);
-            }
-            
-            projectColors = importedData.projectColors;
-            
-            // Save to localStorage and refresh UI
+            // Save the imported data
             saveData();
-            updateProjectSelect();
+            
+            // Render the imported data
             renderAll();
             
             // Show success message
-            statusEl.textContent = 'Tasks imported successfully!';
-            statusEl.className = 'import-status success';
+            const importStatus = document.getElementById('importStatus');
+            importStatus.textContent = 'Data imported successfully!';
+            importStatus.className = 'import-status success';
             
-            // Reset file input
-            event.target.value = '';
-            
+            // Reset the file input
+            document.getElementById('importFileInput').value = '';
         } catch (error) {
-            console.error('Import error:', error);
-            statusEl.textContent = `Error: ${error.message || 'Failed to import data.'}`;
-            statusEl.className = 'import-status error';
+            // Show error message
+            const importStatus = document.getElementById('importStatus');
+            importStatus.textContent = `Error importing data: ${error.message}`;
+            importStatus.className = 'import-status error';
         }
-    };
-    
-    reader.onerror = function() {
-        statusEl.textContent = 'Error: Failed to read the file.';
-        statusEl.className = 'import-status error';
     };
     
     reader.readAsText(file);
@@ -1281,44 +1308,37 @@ function setupEventListeners() {
         addProjectBtn.addEventListener('click', openNewProjectModal);
     }
     
-    // Export/Import buttons
-    const exportDataBtn = document.getElementById('exportDataBtn');
-    if (exportDataBtn) {
-        // Remove any existing listeners
-        const newExportDataBtn = exportDataBtn.cloneNode(true);
-        exportDataBtn.parentNode.replaceChild(newExportDataBtn, exportDataBtn);
-        
-        // Add fresh listener
-        newExportDataBtn.addEventListener('click', exportData);
+    // Export/Import buttons in the data storage notice
+    const exportImportBtn = document.getElementById('exportImportBtn');
+    if (exportImportBtn) {
+        exportImportBtn.addEventListener('click', openExportImportModal);
     }
     
-    const importDataBtn = document.getElementById('importDataBtn');
-    if (importDataBtn) {
-        // Remove any existing listeners
-        const newImportDataBtn = importDataBtn.cloneNode(true);
-        importDataBtn.parentNode.replaceChild(newImportDataBtn, importDataBtn);
-        
-        // Add fresh listener
-        newImportDataBtn.addEventListener('click', importData);
+    // Minimize/Expand notice buttons
+    const minimizeNoticeBtn = document.getElementById('minimizeNoticeBtn');
+    if (minimizeNoticeBtn) {
+        minimizeNoticeBtn.addEventListener('click', minimizeNotice);
     }
     
-    const importFileInput = document.getElementById('importFileInput');
-    if (importFileInput) {
-        // Remove any existing listeners
-        const newImportFileInput = importFileInput.cloneNode(true);
-        importFileInput.parentNode.replaceChild(newImportFileInput, importFileInput);
-        
-        // Add fresh listener
-        newImportFileInput.addEventListener('change', handleFileImport);
+    const expandNoticeBtn = document.getElementById('expandNoticeBtn');
+    if (expandNoticeBtn) {
+        expandNoticeBtn.addEventListener('click', expandNotice);
     }
     
-    // Other event listeners...
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
+    
+    // Setup drag and drop for todo items
+    setupDragAndDrop();
 }
 
 function renderAll() {
     const projectsContainer = document.getElementById('projectsContainer');
     projectsContainer.innerHTML = '';
-
+    
     // Remove any existing show hidden containers
     document.querySelectorAll('.show-hidden-container').forEach(container => container.remove());
 
@@ -1430,6 +1450,26 @@ function renderAll() {
     
     // Add tooltips to elements
     addTooltips();
+    
+    // Remove any duplicate backup & restore sections that might be present
+    removeDuplicateBackupRestoreSections();
+}
+
+// Remove any duplicate backup & restore sections that might be present
+function removeDuplicateBackupRestoreSections() {
+    // Get all elements with "Backup & Restore Tasks" heading
+    const backupHeadings = Array.from(document.querySelectorAll('h2')).filter(h => 
+        h.textContent.includes('Backup & Restore Tasks') && 
+        !h.closest('#exportImportModal')
+    );
+    
+    // Remove any backup sections outside the modal
+    backupHeadings.forEach(heading => {
+        const section = heading.closest('div');
+        if (section && section.parentNode) {
+            section.parentNode.removeChild(section);
+        }
+    });
 }
 
 // Render empty state for a project
