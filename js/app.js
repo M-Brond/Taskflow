@@ -392,6 +392,17 @@ function renderTodoItem(todo) {
         todoContent.appendChild(todoDate);
     }
     
+    // Create checkbox wrapper for larger clickable area
+    const checkboxWrapper = document.createElement('div');
+    checkboxWrapper.className = 'checkbox-wrapper';
+    checkboxWrapper.addEventListener('click', (e) => {
+        // Only toggle if the click was on the wrapper itself, not on the checkbox
+        // This prevents double toggling when clicking directly on the checkbox
+        if (e.target === checkboxWrapper) {
+            toggleTodo(todo.id);
+        }
+    });
+    
     // Create checkbox
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -407,11 +418,13 @@ function renderTodoItem(todo) {
     // Add elements to todo content
     if (!todo.completed) {
         // For incomplete tasks, just add checkbox and text
-        todoContent.appendChild(checkbox);
+        checkboxWrapper.appendChild(checkbox);
+        todoContent.appendChild(checkboxWrapper);
         todoContent.appendChild(todoText);
     } else {
         // For completed tasks, date is already added above
-        todoContent.appendChild(checkbox);
+        checkboxWrapper.appendChild(checkbox);
+        todoContent.appendChild(checkboxWrapper);
         todoContent.appendChild(todoText);
     }
     
