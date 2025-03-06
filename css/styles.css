@@ -494,11 +494,11 @@ body.dark-mode .todo-item:hover {
 }
 
 .checkbox-wrapper:hover {
-    background-color: rgba(92, 184, 92, 0.15);
+    background-color: rgba(92, 184, 92, 0.08);
 }
 
 body.dark-mode .checkbox-wrapper:hover {
-    background-color: rgba(92, 184, 92, 0.25);
+    background-color: rgba(92, 184, 92, 0.12);
 }
 
 .todo-checkbox {
