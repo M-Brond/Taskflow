@@ -828,193 +828,8 @@ function initDarkMode() {
     }
 }
 
-// Global variables for data storage notice
-let minimizeNoticeHandler, expandNoticeHandler;
-let dataStorageNoticeInitialized = false;
-
-function initDataStorageNotice() {
-    // Prevent multiple initializations
-    if (dataStorageNoticeInitialized) return;
-    
-    const minimizedKey = 'taskflow_notice_minimized';
-    const noticeMinimized = localStorage.getItem(minimizedKey) === 'true';
-    
-    const notice = document.getElementById('dataStorageNotice');
-    const minimizedNotice = document.getElementById('minimizedNotice');
-    const minimizeBtn = document.getElementById('minimizeNoticeBtn');
-    const expandBtn = document.getElementById('expandNoticeBtn');
-    
-    if (!notice || !minimizedNotice) return;
-    
-    // Initial state based on localStorage
-    if (noticeMinimized) {
-        notice.style.display = 'none';
-        minimizedNotice.style.display = 'block';
-    } else {
-        notice.style.display = 'block';
-        minimizedNotice.style.display = 'none';
-    }
-    
-    // Clear any existing event listeners
-    if (minimizeBtn) {
-        if (minimizeNoticeHandler) {
-            minimizeBtn.removeEventListener('click', minimizeNoticeHandler);
-        }
-        
-        minimizeNoticeHandler = function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Prevent multiple clicks
-            if (notice.classList.contains('hiding')) return;
-            
-            // Add visual feedback
-            this.classList.add('active');
-            setTimeout(() => this.classList.remove('active'), 200);
-            
-            // Get the position of the minimized button for animation
-            const minimizedRect = minimizedNotice.getBoundingClientRect();
-            const noticeRect = notice.getBoundingClientRect();
-            
-            // Calculate the distance to animate
-            const distanceX = (minimizedRect.left - noticeRect.left) || -100;
-            const distanceY = (minimizedRect.top - noticeRect.top) || 0;
-            
-            // Apply custom animation
-            notice.style.transition = 'opacity 0.3s, transform 0.3s';
-            notice.style.transformOrigin = 'bottom left';
-            notice.style.transform = `translate(${distanceX}px, ${distanceY}px) scale(0.2)`;
-            notice.style.opacity = '0';
-            
-            setTimeout(() => {
-                notice.style.display = 'none';
-                notice.style.transform = '';
-                notice.style.opacity = '';
-                
-                minimizedNotice.style.display = 'block';
-                minimizedNotice.classList.add('showing');
-                setTimeout(() => minimizedNotice.classList.remove('showing'), 300);
-            }, 300);
-            localStorage.setItem(minimizedKey, 'true');
-        };
-        
-        minimizeBtn.addEventListener('click', minimizeNoticeHandler);
-    }
-    
-    if (expandBtn) {
-        if (expandNoticeHandler) {
-            expandBtn.removeEventListener('click', expandNoticeHandler);
-        }
-        
-        expandNoticeHandler = function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Prevent multiple clicks
-            if (minimizedNotice.classList.contains('hiding')) return;
-            
-            // Add visual feedback
-            this.classList.add('active');
-            setTimeout(() => this.classList.remove('active'), 200);
-            
-            // Get the position of the elements for animation
-            const minimizedRect = minimizedNotice.getBoundingClientRect();
-            
-            // Set a flag to prevent multiple clicks
-            let isExpanding = true;
-            
-            // Apply custom animation
-            minimizedNotice.style.transition = 'opacity 0.3s, transform 0.3s';
-            minimizedNotice.style.transformOrigin = 'center';
-            minimizedNotice.style.transform = 'scale(0.8)';
-            minimizedNotice.style.opacity = '0';
-            
-            setTimeout(() => {
-                minimizedNotice.style.display = 'none';
-                minimizedNotice.style.transform = '';
-                minimizedNotice.style.opacity = '';
-                
-                // Only show the notice if we're still in the expanding state
-                if (isExpanding) {
-                    notice.style.display = 'block';
-                    notice.style.opacity = '0';
-                    notice.style.transform = 'translateX(-20px) scale(0.9)';
-                    
-                    // Force a reflow to ensure the animation works
-                    notice.offsetHeight;
-                    
-                    notice.style.transition = 'opacity 0.3s, transform 0.3s';
-                    notice.style.opacity = '1';
-                    notice.style.transform = 'translateX(0) scale(1)';
-                    
-                    setTimeout(() => {
-                        notice.style.transition = '';
-                    }, 300);
-                    
-                    isExpanding = false;
-                }
-            }, 300);
-            localStorage.removeItem(minimizedKey);
-        };
-        
-        expandBtn.addEventListener('click', expandNoticeHandler);
-    }
-    
-    // Add event listener for export/import button
-    const exportImportBtn = document.getElementById('exportImportBtn');
-    if (exportImportBtn) {
-        // Remove any existing listeners
-        const newExportImportBtn = exportImportBtn.cloneNode(true);
-        exportImportBtn.parentNode.replaceChild(newExportImportBtn, exportImportBtn);
-        
-        // Add fresh listener
-        newExportImportBtn.addEventListener('click', function() {
-            openExportImportModal();
-            
-            // Setup the export/import buttons in the modal
-            const exportDataBtn = document.getElementById('exportDataBtn');
-            if (exportDataBtn) {
-                // Remove any existing listeners
-                const newExportDataBtn = exportDataBtn.cloneNode(true);
-                exportDataBtn.parentNode.replaceChild(newExportDataBtn, exportDataBtn);
-                
-                // Add fresh listener
-                newExportDataBtn.addEventListener('click', exportData);
-            }
-            
-            const importDataBtn = document.getElementById('importDataBtn');
-            if (importDataBtn) {
-                // Remove any existing listeners
-                const newImportDataBtn = importDataBtn.cloneNode(true);
-                importDataBtn.parentNode.replaceChild(newImportDataBtn, importDataBtn);
-                
-                // Add fresh listener
-                newImportDataBtn.addEventListener('click', function() {
-                    document.getElementById('importFileInput').click();
-                });
-            }
-            
-            const importFileInput = document.getElementById('importFileInput');
-            if (importFileInput) {
-                // Remove any existing listeners
-                const newImportFileInput = importFileInput.cloneNode(true);
-                importFileInput.parentNode.replaceChild(newImportFileInput, importFileInput);
-                
-                // Add fresh listener
-                newImportFileInput.addEventListener('change', handleFileImport);
-            }
-            
-            // Add event listener to the close button
-            const closeModalBtn = document.querySelector('#exportImportModal .close-modal');
-            if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', closeExportImportModal);
-            }
-        });
-    }
-    
-    // Mark as initialized
-    dataStorageNoticeInitialized = true;
-}
+// Global variables for data storage notice - moved to backup-restore.js
+// Keeping this comment as a reference to where the code was moved from
 
 // Tutorial functions
 function initTutorial() {
@@ -1099,152 +914,8 @@ function closeTutorial() {
     document.getElementById('tutorialOverlay').style.display = 'none';
 }
 
-// Export/Import functions
-function openExportImportModal() {
-    const modal = document.getElementById('exportImportModal');
-    modal.style.display = 'flex';
-    
-    // Clear any previous import status
-    document.getElementById('importStatus').textContent = '';
-    document.getElementById('importStatus').className = 'import-status';
-    
-    // Setup the export button
-    setupExportButton();
-    
-    // Setup the import button
-    setupImportButton();
-}
-
-// Setup the export button with proper event listener
-function setupExportButton() {
-    const exportDataBtn = document.getElementById('exportDataBtn');
-    if (exportDataBtn) {
-        // Remove any existing listeners
-        const newExportDataBtn = exportDataBtn.cloneNode(true);
-        exportDataBtn.parentNode.replaceChild(newExportDataBtn, exportDataBtn);
-        
-        // Add fresh listener
-        newExportDataBtn.addEventListener('click', exportData);
-    }
-}
-
-// Setup the import button with proper event listener
-function setupImportButton() {
-    const importDataBtn = document.getElementById('importDataBtn');
-    if (importDataBtn) {
-        // Remove any existing listeners
-        const newImportDataBtn = importDataBtn.cloneNode(true);
-        importDataBtn.parentNode.replaceChild(newImportDataBtn, importDataBtn);
-        
-        // Add fresh listener
-        newImportDataBtn.addEventListener('click', function() {
-            document.getElementById('importFileInput').click();
-        });
-    }
-    
-    // Setup file input change listener
-    const importFileInput = document.getElementById('importFileInput');
-    if (importFileInput) {
-        // Remove any existing listeners
-        const newImportFileInput = importFileInput.cloneNode(true);
-        importFileInput.parentNode.replaceChild(newImportFileInput, importFileInput);
-        
-        // Add fresh listener
-        newImportFileInput.addEventListener('change', handleFileImport);
-    }
-}
-
-function closeExportImportModal() {
-    const modal = document.getElementById('exportImportModal');
-    modal.style.display = 'none';
-}
-
-function exportData() {
-    // Create a data object with all the app data
-    const appData = {
-        todos: todos,
-        projects: projects,
-        hiddenProjects: Array.from(hiddenProjects),
-        projectColors: projectColors,
-        version: '1.0' // For future compatibility checks
-    };
-    
-    // Convert to JSON string
-    const jsonData = JSON.stringify(appData, null, 2);
-    
-    // Create a blob and download link
-    const blob = new Blob([jsonData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    // Create a temporary download link
-    const downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    
-    // Generate filename with date
-    const date = new Date();
-    const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-    downloadLink.download = `taskflow-backup-${dateStr}.json`;
-    
-    // Trigger download
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-    
-    // Clean up
-    URL.revokeObjectURL(url);
-}
-
-function importData() {
-    // Trigger file input click
-    const fileInput = document.getElementById('importFileInput');
-    fileInput.click();
-}
-
-function handleFileImport(e) {
-    const file = e.target.files[0];
-    if (!file) {
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        try {
-            const data = JSON.parse(event.target.result);
-            
-            // Validate the data
-            if (!data.todos || !data.projects || !data.projectColors) {
-                throw new Error('Invalid backup file format.');
-            }
-            
-            // Import the data
-            todos = data.todos;
-            projects = data.projects;
-            projectColors = data.projectColors;
-            hiddenProjects = new Set(data.hiddenProjects || []);
-            
-            // Save the imported data
-            saveData();
-            
-            // Render the imported data
-            renderAll();
-            
-            // Show success message
-            const importStatus = document.getElementById('importStatus');
-            importStatus.textContent = 'Data imported successfully!';
-            importStatus.className = 'import-status success';
-            
-            // Reset the file input
-            document.getElementById('importFileInput').value = '';
-        } catch (error) {
-            // Show error message
-            const importStatus = document.getElementById('importStatus');
-            importStatus.textContent = `Error importing data: ${error.message}`;
-            importStatus.className = 'import-status error';
-        }
-    };
-    
-    reader.readAsText(file);
-}
+// Export/Import functions - moved to backup-restore.js
+// Keeping this comment as a reference to where the code was moved from
 
 // Initialize the app when the DOM is loaded
 let appInitialized = false;
@@ -1255,8 +926,10 @@ function initApp() {
     // Initialize dark mode
     initDarkMode();
     
-    // Initialize data storage notice
-    initDataStorageNotice();
+    // Initialize data storage notice (now in backup-restore.js)
+    if (typeof initDataStorageNotice === 'function') {
+        initDataStorageNotice();
+    }
     
     // Load todos from localStorage
     loadData();
@@ -1308,22 +981,7 @@ function setupEventListeners() {
         addProjectBtn.addEventListener('click', openNewProjectModal);
     }
     
-    // Export/Import buttons in the data storage notice
-    const exportImportBtn = document.getElementById('exportImportBtn');
-    if (exportImportBtn) {
-        exportImportBtn.addEventListener('click', openExportImportModal);
-    }
-    
-    // Minimize/Expand notice buttons
-    const minimizeNoticeBtn = document.getElementById('minimizeNoticeBtn');
-    if (minimizeNoticeBtn) {
-        minimizeNoticeBtn.addEventListener('click', minimizeNotice);
-    }
-    
-    const expandNoticeBtn = document.getElementById('expandNoticeBtn');
-    if (expandNoticeBtn) {
-        expandNoticeBtn.addEventListener('click', expandNotice);
-    }
+    // Export/Import buttons and minimize/expand buttons are now handled in backup-restore.js
     
     // Dark mode toggle
     const darkModeToggle = document.getElementById('darkModeToggle');
@@ -1455,22 +1113,8 @@ function renderAll() {
     removeDuplicateBackupRestoreSections();
 }
 
-// Remove any duplicate backup & restore sections that might be present
-function removeDuplicateBackupRestoreSections() {
-    // Get all elements with "Backup & Restore Tasks" heading
-    const backupHeadings = Array.from(document.querySelectorAll('h2')).filter(h => 
-        h.textContent.includes('Backup & Restore Tasks') && 
-        !h.closest('#exportImportModal')
-    );
-    
-    // Remove any backup sections outside the modal
-    backupHeadings.forEach(heading => {
-        const section = heading.closest('div');
-        if (section && section.parentNode) {
-            section.parentNode.removeChild(section);
-        }
-    });
-}
+// Remove any duplicate backup & restore sections - moved to backup-restore.js
+// Keeping this comment as a reference to where the code was moved from
 
 // Render empty state for a project
 function renderEmptyState(project) {

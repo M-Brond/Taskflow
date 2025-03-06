@@ -894,6 +894,51 @@ body.dark-mode .minimize-notice-btn:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 20px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+body.dark-mode .modal-content {
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-light);
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: var(--color-danger);
+}
+
 /* Export/Import Modal Styles */
 .modal-section {
     margin-bottom: 25px;
