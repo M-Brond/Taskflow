@@ -774,9 +774,11 @@ html {
     z-index: 1000;
     max-width: 400px;
     animation: slideIn 0.3s ease-out;
-    border-left: 4px solid var(--color-primary);
+    border: 1px solid rgba(59, 130, 246, 0.2);
     transform-origin: bottom left;
     transition: opacity 0.3s, transform 0.3s;
+    overflow: hidden;
+    opacity: 1;
 }
 
 .data-storage-notice.hiding {
@@ -804,39 +806,65 @@ html {
 .notice-content {
     display: flex;
     align-items: flex-start;
-    padding: 15px 15px 10px 15px;
-    gap: 10px;
+    padding: 16px;
+    gap: 16px;
 }
 
-.notice-content i {
-    color: var(--color-primary);
-    font-size: 1.2rem;
-    margin-top: 2px;
+.notice-icon {
+    flex-shrink: 0;
 }
 
-.notice-content span {
-    flex: 1;
-    font-size: 0.9rem;
-    color: var(--color-text);
-}
-
-.data-actions {
+.notice-icon i {
     display: flex;
-    padding: 0 15px 15px 15px;
+    align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--color-primary);
+    font-size: 1rem;
+    border-radius: 50%;
+}
+
+.notice-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notice-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    margin: 0;
+}
+
+.notice-text p {
+    font-size: 0.85rem;
+    color: var(--color-text);
+    margin: 0;
+    line-height: 1.4;
 }
 
 .data-action-btn {
     background-color: transparent;
     color: var(--color-primary);
-    border: 1px solid var(--color-primary);
+    border: 1px solid rgba(59, 130, 246, 0.3);
     border-radius: var(--radius-sm);
     padding: 8px 12px;
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s;
-    width: 100%;
-    text-align: center;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.data-action-btn:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+    border-color: rgba(59, 130, 246, 0.5);
 }
 
 .data-action-btn:hover {
@@ -858,6 +886,7 @@ html {
     transition: all 0.2s;
     position: relative;
     z-index: 1001; /* Ensure it's above other elements */
+    opacity: 0.5;
 }
 
 .minimize-notice-btn:hover {
@@ -878,6 +907,8 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 1;
+    visibility: visible;
 }
 
 .minimized-notice button {
@@ -1036,12 +1067,29 @@ body.dark-mode .modal-content {
 
 /* Dark mode adjustments */
 body.dark-mode .data-storage-notice {
-    background-color: #333;
-    border-left-color: var(--color-primary);
+    background-color: #2d2d2d;
+    border-color: rgba(59, 130, 246, 0.3);
 }
 
-body.dark-mode .notice-content span {
+body.dark-mode .notice-title {
     color: #f0f0f0;
+}
+
+body.dark-mode .notice-text p {
+    color: #b0b0b0;
+}
+
+body.dark-mode .notice-icon i {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+body.dark-mode .data-action-btn {
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+body.dark-mode .data-action-btn:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.6);
 }
 
 body.dark-mode .modal-section {

@@ -101,17 +101,20 @@
     <!-- Data Storage Notice -->
     <div class="data-storage-notice" id="dataStorageNotice">
         <div class="notice-content">
-            <i class="fas fa-info-circle"></i>
-            <span>Your tasks are stored in your browser's local storage. Clearing your browser data will delete all tasks. We recommend occasionally backing up your data.</span>
+            <div class="notice-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="notice-text">
+                <h3 class="notice-title">Local Storage Notice</h3>
+                <p>Your tasks are stored in your browser's local storage. Clearing your browser data will delete all tasks. We recommend occasionally backing up your data.</p>
+                <button id="exportImportBtn" class="data-action-btn"><i class="fas fa-download"></i> Backup & Restore</button>
+            </div>
             <button id="minimizeNoticeBtn" class="minimize-notice-btn" title="Minimize"><i class="fas fa-minus"></i></button>
-        </div>
-        <div class="data-actions">
-            <button id="exportImportBtn" class="data-action-btn"><i class="fas fa-download"></i> Backup & Restore (includes all tasks, completed tasks, and projects)</button>
         </div>
     </div>
     
     <!-- Minimized Notice Button -->
-    <div class="minimized-notice" id="minimizedNotice" style="display: none;">
+    <div class="minimized-notice" id="minimizedNotice" style="display: none; opacity: 1;">
         <button id="expandNoticeBtn" title="Backup & Restore">
             <i class="fas fa-database"></i>
         </button>

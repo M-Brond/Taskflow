@@ -7,6 +7,7 @@ let dataStorageNoticeInitialized = false;
 
 /**
  * Initialize the data storage notice with backup and restore functionality
+ * This implements a modern design for the data storage notice
  */
 function initDataStorageNotice() {
     if (dataStorageNoticeInitialized) return;
@@ -17,7 +18,10 @@ function initDataStorageNotice() {
     const expandNoticeBtn = document.getElementById('expandNoticeBtn');
     const exportImportBtn = document.getElementById('exportImportBtn');
     
-    // Check if notice should be minimized based on localStorage
+    // Always show the notice by default (overriding previous settings)
+    localStorage.setItem('taskflow_notice_minimized', 'false');
+    
+    // Check if notice should be minimized based on localStorage (but we've just set it to false)
     const isNoticeMinimized = localStorage.getItem('taskflow_notice_minimized') === 'true';
     
     if (isNoticeMinimized) {
@@ -28,6 +32,13 @@ function initDataStorageNotice() {
         minimizedNotice.style.display = 'none';
     }
     
+    // Make sure the minimized notice is visible in the DOM
+    minimizedNotice.style.opacity = '1';
+    
+    // Reset any existing classes that might interfere with visibility
+    minimizedNotice.classList.remove('hiding', 'showing');
+    dataStorageNotice.classList.remove('hiding', 'showing');
+    
     // Remove any existing event listeners
     if (minimizeNoticeHandler) {
         minimizeNoticeBtn.removeEventListener('click', minimizeNoticeHandler);
@@ -37,50 +48,26 @@ function initDataStorageNotice() {
         expandNoticeBtn.removeEventListener('click', expandNoticeHandler);
     }
     
-    // Define new event handlers
+    // Define simplified event handlers without complex animations
     minimizeNoticeHandler = function() {
-        // Get the position of the minimize button for animation
-        const minimizeRect = minimizeNoticeBtn.getBoundingClientRect();
-        const noticeRect = dataStorageNotice.getBoundingClientRect();
+        // Simple transition - hide main notice
+        dataStorageNotice.style.display = 'none';
         
-        // Calculate the distance to move
-        const moveX = minimizeRect.left - noticeRect.left;
+        // Show minimized notice
+        minimizedNotice.style.display = 'flex';
+        minimizedNotice.style.opacity = '1';
         
-        // Add transition class
-        dataStorageNotice.classList.add('minimizing');
-        
-        // Set transform origin to the minimize button
-        dataStorageNotice.style.transformOrigin = `${minimizeRect.left - noticeRect.left}px center`;
-        
-        // Apply the transform
-        dataStorageNotice.style.transform = `translateX(${moveX}px) scale(0.1)`;
-        
-        // After animation completes
-        setTimeout(() => {
-            dataStorageNotice.style.display = 'none';
-            dataStorageNotice.style.transform = '';
-            dataStorageNotice.classList.remove('minimizing');
-            
-            minimizedNotice.style.display = 'flex';
-            minimizedNotice.classList.add('expanding');
-            
-            setTimeout(() => {
-                minimizedNotice.classList.remove('expanding');
-            }, 300);
-            
-            // Save preference
-            localStorage.setItem('taskflow_notice_minimized', 'true');
-        }, 300);
+        // Save preference
+        localStorage.setItem('taskflow_notice_minimized', 'true');
     };
     
     expandNoticeHandler = function() {
+        // Simple transition - hide minimized notice
         minimizedNotice.style.display = 'none';
-        dataStorageNotice.style.display = 'flex';
-        dataStorageNotice.classList.add('expanding');
         
-        setTimeout(() => {
-            dataStorageNotice.classList.remove('expanding');
-        }, 300);
+        // Show main notice
+        dataStorageNotice.style.display = 'flex';
+        dataStorageNotice.style.opacity = '1';
         
         // Save preference
         localStorage.setItem('taskflow_notice_minimized', 'false');
