@@ -1051,6 +1051,11 @@ function renderAll() {
                 projectTodos.forEach(todo => {
                     todosList.appendChild(renderTodoItem(todo));
                 });
+                
+                // Add scrollable class if there are more than 7 tasks
+                if (projectTodos.length > 7) {
+                    todosList.classList.add('scrollable');
+                }
             } else {
                 // Render empty state
                 todosList.appendChild(renderEmptyState(project));
