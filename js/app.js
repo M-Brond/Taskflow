@@ -681,79 +681,16 @@ function updateTodoPriorities(project) {
     saveData();
 }
 
-function addDragAndDropListeners() {
-    const todoItems = document.querySelectorAll('.todo-item:not(.completed)');
-    const containers = document.querySelectorAll('.project-todos');
-    
-    todoItems.forEach(item => {
-        item.addEventListener('dragstart', handleDragStart);
-        item.addEventListener('dragend', handleDragEnd);
-    });
-    
-    containers.forEach(container => {
-        container.addEventListener('dragover', handleDragOver);
-        container.addEventListener('dragenter', handleDragEnter);
-        container.addEventListener('dragleave', handleDragLeave);
-        container.addEventListener('drop', handleDrop);
-    });
-}
-
-let draggedItem = null;
-let originalContainer = null;
-
-function handleDragStart(e) {
-    draggedItem = e.target;
-    originalContainer = e.target.closest('.project-todos');
-    e.target.classList.add('dragging');
-    
-    // Set drag effect
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', ''); // Required for Firefox
-}
-
-function handleDragEnd(e) {
-    e.target.classList.remove('dragging');
-    draggedItem = null;
-    originalContainer = null;
-    document.querySelectorAll('.project-todos').forEach(container => {
-        container.classList.remove('drag-over');
-    });
-}
-
-function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-}
-
-function handleDragEnter(e) {
-    e.preventDefault();
-    const container = e.target.closest('.project-todos');
-    if (container) {
-        container.classList.add('drag-over');
-    }
-}
-
-function handleDragLeave(e) {
-    const container = e.target.closest('.project-todos');
-    if (container) {
-        container.classList.remove('drag-over');
-    }
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    const container = e.target.closest('.project-todos');
-    if (!container || !draggedItem) return;
-
-    const newProject = container.dataset.project;
-    const todoId = parseInt(draggedItem.dataset.id);
+/**
+ * Update task position after drag and drop
+ * This function is called by the drag-drop module when a task is dropped
+ * @param {number} todoId - The ID of the dragged task
+ * @param {string} newProject - The project the task was dropped into
+ * @param {HTMLElement} dropTarget - The task element that was the drop target (if any)
+ */
+function updateTaskPosition(todoId, newProject, dropTarget) {
     const todo = todos.find(t => t.id === todoId);
-    
     if (!todo) return;
-
-    // Get the drop target position
-    const dropTarget = e.target.closest('.todo-item');
-    const items = Array.from(container.querySelectorAll('.todo-item:not(.completed)'));
     
     // Remove the dragged item from its current position
     const projectTodos = todos.filter(t => !t.completed && t.project === todo.project);
@@ -787,20 +724,8 @@ function handleDrop(e) {
     renderAll();
 }
 
-// Add styles for drag and drop
-const style = document.createElement('style');
-style.textContent = `
-    .project-todos.drag-over {
-        background-color: rgba(65, 105, 225, 0.1);
-        border-radius: 8px;
-    }
-    
-    .todo-item.dragging {
-        opacity: 0.5;
-        cursor: grabbing;
-    }
-`;
-document.head.appendChild(style);
+// Make the function available to the drag-drop module
+window.updateTaskPosition = updateTaskPosition;
 
 // Add dark mode toggle functionality
 function toggleDarkMode() {
