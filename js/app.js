@@ -714,8 +714,11 @@ function updateTodoPriorities(project) {
 function updateTaskPosition(todoId, newProject, dropTarget) {
     console.log('Updating task position:', todoId, newProject, dropTarget ? dropTarget.dataset.id : 'end');
     
+    // Ensure todoId is an integer
+    todoId = parseInt(todoId);
+    
     // Find the task that was dragged
-    const draggedTask = todos.find(t => t.id === parseInt(todoId));
+    const draggedTask = todos.find(t => t.id === todoId);
     if (!draggedTask) {
         console.error('Dragged task not found:', todoId);
         return;
@@ -739,21 +742,26 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     if (dropTarget) {
         // If dropping before a specific task
         const targetId = parseInt(dropTarget.dataset.id);
+        console.log('Target ID from dataset:', targetId);
+        
         const targetTask = todos.find(t => t.id === targetId);
         if (targetTask) {
             newPriority = targetTask.priority;
             console.log('Drop target found, priority:', targetTask.priority);
         } else {
             // Fallback if target task not found
-            newPriority = 0;
-            console.log('Drop target not found in data, using priority 0');
+            console.error('Target task not found in data model:', targetId);
+            // Get all tasks in the project to determine the fallback priority
+            const projectTasks = todos.filter(t => !t.completed && t.project === newProject);
+            newPriority = projectTasks.length > 0 ? projectTasks[0].priority : 0;
+            console.log('Using fallback priority:', newPriority);
         }
     } else {
         // If dropping at the end of a project
         const projectTasks = todos.filter(t => 
             !t.completed && 
             t.project === newProject && 
-            t.id !== parseInt(todoId)
+            t.id !== todoId
         );
         newPriority = projectTasks.length;
         console.log('Dropping at end, new priority:', newPriority);
@@ -779,7 +787,8 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         todos.filter(t => 
             !t.completed && 
             t.project === newProject && 
-            t.priority >= newPriority
+            t.priority >= newPriority && 
+            t.id !== todoId
         ).forEach(t => {
             t.priority++;
             console.log('Increasing priority of task in new project:', t.id, t.priority);
@@ -792,7 +801,8 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
             !t.completed && 
             t.project === newProject && 
             t.priority > originalPriority && 
-            t.priority <= newPriority
+            t.priority <= newPriority && 
+            t.id !== todoId
         ).forEach(t => {
             t.priority--;
             console.log('Decreasing priority of task:', t.id, t.priority);
@@ -809,7 +819,8 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
             !t.completed && 
             t.project === newProject && 
             t.priority >= newPriority && 
-            t.priority < originalPriority
+            t.priority < originalPriority && 
+            t.id !== todoId
         ).forEach(t => {
             t.priority++;
             console.log('Increasing priority of task:', t.id, t.priority);
@@ -820,13 +831,24 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     draggedTask.priority = newPriority;
     console.log('Final priority for dragged task:', draggedTask.id, draggedTask.priority);
     
+    // Recalculate priorities for all tasks in the project to ensure consistency
+    const projectTasks = todos.filter(t => !t.completed && t.project === newProject);
+    projectTasks.sort((a, b) => a.priority - b.priority);
+    
+    // Reassign priorities to ensure they are sequential and without gaps
+    projectTasks.forEach((task, index) => {
+        task.priority = index;
+        console.log(`Reassigned priority for task ${task.id}: ${index}`);
+    });
+    
     // Save and render
     saveData();
     renderAll();
 }
 
-// Make the function available to the drag-drop module
+// Make functions available to the drag-drop module
 window.updateTaskPosition = updateTaskPosition;
+window.renderAll = renderAll;
 
 // Add dark mode toggle functionality
 function toggleDarkMode() {

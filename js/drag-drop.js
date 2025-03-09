@@ -24,6 +24,11 @@ function addDragAndDropListeners() {
     const todoItems = document.querySelectorAll('.todo-item:not(.completed)');
     const containers = document.querySelectorAll('.project-todos');
     
+    // First, ensure all items are draggable
+    todoItems.forEach(item => {
+        item.setAttribute('draggable', 'true');
+    });
+    
     // Remove any existing listeners to prevent duplicates
     todoItems.forEach(item => {
         item.removeEventListener('dragstart', handleDragStart);
@@ -79,9 +84,19 @@ function handleDragStart(e) {
         commentsSection.classList.remove('show-comments');
     }
     
-    // Set drag effect
+    // Set drag effect and data
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', ''); // Required for Firefox
+    e.dataTransfer.setData('text/plain', todoId); // Store the ID for Firefox
+    
+    // Create a ghost image that looks better during drag
+    const ghostElement = draggedItem.cloneNode(true);
+    ghostElement.style.width = draggedItem.offsetWidth + 'px';
+    ghostElement.style.opacity = '0.7';
+    document.body.appendChild(ghostElement);
+    e.dataTransfer.setDragImage(ghostElement, 10, 10);
+    setTimeout(() => {
+        document.body.removeChild(ghostElement);
+    }, 0);
     
     console.log('Drag started for todo item:', todoId);
 }
@@ -153,43 +168,47 @@ function handleDragLeave(e) {
  */
 function handleDrop(e) {
     e.preventDefault();
-    const container = e.target.closest('.project-todos');
+    
+    // Find the container where the item was dropped
+    let container = e.target.closest('.project-todos');
     if (!container || !draggedItem) return;
 
     const newProject = container.dataset.project;
     const todoId = parseInt(draggedItem.dataset.id);
     
+    console.log('Drop detected on project:', newProject, 'for todo ID:', todoId);
+    
     // Get the wrapper that contains the todo item and comments
     const todoWrapper = draggedItem.closest('.todo-wrapper');
     
-    // Get all visible todo wrappers in the container (excluding the dragged one)
-    const todoWrappers = Array.from(container.querySelectorAll('.todo-wrapper'));
-    const visibleWrappers = todoWrappers.filter(wrapper => {
-        const item = wrapper.querySelector('.todo-item');
-        return item && !item.classList.contains('completed') && wrapper !== todoWrapper;
-    });
+    // Get all todo items in the container (excluding the dragged one and completed items)
+    const todoItems = Array.from(container.querySelectorAll('.todo-item:not(.completed)'));
+    const visibleItems = todoItems.filter(item => item !== draggedItem);
     
     // Get the mouse position
     const mouseY = e.clientY;
     
-    // Find the insertion point
+    // Find the insertion point based on mouse position
     let insertBefore = null;
     
     // If there are no items or mouse is below all items, append to the end
-    if (visibleWrappers.length === 0) {
+    if (visibleItems.length === 0) {
         insertBefore = null;
+        console.log('No visible items in container, will append to end');
     } else {
         // Find the first item that the mouse is above
-        for (let i = 0; i < visibleWrappers.length; i++) {
-            const item = visibleWrappers[i].querySelector('.todo-item');
-            if (!item) continue;
-            
-            const rect = item.getBoundingClientRect();
+        for (let i = 0; i < visibleItems.length; i++) {
+            const rect = visibleItems[i].getBoundingClientRect();
             // If mouse is above the middle of this item
             if (mouseY < rect.top + (rect.height / 2)) {
-                insertBefore = item;
+                insertBefore = visibleItems[i];
+                console.log('Will insert before item ID:', insertBefore.dataset.id);
                 break;
             }
+        }
+        
+        if (!insertBefore) {
+            console.log('Mouse is below all items, will append to end');
         }
     }
     
@@ -204,11 +223,27 @@ function handleDrop(e) {
         commentsSection.classList.remove('show-comments');
     }
     
+    // Add visual feedback for the drop
+    if (draggedItem) {
+        draggedItem.classList.add('dropped');
+        setTimeout(() => {
+            draggedItem.classList.remove('dropped');
+        }, 300);
+    }
+    
     console.log('Dropping todo item:', todoId, 'to project:', newProject, 'before:', insertBefore ? insertBefore.dataset.id : 'end');
     
     // Call the main app's function to update the data model
     // Pass the actual DOM element as the drop target
     window.updateTaskPosition(todoId, newProject, insertBefore);
+    
+    // Force a re-render after a short delay to ensure the UI is updated
+    setTimeout(() => {
+        if (typeof window.renderAll === 'function') {
+            window.renderAll();
+            console.log('Forced re-render after drag and drop');
+        }
+    }, 50);
 }
 
 /**
@@ -233,6 +268,16 @@ function addDragAndDropStyles() {
             opacity: 0.6;
             position: relative;
             z-index: 10;
+        }
+        
+        .todo-item.dropped {
+            animation: flash-highlight 0.3s ease-in-out;
+        }
+        
+        @keyframes flash-highlight {
+            0% { background-color: rgba(65, 105, 225, 0.1); }
+            50% { background-color: rgba(65, 105, 225, 0.3); }
+            100% { background-color: rgba(65, 105, 225, 0.1); }
         }
     `;
     document.head.appendChild(style);
