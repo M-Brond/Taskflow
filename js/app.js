@@ -369,6 +369,12 @@ function formatDate(date) {
 }
 
 function renderTodoItem(todo) {
+    // Create a wrapper for the entire todo item including comments
+    const todoWrapper = document.createElement('div');
+    todoWrapper.className = 'todo-wrapper';
+    todoWrapper.dataset.id = todo.id;
+    
+    // Create the main todo item
     const todoItem = document.createElement('div');
     todoItem.className = `todo-item${todo.completed ? ' completed' : ''}`;
     todoItem.id = `todo-${todo.id}`;
@@ -461,7 +467,10 @@ function renderTodoItem(todo) {
     todoItem.appendChild(todoContent);
     todoItem.appendChild(todoActions);
     
-    // Create comments section
+    // Add the todo item to the wrapper
+    todoWrapper.appendChild(todoItem);
+    
+    // Create comments section (outside the todo item but inside the wrapper)
     const commentsSection = document.createElement('div');
     commentsSection.className = 'comments-section';
     commentsSection.id = `comments-${todo.id}`;
@@ -545,9 +554,10 @@ function renderTodoItem(todo) {
     commentsSection.appendChild(commentsList);
     commentsSection.appendChild(commentForm);
     
-    todoItem.appendChild(commentsSection);
+    // Add the comments section to the wrapper (not inside the todo item)
+    todoWrapper.appendChild(commentsSection);
     
-    return todoItem;
+    return todoWrapper;
 }
 
 // Add or update a comment to a todo
@@ -581,6 +591,13 @@ function deleteComment(todoId, commentId) {
 
 // Toggle the comments section for a todo
 function toggleComments(todoId) {
+    // Close any other open comments sections first
+    document.querySelectorAll('.comments-section.show-comments').forEach(section => {
+        if (section.id !== `comments-${todoId}`) {
+            section.classList.remove('show-comments');
+        }
+    });
+    
     const commentsSection = document.getElementById(`comments-${todoId}`);
     if (commentsSection) {
         commentsSection.classList.toggle('show-comments');
@@ -590,6 +607,12 @@ function toggleComments(todoId) {
             const commentInput = document.getElementById(`comment-input-${todoId}`);
             if (commentInput) {
                 commentInput.focus();
+            }
+            
+            // Make sure the todo item is visible
+            const todoItem = document.querySelector(`.todo-item[data-id="${todoId}"]`);
+            if (todoItem) {
+                todoItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
     }
@@ -689,37 +712,115 @@ function updateTodoPriorities(project) {
  * @param {HTMLElement} dropTarget - The task element that was the drop target (if any)
  */
 function updateTaskPosition(todoId, newProject, dropTarget) {
-    const todo = todos.find(t => t.id === todoId);
-    if (!todo) return;
+    console.log('Updating task position:', todoId, newProject, dropTarget ? dropTarget.dataset.id : 'end');
     
-    // Remove the dragged item from its current position
-    const projectTodos = todos.filter(t => !t.completed && t.project === todo.project);
-    projectTodos.splice(todo.priority, 1);
-    
-    // Update project if changed
-    todo.project = newProject;
-    
-    if (dropTarget) {
-        // Get the index where to insert the dragged item
-        const dropTodo = todos.find(t => t.id === parseInt(dropTarget.dataset.id));
-        const dropIndex = dropTodo.priority;
-        
-        // Update priorities for all todos in the project
-        const targetProjectTodos = todos.filter(t => !t.completed && t.project === newProject);
-        targetProjectTodos.forEach(t => {
-            if (t.priority >= dropIndex) {
-                t.priority++;
-            }
-        });
-        
-        // Set the new priority for the dragged item
-        todo.priority = dropIndex;
-    } else {
-        // If dropped at the end of the list
-        const targetProjectTodos = todos.filter(t => !t.completed && t.project === newProject);
-        todo.priority = targetProjectTodos.length;
+    // Find the task that was dragged
+    const draggedTask = todos.find(t => t.id === parseInt(todoId));
+    if (!draggedTask) {
+        console.error('Dragged task not found:', todoId);
+        return;
     }
     
+    // Store original project and priority
+    const originalProject = draggedTask.project;
+    const originalPriority = draggedTask.priority;
+    
+    console.log('Original position:', originalProject, originalPriority);
+    
+    // Close any open comments section for this task
+    const commentsSection = document.getElementById(`comments-${todoId}`);
+    if (commentsSection && commentsSection.classList.contains('show-comments')) {
+        commentsSection.classList.remove('show-comments');
+    }
+    
+    // Determine the new priority
+    let newPriority;
+    
+    if (dropTarget) {
+        // If dropping before a specific task
+        const targetId = parseInt(dropTarget.dataset.id);
+        const targetTask = todos.find(t => t.id === targetId);
+        if (targetTask) {
+            newPriority = targetTask.priority;
+            console.log('Drop target found, priority:', targetTask.priority);
+        } else {
+            // Fallback if target task not found
+            newPriority = 0;
+            console.log('Drop target not found in data, using priority 0');
+        }
+    } else {
+        // If dropping at the end of a project
+        const projectTasks = todos.filter(t => 
+            !t.completed && 
+            t.project === newProject && 
+            t.id !== parseInt(todoId)
+        );
+        newPriority = projectTasks.length;
+        console.log('Dropping at end, new priority:', newPriority);
+    }
+    
+    // Handle project change
+    if (originalProject !== newProject) {
+        console.log('Project changed from', originalProject, 'to', newProject);
+        // Update the task's project
+        draggedTask.project = newProject;
+        
+        // Adjust priorities in the original project
+        todos.filter(t => 
+            !t.completed && 
+            t.project === originalProject && 
+            t.priority > originalPriority
+        ).forEach(t => {
+            t.priority--;
+            console.log('Decreasing priority of task in original project:', t.id, t.priority);
+        });
+        
+        // Adjust priorities in the new project to make room for the new task
+        todos.filter(t => 
+            !t.completed && 
+            t.project === newProject && 
+            t.priority >= newPriority
+        ).forEach(t => {
+            t.priority++;
+            console.log('Increasing priority of task in new project:', t.id, t.priority);
+        });
+    } else if (originalPriority < newPriority) {
+        // Moving down in the same project
+        console.log('Moving down in same project');
+        // Adjust tasks between the original position and new position
+        todos.filter(t => 
+            !t.completed && 
+            t.project === newProject && 
+            t.priority > originalPriority && 
+            t.priority <= newPriority
+        ).forEach(t => {
+            t.priority--;
+            console.log('Decreasing priority of task:', t.id, t.priority);
+        });
+        
+        // Adjust the new priority since we removed the task from above
+        newPriority--;
+        console.log('Adjusted new priority:', newPriority);
+    } else if (originalPriority > newPriority) {
+        // Moving up in the same project
+        console.log('Moving up in same project');
+        // Adjust tasks between the new position and original position
+        todos.filter(t => 
+            !t.completed && 
+            t.project === newProject && 
+            t.priority >= newPriority && 
+            t.priority < originalPriority
+        ).forEach(t => {
+            t.priority++;
+            console.log('Increasing priority of task:', t.id, t.priority);
+        });
+    }
+    
+    // Set the new priority for the dragged task
+    draggedTask.priority = newPriority;
+    console.log('Final priority for dragged task:', draggedTask.id, draggedTask.priority);
+    
+    // Save and render
     saveData();
     renderAll();
 }
@@ -928,7 +1029,7 @@ function setupEventListeners() {
     }
     
     // Setup drag and drop for todo items
-    setupDragAndDrop();
+    window.dragDropModule.setupDragAndDrop();
 }
 
 function renderAll() {
@@ -965,11 +1066,7 @@ function renderAll() {
             todosList.className = 'project-todos';
             todosList.dataset.project = project;
             
-            // Add drag and drop event listeners to the container
-            todosList.addEventListener('dragover', handleDragOver);
-            todosList.addEventListener('dragenter', handleDragEnter);
-            todosList.addEventListener('dragleave', handleDragLeave);
-            todosList.addEventListener('drop', handleDrop);
+            // Drag and drop event listeners will be added by the drag-drop module
             
             // Check if project has any todos
             if (projectTodos.length > 0) {
@@ -1054,6 +1151,11 @@ function renderAll() {
     
     // Remove any duplicate backup & restore sections that might be present
     removeDuplicateBackupRestoreSections();
+    
+    // Re-initialize drag and drop listeners after rendering
+    if (window.dragDropModule) {
+        window.dragDropModule.addDragAndDropListeners();
+    }
 }
 
 // Remove any duplicate backup & restore sections - moved to backup-restore.js

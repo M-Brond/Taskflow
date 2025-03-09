@@ -496,11 +496,16 @@ body.dark-mode .project-remove-btn:hover {
 }
 
 /* Todo items */
+/* Wrapper for todo item and its comments */
+.todo-wrapper {
+    position: relative;
+    margin-bottom: var(--todo-item-margin);
+}
+
 .todo-item {
     display: flex;
     align-items: center;
     padding: 0.65rem 0.75rem; /* Reduced vertical padding from 0.75rem to 0.65rem */
-    margin-bottom: var(--todo-item-margin);
     background-color: var(--color-bg);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-xs);
@@ -509,6 +514,7 @@ body.dark-mode .project-remove-btn:hover {
     border-left: 4px solid transparent;
     height: var(--todo-item-height);
     box-sizing: border-box;
+    z-index: 1;
 }
 
 .todo-item:hover {
@@ -516,6 +522,19 @@ body.dark-mode .project-remove-btn:hover {
     transform: translateX(2px);
     background-color: var(--color-bg-hover);
 }
+
+.todo-item.dragging {
+    opacity: 0.6;
+    box-shadow: var(--shadow-md);
+}
+
+.todo-wrapper.dragging-wrapper {
+    opacity: 0.6;
+    position: relative;
+    z-index: 10;
+}
+
+
 
 body.dark-mode .todo-item {
     background-color: #2a2a2a;
@@ -1375,15 +1394,26 @@ body.dark-mode .todo-date {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out;
-    margin-top: 0.3rem;
+    margin-top: 0;
     width: 100%;
     border-top: 1px solid transparent;
+    position: relative;
+    background-color: var(--color-bg);
+    box-sizing: border-box;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    z-index: 20;
 }
 
 .comments-section.show-comments {
     max-height: 500px;
     border-top: 1px solid var(--color-border);
-    padding-top: 0.3rem;
+    padding: 0.5rem;
+    box-shadow: var(--shadow-md);
+    margin-top: -5px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    background-color: var(--color-bg);
+    z-index: 30;
 }
 
 .comments-list {
@@ -1441,6 +1471,8 @@ body.dark-mode .todo-date {
     display: flex;
     gap: 0.5rem;
     margin-top: 0.5rem;
+    position: relative;
+    z-index: 20;
 }
 
 .comment-input {
@@ -1449,6 +1481,8 @@ body.dark-mode .todo-date {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-size: 0.9rem;
+    position: relative;
+    z-index: 25;
 }
 
 .comment-input:focus {
@@ -1573,8 +1607,13 @@ body.dark-mode .explosion-animation::before {
 }
 
 /* Dark mode styles for comments */
+body.dark-mode .comments-section {
+    background-color: #2a2a2a;
+}
+
 body.dark-mode .comments-section.show-comments {
     border-top-color: var(--color-border);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
 
 body.dark-mode .comment-item {
