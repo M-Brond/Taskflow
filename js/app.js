@@ -341,9 +341,15 @@ function playConfettiAtElement(element) {
 }
 
 function deleteTodo(id) {
-    todos = todos.filter(todo => todo.id !== id);
-    saveData();
-    renderAll();
+    showConfirmationDialog(
+        'Delete Task', 
+        'Are you sure you want to delete this task?',
+        () => {
+            todos = todos.filter(todo => todo.id !== id);
+            saveData();
+            renderAll();
+        }
+    );
 }
 
 function toggleCompletedTasks() {
@@ -670,30 +676,34 @@ function renderProjectHeader(project) {
 }
 
 function removeProject(project) {
-    if (confirm(`Are you sure you want to remove the project "${project}"?\nAll tasks in this project will also be deleted.`)) {
-        // Remove all todos associated with this project
-        todos = todos.filter(todo => todo.project !== project);
-        
-        // Remove the project from the projects array
-        const index = projects.indexOf(project);
-        if (index > -1) {
-            projects.splice(index, 1);
+    showConfirmationDialog(
+        'Delete Project', 
+        `Are you sure you want to remove the project "${project}"?<br>All tasks in this project will also be deleted.`,
+        () => {
+            // Remove all todos associated with this project
+            todos = todos.filter(todo => todo.project !== project);
+            
+            // Remove the project from the projects array
+            const index = projects.indexOf(project);
+            if (index > -1) {
+                projects.splice(index, 1);
+            }
+            
+            // Remove from hiddenProjects if it's there
+            if (hiddenProjects.has(project)) {
+                hiddenProjects.delete(project);
+            }
+            
+            // Remove from projectColors
+            if (projectColors[project]) {
+                delete projectColors[project];
+            }
+            
+            saveData();
+            updateProjectSelect();
+            renderAll();
         }
-        
-        // Remove from hiddenProjects if it's there
-        if (hiddenProjects.has(project)) {
-            hiddenProjects.delete(project);
-        }
-        
-        // Remove from projectColors
-        if (projectColors[project]) {
-            delete projectColors[project];
-        }
-        
-        saveData();
-        updateProjectSelect();
-        renderAll();
-    }
+    );
 }
 
 function updateTodoPriorities(project) {
@@ -1006,6 +1016,73 @@ function initApp() {
     
     // Mark as initialized
     appInitialized = true;
+}
+
+// Custom confirmation dialog
+function showConfirmationDialog(title, message, onConfirm) {
+    // Create the dialog container
+    const dialogOverlay = document.createElement('div');
+    dialogOverlay.className = 'dialog-overlay';
+    
+    const dialogBox = document.createElement('div');
+    dialogBox.className = 'dialog-box';
+    
+    const dialogHeader = document.createElement('div');
+    dialogHeader.className = 'dialog-header';
+    dialogHeader.innerHTML = `<h3>${title}</h3>`;
+    
+    const dialogContent = document.createElement('div');
+    dialogContent.className = 'dialog-content';
+    dialogContent.innerHTML = `<p>${message}</p>`;
+    
+    const dialogActions = document.createElement('div');
+    dialogActions.className = 'dialog-actions';
+    
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'dialog-btn cancel-btn';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.addEventListener('click', () => {
+        document.body.removeChild(dialogOverlay);
+    });
+    
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'dialog-btn confirm-btn';
+    confirmBtn.textContent = 'Delete';
+    confirmBtn.addEventListener('click', () => {
+        document.body.removeChild(dialogOverlay);
+        if (typeof onConfirm === 'function') {
+            onConfirm();
+        }
+    });
+    
+    dialogActions.appendChild(cancelBtn);
+    dialogActions.appendChild(confirmBtn);
+    
+    dialogBox.appendChild(dialogHeader);
+    dialogBox.appendChild(dialogContent);
+    dialogBox.appendChild(dialogActions);
+    
+    dialogOverlay.appendChild(dialogBox);
+    document.body.appendChild(dialogOverlay);
+    
+    // Focus on cancel button by default (safer option)
+    cancelBtn.focus();
+    
+    // Close dialog when clicking outside
+    dialogOverlay.addEventListener('click', (e) => {
+        if (e.target === dialogOverlay) {
+            document.body.removeChild(dialogOverlay);
+        }
+    });
+    
+    // Close dialog when pressing Escape
+    const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+            document.body.removeChild(dialogOverlay);
+            document.removeEventListener('keydown', handleKeyDown);
+        }
+    };
+    document.addEventListener('keydown', handleKeyDown);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
