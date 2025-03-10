@@ -340,16 +340,14 @@ function playConfettiAtElement(element) {
     }, 500);
 }
 
+// This function is called from the confirmation dialog callback
 function deleteTodo(id) {
-    showConfirmationDialog(
-        'Delete Task', 
-        'Are you sure you want to delete this task?',
-        () => {
-            todos = todos.filter(todo => todo.id !== id);
-            saveData();
-            renderAll();
-        }
-    );
+    // Remove the task with the given ID from the todos array
+    todos = todos.filter(todo => todo.id !== id);
+    // Save the updated data
+    saveData();
+    // Re-render the UI
+    renderAll();
 }
 
 function toggleCompletedTasks() {
@@ -462,7 +460,15 @@ function renderTodoItem(todo) {
     deleteBtn.title = 'Delete Task';
     deleteBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        deleteTodo(todo.id);
+        // Show confirmation dialog before deleting
+        showConfirmationDialog(
+            'Delete Task', 
+            'Are you sure you want to delete this task?<br>This action cannot be undone.',
+            () => {
+                // Only delete if user confirms
+                deleteTodo(todo.id);
+            }
+        );
     });
     
     // Add buttons to actions
@@ -1018,71 +1024,101 @@ function initApp() {
     appInitialized = true;
 }
 
-// Custom confirmation dialog
+// Custom confirmation dialog that looks like the modal
 function showConfirmationDialog(title, message, onConfirm) {
+    // Remove any existing confirmation dialogs
+    const existingDialog = document.getElementById('confirmDialog');
+    if (existingDialog) {
+        document.body.removeChild(existingDialog);
+    }
+    
     // Create the dialog container
-    const dialogOverlay = document.createElement('div');
-    dialogOverlay.className = 'dialog-overlay';
+    const dialog = document.createElement('div');
+    dialog.id = 'confirmDialog';
+    dialog.className = 'confirm-dialog';
     
-    const dialogBox = document.createElement('div');
-    dialogBox.className = 'dialog-box';
-    
-    const dialogHeader = document.createElement('div');
-    dialogHeader.className = 'dialog-header';
-    dialogHeader.innerHTML = `<h3>${title}</h3>`;
-    
+    // Create dialog content
     const dialogContent = document.createElement('div');
-    dialogContent.className = 'dialog-content';
-    dialogContent.innerHTML = `<p>${message}</p>`;
+    dialogContent.className = 'confirm-dialog-content';
     
-    const dialogActions = document.createElement('div');
-    dialogActions.className = 'dialog-actions';
-    
-    const cancelBtn = document.createElement('button');
-    cancelBtn.className = 'dialog-btn cancel-btn';
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.addEventListener('click', () => {
-        document.body.removeChild(dialogOverlay);
+    // Create close button
+    const closeBtn = document.createElement('span');
+    closeBtn.className = 'confirm-dialog-close';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.addEventListener('click', () => {
+        closeConfirmDialog();
     });
     
-    const confirmBtn = document.createElement('button');
-    confirmBtn.className = 'dialog-btn confirm-btn';
-    confirmBtn.textContent = 'Delete';
-    confirmBtn.addEventListener('click', () => {
-        document.body.removeChild(dialogOverlay);
+    // Create header
+    const header = document.createElement('div');
+    header.className = 'confirm-dialog-header';
+    header.innerHTML = `<h3>${title}</h3>`;
+    
+    // Create body
+    const body = document.createElement('div');
+    body.className = 'confirm-dialog-body';
+    body.innerHTML = `<p>${message}</p>`;
+    
+    // Create footer with buttons
+    const footer = document.createElement('div');
+    footer.className = 'confirm-dialog-footer';
+    
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'confirm-dialog-btn confirm-cancel-btn';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.addEventListener('click', () => {
+        closeConfirmDialog();
+    });
+    
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'confirm-dialog-btn confirm-delete-btn';
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.addEventListener('click', () => {
+        closeConfirmDialog();
         if (typeof onConfirm === 'function') {
             onConfirm();
         }
     });
     
-    dialogActions.appendChild(cancelBtn);
-    dialogActions.appendChild(confirmBtn);
+    // Assemble the dialog
+    footer.appendChild(cancelBtn);
+    footer.appendChild(deleteBtn);
     
-    dialogBox.appendChild(dialogHeader);
-    dialogBox.appendChild(dialogContent);
-    dialogBox.appendChild(dialogActions);
+    dialogContent.appendChild(closeBtn);
+    dialogContent.appendChild(header);
+    dialogContent.appendChild(body);
+    dialogContent.appendChild(footer);
     
-    dialogOverlay.appendChild(dialogBox);
-    document.body.appendChild(dialogOverlay);
+    dialog.appendChild(dialogContent);
+    document.body.appendChild(dialog);
+    
+    // Display the dialog
+    dialog.style.display = 'flex';
     
     // Focus on cancel button by default (safer option)
     cancelBtn.focus();
     
     // Close dialog when clicking outside
-    dialogOverlay.addEventListener('click', (e) => {
-        if (e.target === dialogOverlay) {
-            document.body.removeChild(dialogOverlay);
+    dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) {
+            closeConfirmDialog();
         }
     });
     
     // Close dialog when pressing Escape
     const handleKeyDown = (e) => {
         if (e.key === 'Escape') {
-            document.body.removeChild(dialogOverlay);
+            closeConfirmDialog();
             document.removeEventListener('keydown', handleKeyDown);
         }
     };
     document.addEventListener('keydown', handleKeyDown);
+    
+    // Function to close the dialog
+    function closeConfirmDialog() {
+        dialog.style.display = 'none';
+        document.body.removeChild(dialog);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
