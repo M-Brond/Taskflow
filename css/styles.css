@@ -504,7 +504,7 @@ body.dark-mode .project-remove-btn:hover {
 
 .todo-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     padding: 0.65rem 0.75rem; /* Reduced vertical padding from 0.75rem to 0.65rem */
     background-color: var(--color-bg);
     border-radius: var(--radius-sm);
@@ -512,9 +512,11 @@ body.dark-mode .project-remove-btn:hover {
     transition: all 0.2s ease;
     position: relative;
     border-left: 4px solid transparent;
-    height: var(--todo-item-height);
+    min-height: var(--todo-item-height);
+    height: auto;
     box-sizing: border-box;
     z-index: 1;
+    flex-wrap: wrap;
 }
 
 .todo-item:hover {
@@ -549,13 +551,15 @@ body.dark-mode .todo-item:hover {
 /* Checkbox wrapper for larger clickable area */
 .checkbox-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     width: 30px;
+    min-width: 30px; /* Ensure minimum width */
     height: 30px;
     border-radius: 50%;
     cursor: pointer;
     margin-right: 0.5rem;
+    margin-top: 0.2rem;
     transition: background-color 0.2s;
 }
 
@@ -594,6 +598,13 @@ body.dark-mode .checkbox-wrapper:hover {
     font-size: 0.95rem;
     margin-right: 0.75rem;
     word-break: break-word;
+    line-height: 1.4;
+    padding-top: 0.2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-clamp: 3; /* Standard property for compatibility */
 }
 
 .todo-text.completed {
@@ -2066,8 +2077,9 @@ body.dark-mode .tooltip .tooltip-text::after {
     display: flex;
     margin-left: auto;
     gap: 0.25rem;
-    align-items: flex-start;
-    margin-top: -0.75rem;
+    align-items: center;
+    align-self: flex-start;
+    margin-top: 0.2rem;
 }
 
 .todo-action-btn {
