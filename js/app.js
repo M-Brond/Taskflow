@@ -1017,6 +1017,9 @@ function initApp() {
     // Update the project select dropdown
     updateProjectSelect();
     
+    // Initialize the tutorial for first-time users
+    initTutorial();
+    
     // Set up event listeners
     setupEventListeners();
     
