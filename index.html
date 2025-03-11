@@ -70,6 +70,20 @@
                 <h2>Completed Tasks <span class="project-counter" id="completedCounter">0</span></h2>
                 <span id="completedToggle">▼</span>
             </div>
+            <div class="completed-controls" id="completedControls" style="display: none;">
+                <div class="search-filter-container">
+                    <div class="search-container">
+                        <input type="text" id="completedSearchInput" placeholder="Search completed tasks..." class="completed-search">
+                        <button id="completedSearchClear" class="search-clear-btn" title="Clear search"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="filter-container">
+                        <select id="completedProjectFilter" class="completed-filter">
+                            <option value="">All Projects</option>
+                            <!-- Project options will be added dynamically -->
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div id="completedTasks" class="completed-tasks">
                 <!-- Completed tasks will be rendered here -->
             </div>
