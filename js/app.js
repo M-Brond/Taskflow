@@ -1372,43 +1372,43 @@ function focusAddTaskInput(project) {
 
 // Add tooltips to elements
 function addTooltips() {
-    // Add tooltip to project visibility toggle
+    // Add tooltips to project visibility toggle buttons
     document.querySelectorAll('.project-visibility-toggle').forEach(button => {
-        if (!button.querySelector('.tooltip')) {
-            const tooltipSpan = document.createElement('span');
-            tooltipSpan.className = 'tooltip';
-            tooltipSpan.innerHTML = `
-                <span class="tooltip-text">Hide this project from view. You can show it again later.</span>
-            `;
-            button.appendChild(tooltipSpan);
-        }
+        button.setAttribute('title', 'Hide this project from view. You can show it again later.');
     });
     
-    // Add tooltip to drag handle
+    // Add tooltips to drag handles
     document.querySelectorAll('.drag-handle').forEach(handle => {
-        if (!handle.querySelector('.tooltip')) {
-            const tooltipSpan = document.createElement('span');
-            tooltipSpan.className = 'tooltip';
-            tooltipSpan.innerHTML = `
-                <span class="tooltip-text">Drag to reorder or move to another project</span>
-            `;
-            handle.appendChild(tooltipSpan);
-        }
+        handle.setAttribute('title', 'Drag to reorder or move to another project');
+    });
+    
+    // Add tooltips to color pickers
+    document.querySelectorAll('.color-picker-container .color-picker').forEach(picker => {
+        picker.setAttribute('title', 'Change project color');
+    });
+    
+    // Add tooltips to delete task buttons
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.setAttribute('title', 'Delete Task');
+    });
+    
+    // Add tooltips to fullscreen buttons
+    document.querySelectorAll('.project-fullscreen-btn').forEach(button => {
+        button.setAttribute('title', 'View this project in fullscreen');
+    });
+    
+    // Add tooltips to project remove buttons
+    document.querySelectorAll('.project-remove-btn').forEach(button => {
+        button.setAttribute('title', 'Delete this project');
     });
     
     // Add tooltip to dark mode toggle
     const darkModeToggle = document.getElementById('darkModeToggle');
-    if (darkModeToggle && !darkModeToggle.querySelector('.tooltip')) {
-        const tooltipSpan = document.createElement('span');
-        tooltipSpan.className = 'tooltip';
-        tooltipSpan.innerHTML = `
-                <span class="tooltip-text">Toggle dark mode</span>
-        `;
-        darkModeToggle.appendChild(tooltipSpan);
+    if (darkModeToggle) {
+        darkModeToggle.setAttribute('title', 'Toggle dark mode');
     }
 }
 
-// Filter to show only a specific project
 function filterByProject(projectName) {
     if (projects.includes(projectName)) {
         // Show only this project
