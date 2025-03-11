@@ -28,10 +28,9 @@ function loadData() {
         projects = JSON.parse(savedProjects);
     }
 
-    if (savedHiddenProjects) {
-        hiddenProjects = new Set(JSON.parse(savedHiddenProjects));
-    }
-
+    // Clear hidden projects on initial load to ensure all projects are visible
+    hiddenProjects = new Set();
+    
     // Default colors for standard projects
     const defaultColors = {
         'Work': '#1e88e5', // Blue
@@ -354,8 +353,23 @@ function toggleCompletedTasks() {
     showCompleted = !showCompleted;
     const completedTasks = document.getElementById('completedTasks');
     const toggle = document.getElementById('completedToggle');
-    completedTasks.style.maxHeight = showCompleted ? completedTasks.scrollHeight + 'px' : '0';
-    toggle.textContent = showCompleted ? '▼' : '▶';
+    
+    if (showCompleted) {
+        // Show completed tasks
+        completedTasks.style.maxHeight = completedTasks.scrollHeight + 'px';
+        completedTasks.style.visibility = 'visible';
+        completedTasks.style.display = 'block';
+        toggle.textContent = '▼';
+    } else {
+        // Hide completed tasks but keep them in the DOM
+        completedTasks.style.maxHeight = '0';
+        completedTasks.style.overflow = 'hidden';
+        completedTasks.style.visibility = 'hidden';
+        toggle.textContent = '▶';
+    }
+    
+    // Save the state but don't re-render the projects
+    localStorage.setItem('showCompleted', JSON.stringify(showCompleted));
 }
 
 function formatDate(date) {
@@ -635,9 +649,34 @@ function renderProjectHeader(project) {
     header.className = 'project-header';
     const projectTodos = todos.filter(todo => !todo.completed && todo.project === project);
     
+    // Check if we're in fullscreen mode
+    const isFullscreen = document.getElementById('projectsContainer').classList.contains('fullscreen-project');
+    
+    let backButton = '';
+    if (isFullscreen && !hiddenProjects.has(project)) {
+        backButton = `
+            <button class="project-back-btn" onclick="exitFullscreenMode()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back</span>
+            </button>
+        `;
+    }
+    
+    // Add fullscreen button if not already in fullscreen mode
+    let fullscreenButton = '';
+    if (!isFullscreen) {
+        fullscreenButton = `
+            <button class="project-fullscreen-btn" onclick="filterByProject('${project}')" title="Fullscreen mode">
+                <i class="fas fa-expand"></i>
+            </button>
+        `;
+    }
+    
     header.innerHTML = `
+        ${backButton}
         <h3 class="project-title">${project}</h3>
         <span class="project-counter">${projectTodos.length}</span>
+        ${fullscreenButton}
         <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
             <i class="fas fa-eye-slash"></i>
         </button>
@@ -904,9 +943,6 @@ function initDarkMode() {
         darkModeToggle.addEventListener('click', toggleDarkMode);
     }
 }
-
-// Global variables for data storage notice - moved to backup-restore.js
-// Keeping this comment as a reference to where the code was moved from
 
 // Tutorial functions
 function initTutorial() {
@@ -1221,8 +1257,13 @@ function renderAll() {
                 todosList.appendChild(renderEmptyState(project));
             }
             
+            // Create a content wrapper for better fullscreen layout
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'project-content';
+            contentWrapper.appendChild(todosList);
+            
             column.appendChild(header);
-            column.appendChild(todosList);
+            column.appendChild(contentWrapper);
             projectsContainer.appendChild(column);
         } else {
             // Render placeholder for hidden project with show button
@@ -1378,9 +1419,31 @@ function filterByProject(projectName) {
                 hiddenProjects.delete(p);
             }
         });
+        
+        // Add fullscreen class to the projects container
+        document.getElementById('projectsContainer').classList.add('fullscreen-project');
+        
+        // Update URL hash for bookmarking/sharing
+        window.location.hash = encodeURIComponent(projectName);
+        
         updateProjectFilter();
         renderAll();
     }
+}
+
+// Function to exit fullscreen mode
+function exitFullscreenMode() {
+    // Clear all hidden projects
+    hiddenProjects.clear();
+    
+    // Remove fullscreen class
+    document.getElementById('projectsContainer').classList.remove('fullscreen-project');
+    
+    // Clear URL hash
+    history.pushState("", document.title, window.location.pathname + window.location.search);
+    
+    saveData();
+    renderAll();
 }
 
 // Update the project filter dropdown
