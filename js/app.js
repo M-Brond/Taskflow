@@ -1316,6 +1316,14 @@ function renderAll() {
         .sort((a, b) => b.completedAt - a.completedAt);
     
     if (completedTodos.length > 0) {
+        // Add scrollable class to completed container if there are more than 10 completed tasks
+        if (completedTodos.length > 10) {
+            completedContainer.classList.add('scrollable-completed');
+        } else {
+            completedContainer.classList.remove('scrollable-completed');
+        }
+        
+        // Render all completed tasks
         completedTodos.forEach(todo => {
             completedContainer.appendChild(renderTodoItem(todo));
         });
