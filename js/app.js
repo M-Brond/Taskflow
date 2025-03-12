@@ -672,18 +672,26 @@ function renderProjectHeader(project) {
         `;
     }
     
+    // Only show visibility toggle when not in fullscreen mode
+    let visibilityToggle = '';
+    if (!isFullscreen) {
+        visibilityToggle = `
+            <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')" title="Hide this project from view. You can show it again later.">
+                <i class="fas fa-eye-slash"></i>
+            </button>
+        `;
+    }
+    
     header.innerHTML = `
         ${backButton}
         <h3 class="project-title">${project}</h3>
         <span class="project-counter">${projectTodos.length}</span>
         ${fullscreenButton}
-        <button class="project-visibility-toggle" onclick="toggleProjectVisibility('${project}')">
-            <i class="fas fa-eye-slash"></i>
-        </button>
+        ${visibilityToggle}
         <div class="color-picker-container">
             <div class="color-picker" id="color-picker-${project}" style="background-color: ${projectColors[project] || getRandomColor()}"></div>
         </div>
-        <button class="project-remove-btn" onclick="removeProject('${project}')">
+        <button class="project-remove-btn" onclick="removeProject('${project}')" title="Delete this project">
             <i class="fas fa-trash"></i>
         </button>
     `;
