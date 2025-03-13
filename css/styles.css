@@ -552,6 +552,10 @@ body.dark-mode .pcr-button {
 
 .color-picker:hover {
     transform: scale(1.1);
+}.color-picker-container {
+    display: flex;
+    align-items: center;
+    margin-left: 0.5rem;
 }
 
 .color-picker-large {
@@ -3224,72 +3228,4 @@ body.dark-mode .tooltip .tooltip-text::after {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-/* Scrollable completed tasks section */
-.scrollable-completed {
-    max-height: calc(10 * (var(--todo-item-height, 56px) + var(--todo-item-margin, 8px)));
-    overflow-y: auto;
-    padding-right: 5px; /* Add some padding for the scrollbar */
-}
-
-/* Style the scrollbar for the completed tasks section */
-.scrollable-completed::-webkit-scrollbar {
-    width: 8px;
-}
-
-.scrollable-completed::-webkit-scrollbar-track {
-    background: var(--color-bg);
-    border-radius: 4px;
-}
-
-.scrollable-completed::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-
-.scrollable-completed::-webkit-scrollbar-thumb:hover {
-    background: #999;
-}
-
-body.dark-mode .scrollable-completed::-webkit-scrollbar-thumb {
-    background: #555;
-}
-
-body.dark-mode .scrollable-completed::-webkit-scrollbar-thumb:hover {
-    background: #777;
-}
-
-/* Scrollable completed tasks section */
-.scrollable-completed {
-    max-height: calc(10 * (var(--todo-item-height, 56px) + var(--todo-item-margin, 8px)));
-    overflow-y: auto;
-    padding-right: 5px; /* Add some padding for the scrollbar */
-}
-
-/* Style the scrollbar for the completed tasks section */
-.scrollable-completed::-webkit-scrollbar {
-    width: 8px;
-}
-
-.scrollable-completed::-webkit-scrollbar-track {
-    background: var(--color-bg);
-    border-radius: 4px;
-}
-
-.scrollable-completed::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-
-.scrollable-completed::-webkit-scrollbar-thumb:hover {
-    background: #999;
-}
-
-body.dark-mode .scrollable-completed::-webkit-scrollbar-thumb {
-    background: #555;
-}
-
-body.dark-mode .scrollable-completed::-webkit-scrollbar-thumb:hover {
-    background: #777;
 }
