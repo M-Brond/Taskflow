@@ -943,6 +943,7 @@ function initDarkMode() {
     const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
     if (darkModeEnabled) {
         document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i>';
     }
     
     // Add event listener to the dark mode toggle button
@@ -1177,7 +1178,43 @@ document.addEventListener('DOMContentLoaded', function() {
         const projectName = decodeURIComponent(window.location.hash.substring(1));
         filterByProject(projectName);
     }
+    
+    // Apply tooltips to all color pickers
+    applyColorPickerTooltips();
+    
+    // Check for dark mode preference
+    const darkModePreference = localStorage.getItem('darkMode');
+    if (darkModePreference === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+    }
 });
+
+// Function to apply tooltips to all color pickers
+function applyColorPickerTooltips() {
+    // Use a longer timeout to ensure all elements are fully rendered and initialized
+    setTimeout(() => {
+        // First, get all color pickers by class
+        document.querySelectorAll('.color-picker').forEach(picker => {
+            picker.setAttribute('title', 'Change project color');
+        });
+        
+        // Specifically target the default projects by ID to ensure they get the tooltip
+        const workColorPicker = document.getElementById('color-picker-Work');
+        const personalColorPicker = document.getElementById('color-picker-Personal');
+        
+        if (workColorPicker) {
+            workColorPicker.setAttribute('title', 'Change project color');
+        }
+        
+        if (personalColorPicker) {
+            personalColorPicker.setAttribute('title', 'Change project color');
+        }
+        
+        // Log for debugging
+        console.log('Applied tooltips to color pickers');
+    }, 300); // Increased timeout to 300ms
+}
 
 // Setup event listeners
 function setupEventListeners() {
@@ -1351,6 +1388,11 @@ function renderAll() {
     if (window.dragDropModule) {
         window.dragDropModule.addDragAndDropListeners();
     }
+    
+    // Apply tooltips to all color pickers after rendering
+    setTimeout(() => {
+        applyColorPickerTooltips();
+    }, 100);
 }
 
 // Remove any duplicate backup & restore sections - moved to backup-restore.js

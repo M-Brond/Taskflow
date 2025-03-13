@@ -1,17 +1,33 @@
-/* Custom tooltip for color pickers */
+/* Custom tooltip for all color pickers */
 .color-picker {
     position: relative;
 }
 
-.color-picker::after {
-    content: none;
+/* Add a custom tooltip that will work for all projects */
+.color-picker::before {
+    content: "Change project color";
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 100;
+    pointer-events: none;
 }
 
-.color-picker:hover::after {
+.color-picker:hover::before {
     opacity: 1;
     visibility: visible;
 }
 
-body.dark-mode .color-picker::after {
+body.dark-mode .color-picker::before {
     background-color: rgba(60, 60, 60, 0.9);
 }

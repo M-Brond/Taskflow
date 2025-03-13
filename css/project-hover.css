@@ -1,0 +1,16 @@
+/* Make all project action buttons always visible */
+.project-header .project-remove-btn,
+.project-header .project-visibility-toggle,
+.project-header .project-fullscreen-btn,
+.project-header .color-picker-container {
+    opacity: 1;
+    transition: transform 0.2s ease;
+}
+
+/* Add a subtle hover effect for better user feedback */
+.project-header .project-remove-btn:hover,
+.project-header .project-visibility-toggle:hover,
+.project-header .project-fullscreen-btn:hover,
+.project-header .color-picker-container:hover {
+    transform: scale(1.1);
+}
