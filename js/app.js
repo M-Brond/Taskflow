@@ -689,7 +689,7 @@ function renderProjectHeader(project) {
         ${fullscreenButton}
         ${visibilityToggle}
         <div class="color-picker-container">
-            <div class="color-picker" id="color-picker-${project}" style="background-color: ${projectColors[project] || getRandomColor()}" title="Change the color for this project"></div>
+            <div class="color-picker" id="color-picker-${project}" style="background-color: ${projectColors[project] || getRandomColor()}" title="Change project color"></div>
         </div>
         <button class="project-remove-btn" onclick="removeProject('${project}')" title="Delete this project">
             <i class="fas fa-trash"></i>

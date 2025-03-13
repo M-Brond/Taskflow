@@ -1,0 +1,17 @@
+/* Custom tooltip for color pickers */
+.color-picker {
+    position: relative;
+}
+
+.color-picker::after {
+    content: none;
+}
+
+.color-picker:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+body.dark-mode .color-picker::after {
+    background-color: rgba(60, 60, 60, 0.9);
+}
