@@ -1,0 +1,203 @@
+/* Enhanced Completed Tasks Section */
+
+/* Header for completed tasks section */
+.completed-tasks-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    margin-top: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.completed-tasks-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.completed-tasks-header h3 i {
+    margin-right: 8px;
+    color: var(--color-success);
+}
+
+.completed-tasks-header .completed-counter {
+    background-color: var(--color-success);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    margin-left: 10px;
+}
+
+.completed-tasks-header .completed-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.completed-tasks-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-light);
+    padding: 5px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.completed-tasks-header button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--color-text);
+}
+
+.completed-tasks-header button i {
+    font-size: 0.9rem;
+}
+
+.completed-filter-container {
+    position: relative;
+    margin-right: 5px;
+}
+
+.completed-filter {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 120px;
+}
+
+.completed-filter:hover, .completed-filter:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+body.dark-mode .completed-filter {
+    background-color: #333;
+    color: var(--color-text-light);
+    border-color: #444;
+}
+
+body.dark-mode .completed-filter:hover, 
+body.dark-mode .completed-filter:focus {
+    border-color: var(--color-primary);
+}
+
+/* Completed tasks container */
+.completed-tasks {
+    background-color: var(--color-bg);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.completed-tasks .todo-item {
+    opacity: 0.8;
+    background-color: var(--color-bg);
+    transition: all 0.2s;
+}
+
+.completed-tasks .todo-item:hover {
+    opacity: 1;
+}
+
+/* Add a subtle strikethrough to completed task text */
+.completed-tasks .todo-text {
+    text-decoration: line-through;
+    text-decoration-color: rgba(0, 0, 0, 0.3);
+    text-decoration-thickness: 1px;
+}
+
+/* Completed date styling */
+.completed-tasks .todo-date {
+    font-style: italic;
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+
+/* Scrollable completed tasks */
+.scrollable-completed {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.scrollable-completed::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-completed::-webkit-scrollbar-track {
+    background: var(--color-bg);
+}
+
+.scrollable-completed::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 20px;
+}
+
+/* Empty state for completed tasks */
+.completed-tasks .empty-state {
+    padding: 30px;
+    text-align: center;
+    color: var(--color-text-light);
+}
+
+.completed-tasks .empty-state i {
+    font-size: 2rem;
+    color: var(--color-success);
+    opacity: 0.5;
+    margin-bottom: 10px;
+}
+
+.completed-tasks .empty-state h3 {
+    margin: 10px 0;
+    font-weight: 500;
+}
+
+.completed-tasks .empty-state p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .completed-tasks-header {
+    background-color: #2a2a2a;
+}
+
+body.dark-mode .completed-tasks {
+    background-color: #333;
+}
+
+body.dark-mode .completed-tasks .todo-item {
+    background-color: #333;
+    border-color: #444;
+}
+
+body.dark-mode .completed-tasks .todo-item:hover {
+    background-color: #3a3a3a;
+}
+
+body.dark-mode .completed-tasks-header button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .completed-tasks .todo-text {
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+}

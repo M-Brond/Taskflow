@@ -227,7 +227,7 @@ function addTodo() {
             id: Date.now().toString(),
             text: text,
             completed: false,
-            project: project,
+            projectId: project, // Changed todo.project to todo.projectId
             createdAt: new Date(),
             priority: 0, // Default priority
             comments: [] // Initialize empty comments array
@@ -350,26 +350,36 @@ function deleteTodo(id) {
 }
 
 function toggleCompletedTasks() {
-    showCompleted = !showCompleted;
     const completedTasks = document.getElementById('completedTasks');
-    const toggle = document.getElementById('completedToggle');
+    const toggleBtn = document.getElementById('toggleCompletedBtn');
     
-    if (showCompleted) {
+    if (completedTasks.style.display === 'none' || !completedTasks.style.display) {
         // Show completed tasks
-        completedTasks.style.maxHeight = completedTasks.scrollHeight + 'px';
-        completedTasks.style.visibility = 'visible';
         completedTasks.style.display = 'block';
-        toggle.textContent = '▼';
+        completedTasks.style.maxHeight = completedTasks.scrollHeight + 'px';
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
     } else {
-        // Hide completed tasks but keep them in the DOM
+        // Hide completed tasks
         completedTasks.style.maxHeight = '0';
-        completedTasks.style.overflow = 'hidden';
-        completedTasks.style.visibility = 'hidden';
-        toggle.textContent = '▶';
+        setTimeout(() => {
+            completedTasks.style.display = 'none';
+        }, 300);
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
     }
-    
-    // Save the state but don't re-render the projects
-    localStorage.setItem('showCompleted', JSON.stringify(showCompleted));
+}
+
+function clearCompletedTasks() {
+    if (confirm('Are you sure you want to delete all completed tasks? This action cannot be undone.')) {
+        // Filter out completed tasks
+        todos = todos.filter(todo => !todo.completed);
+        
+        // Save and render
+        saveData();
+        renderAll();
+        
+        // Show notification
+        showNotification('All completed tasks have been cleared', 'success');
+    }
 }
 
 function formatDate(date) {
@@ -400,7 +410,7 @@ function renderTodoItem(todo) {
     todoItem.dataset.id = todo.id;
     
     // Apply project color to the task
-    const projectColor = projectColors[todo.project] || getRandomColor();
+    const projectColor = projectColors[todo.projectId] || getRandomColor(); // Changed todo.project to todo.projectId
     todoItem.style.borderLeftColor = projectColor;
     
     // Create the main todo content
@@ -647,8 +657,7 @@ function toggleComments(todoId) {
 function renderProjectHeader(project) {
     const header = document.createElement('div');
     header.className = 'project-header';
-    const projectTodos = todos.filter(todo => !todo.completed && todo.project === project);
-    
+    const projectTodos = todos.filter(todo => !todo.completed && todo.projectId === project); // Changed todo.project to todo.projectId
     // Check if we're in fullscreen mode
     const isFullscreen = document.getElementById('projectsContainer').classList.contains('fullscreen-project');
     
@@ -734,7 +743,7 @@ function removeProject(project) {
         `Are you sure you want to remove the project "${project}"?<br>All tasks in this project will also be deleted.`,
         () => {
             // Remove all todos associated with this project
-            todos = todos.filter(todo => todo.project !== project);
+            todos = todos.filter(todo => todo.projectId !== project); // Changed todo.project to todo.projectId
             
             // Remove the project from the projects array
             const index = projects.indexOf(project);
@@ -760,7 +769,7 @@ function removeProject(project) {
 }
 
 function updateTodoPriorities(project) {
-    const projectTodos = todos.filter(t => !t.completed && t.project === project);
+    const projectTodos = todos.filter(t => !t.completed && t.projectId === project); // Changed todo.project to todo.projectId
     projectTodos.forEach((todo, index) => {
         todo.priority = index;
     });
@@ -788,7 +797,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     }
     
     // Store original project and priority
-    const originalProject = draggedTask.project;
+    const originalProject = draggedTask.projectId; // Changed todo.project to todo.projectId
     const originalPriority = draggedTask.priority;
     
     console.log('Original position:', originalProject, originalPriority);
@@ -815,7 +824,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
             // Fallback if target task not found
             console.error('Target task not found in data model:', targetId);
             // Get all tasks in the project to determine the fallback priority
-            const projectTasks = todos.filter(t => !t.completed && t.project === newProject);
+            const projectTasks = todos.filter(t => !t.completed && t.projectId === newProject); // Changed todo.project to todo.projectId
             newPriority = projectTasks.length > 0 ? projectTasks[0].priority : 0;
             console.log('Using fallback priority:', newPriority);
         }
@@ -823,7 +832,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         // If dropping at the end of a project
         const projectTasks = todos.filter(t => 
             !t.completed && 
-            t.project === newProject && 
+            t.projectId === newProject && // Changed todo.project to todo.projectId
             t.id !== todoId
         );
         newPriority = projectTasks.length;
@@ -834,12 +843,12 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     if (originalProject !== newProject) {
         console.log('Project changed from', originalProject, 'to', newProject);
         // Update the task's project
-        draggedTask.project = newProject;
+        draggedTask.projectId = newProject; // Changed todo.project to todo.projectId
         
         // Adjust priorities in the original project
         todos.filter(t => 
             !t.completed && 
-            t.project === originalProject && 
+            t.projectId === originalProject && // Changed todo.project to todo.projectId
             t.priority > originalPriority
         ).forEach(t => {
             t.priority--;
@@ -849,7 +858,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         // Adjust priorities in the new project to make room for the new task
         todos.filter(t => 
             !t.completed && 
-            t.project === newProject && 
+            t.projectId === newProject && // Changed todo.project to todo.projectId
             t.priority >= newPriority && 
             t.id !== todoId
         ).forEach(t => {
@@ -862,7 +871,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         // Adjust tasks between the original position and new position
         todos.filter(t => 
             !t.completed && 
-            t.project === newProject && 
+            t.projectId === newProject && // Changed todo.project to todo.projectId
             t.priority > originalPriority && 
             t.priority <= newPriority && 
             t.id !== todoId
@@ -880,7 +889,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         // Adjust tasks between the new position and original position
         todos.filter(t => 
             !t.completed && 
-            t.project === newProject && 
+            t.projectId === newProject && // Changed todo.project to todo.projectId
             t.priority >= newPriority && 
             t.priority < originalPriority && 
             t.id !== todoId
@@ -895,7 +904,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     console.log('Final priority for dragged task:', draggedTask.id, draggedTask.priority);
     
     // Recalculate priorities for all tasks in the project to ensure consistency
-    const projectTasks = todos.filter(t => !t.completed && t.project === newProject);
+    const projectTasks = todos.filter(t => !t.completed && t.projectId === newProject); // Changed todo.project to todo.projectId
     projectTasks.sort((a, b) => a.priority - b.priority);
     
     // Reassign priorities to ensure they are sequential and without gaps
@@ -1272,7 +1281,7 @@ function renderAll() {
     projects.forEach(project => {
         if (!hiddenProjects.has(project)) {
             // Render visible project
-            const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
+            const projectTodos = todos.filter(todo => !todo.completed && todo.projectId === project) // Changed todo.project to todo.projectId
                 .sort((a, b) => a.priority - b.priority);
             
             const column = document.createElement('div');
@@ -1345,16 +1354,52 @@ function renderAll() {
         projectsContainer.appendChild(emptyProjectsState);
     }
 
-    // Render completed tasks
+    renderCompletedTasks();
+    
+    // Add tooltips to elements
+    addTooltips();
+    
+    // Remove any duplicate backup & restore sections that might be present
+    removeDuplicateBackupRestoreSections();
+    
+    // Re-initialize drag and drop listeners after rendering
+    if (window.dragDropModule) {
+        window.dragDropModule.addDragAndDropListeners();
+    }
+    
+    // Apply tooltips to all color pickers after rendering
+    setTimeout(() => {
+        applyColorPickerTooltips();
+    }, 100);
+}
+
+function renderCompletedTasks() {
     const completedContainer = document.getElementById('completedTasks');
     completedContainer.innerHTML = '';
     
-    const completedTodos = todos.filter(todo => todo.completed)
-        .sort((a, b) => b.completedAt - a.completedAt);
+    // Get the selected project filter
+    const projectFilter = document.getElementById('completedProjectFilter').value;
+    
+    // Filter completed todos based on selected project
+    let completedTodos = todos.filter(todo => todo.completed);
+    
+    // Apply project filter if not "all"
+    if (projectFilter !== 'all') {
+        completedTodos = completedTodos.filter(todo => todo.projectId === projectFilter);
+    }
+    
+    // Sort by completion date (newest first)
+    completedTodos = completedTodos.sort((a, b) => b.completedAt - a.completedAt);
+    
+    // Update completed counter
+    document.getElementById('completedCounter').textContent = completedTodos.length;
+    
+    // Populate project filter dropdown
+    populateCompletedProjectFilter();
     
     if (completedTodos.length > 0) {
-        // Add scrollable class to completed container if there are more than 10 completed tasks
-        if (completedTodos.length > 10) {
+        // Add scrollable class if there are more than 5 completed tasks
+        if (completedTodos.length > 5) {
             completedContainer.classList.add('scrollable-completed');
         } else {
             completedContainer.classList.remove('scrollable-completed');
@@ -1375,30 +1420,45 @@ function renderAll() {
         `;
         completedContainer.appendChild(emptyCompletedState);
     }
-    
-    document.getElementById('completedCounter').textContent = completedTodos.length;
-    
-    // Add tooltips to elements
-    addTooltips();
-    
-    // Remove any duplicate backup & restore sections that might be present
-    removeDuplicateBackupRestoreSections();
-    
-    // Re-initialize drag and drop listeners after rendering
-    if (window.dragDropModule) {
-        window.dragDropModule.addDragAndDropListeners();
-    }
-    
-    // Apply tooltips to all color pickers after rendering
-    setTimeout(() => {
-        applyColorPickerTooltips();
-    }, 100);
 }
 
-// Remove any duplicate backup & restore sections - moved to backup-restore.js
-// Keeping this comment as a reference to where the code was moved from
+function populateCompletedProjectFilter() {
+    const filterSelect = document.getElementById('completedProjectFilter');
+    const currentValue = filterSelect.value;
+    
+    // Clear existing options except the "All Projects" option
+    while (filterSelect.options.length > 1) {
+        filterSelect.remove(1);
+    }
+    
+    // Add an option for each project
+    projects.forEach(project => {
+        const option = document.createElement('option');
+        option.value = project;
+        option.textContent = project;
+        filterSelect.appendChild(option);
+    });
+    
+    // Restore the previously selected value if it exists
+    if (currentValue && filterSelect.querySelector(`option[value="${currentValue}"]`)) {
+        filterSelect.value = currentValue;
+    }
+}
 
-// Render empty state for a project
+// Event listeners for completed tasks section
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle completed tasks visibility
+    document.getElementById('toggleCompletedBtn').addEventListener('click', toggleCompletedTasks);
+    
+    // Clear all completed tasks
+    document.getElementById('clearCompletedBtn').addEventListener('click', clearCompletedTasks);
+    
+    // Filter completed tasks by project
+    document.getElementById('completedProjectFilter').addEventListener('change', function() {
+        renderCompletedTasks();
+    });
+});
+
 function renderEmptyState(project) {
     const emptyState = document.createElement('div');
     emptyState.className = 'empty-state';
@@ -1411,7 +1471,6 @@ function renderEmptyState(project) {
     return emptyState;
 }
 
-// Focus the add task input and select the project
 function focusAddTaskInput(project) {
     const todoInput = document.getElementById('todoInput');
     const projectSelect = document.getElementById('projectSelect');
@@ -1428,7 +1487,6 @@ function focusAddTaskInput(project) {
     todoInput.focus();
 }
 
-// Add tooltips to elements
 function addTooltips() {
     // Add tooltips to project visibility toggle buttons
     document.querySelectorAll('.project-visibility-toggle').forEach(button => {
@@ -1547,4 +1605,67 @@ function updateProjectFilter() {
         saveData();
         renderAll();
     });
+}
+
+function clearCompletedTasks() {
+    if (confirm('Are you sure you want to delete all completed tasks? This action cannot be undone.')) {
+        // Filter out completed tasks
+        todos = todos.filter(todo => !todo.completed);
+        
+        // Save and render
+        saveData();
+        renderAll();
+        
+        // Show notification
+        showNotification('All completed tasks have been cleared', 'success');
+    }
+}
+
+function renderCompletedTasks() {
+    const completedContainer = document.getElementById('completedTasks');
+    completedContainer.innerHTML = '';
+    
+    // Get the selected project filter
+    const projectFilter = document.getElementById('completedProjectFilter').value;
+    
+    // Filter completed todos based on selected project
+    let completedTodos = todos.filter(todo => todo.completed);
+    
+    // Apply project filter if not "all"
+    if (projectFilter !== 'all') {
+        completedTodos = completedTodos.filter(todo => todo.projectId === projectFilter);
+    }
+    
+    // Sort by completion date (newest first)
+    completedTodos = completedTodos.sort((a, b) => b.completedAt - a.completedAt);
+    
+    // Update completed counter
+    document.getElementById('completedCounter').textContent = completedTodos.length;
+    
+    // Populate project filter dropdown
+    populateCompletedProjectFilter();
+    
+    if (completedTodos.length > 0) {
+        // Add scrollable class if there are more than 5 completed tasks
+        if (completedTodos.length > 5) {
+            completedContainer.classList.add('scrollable-completed');
+        } else {
+            completedContainer.classList.remove('scrollable-completed');
+        }
+        
+        // Render all completed tasks
+        completedTodos.forEach(todo => {
+            completedContainer.appendChild(renderTodoItem(todo));
+        });
+    } else {
+        // Render empty state for completed tasks
+        const emptyCompletedState = document.createElement('div');
+        emptyCompletedState.className = 'empty-state';
+        emptyCompletedState.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <h3>No Completed Tasks</h3>
+            <p>Tasks you complete will appear here.</p>
+        `;
+        completedContainer.appendChild(emptyCompletedState);
+    }
 }
