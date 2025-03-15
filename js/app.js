@@ -1,4 +1,4 @@
-let todos = [];
+let todos = []; // Array to store all tasks
 let projects = ['Work', 'Personal']; // Default projects
 let showCompleted = true;
 let hiddenProjects = new Set(); // Track hidden projects
@@ -227,7 +227,7 @@ function addTodo() {
             id: Date.now().toString(),
             text: text,
             completed: false,
-            projectId: project, // Changed todo.project to todo.projectId
+            project: project,
             createdAt: new Date(),
             priority: 0, // Default priority
             comments: [] // Initialize empty comments array
@@ -410,7 +410,7 @@ function renderTodoItem(todo) {
     todoItem.dataset.id = todo.id;
     
     // Apply project color to the task
-    const projectColor = projectColors[todo.projectId] || getRandomColor(); // Changed todo.project to todo.projectId
+    const projectColor = projectColors[todo.project] || getRandomColor();
     todoItem.style.borderLeftColor = projectColor;
     
     // Create the main todo content
@@ -657,7 +657,7 @@ function toggleComments(todoId) {
 function renderProjectHeader(project) {
     const header = document.createElement('div');
     header.className = 'project-header';
-    const projectTodos = todos.filter(todo => !todo.completed && todo.projectId === project); // Changed todo.project to todo.projectId
+    const projectTodos = todos.filter(todo => !todo.completed && todo.project === project);
     // Check if we're in fullscreen mode
     const isFullscreen = document.getElementById('projectsContainer').classList.contains('fullscreen-project');
     
@@ -743,7 +743,7 @@ function removeProject(project) {
         `Are you sure you want to remove the project "${project}"?<br>All tasks in this project will also be deleted.`,
         () => {
             // Remove all todos associated with this project
-            todos = todos.filter(todo => todo.projectId !== project); // Changed todo.project to todo.projectId
+            todos = todos.filter(todo => todo.project !== project);
             
             // Remove the project from the projects array
             const index = projects.indexOf(project);
@@ -769,7 +769,7 @@ function removeProject(project) {
 }
 
 function updateTodoPriorities(project) {
-    const projectTodos = todos.filter(t => !t.completed && t.projectId === project); // Changed todo.project to todo.projectId
+    const projectTodos = todos.filter(t => !t.completed && t.project === project);
     projectTodos.forEach((todo, index) => {
         todo.priority = index;
     });
@@ -797,7 +797,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     }
     
     // Store original project and priority
-    const originalProject = draggedTask.projectId; // Changed todo.project to todo.projectId
+    const originalProject = draggedTask.project;
     const originalPriority = draggedTask.priority;
     
     console.log('Original position:', originalProject, originalPriority);
@@ -824,7 +824,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
             // Fallback if target task not found
             console.error('Target task not found in data model:', targetId);
             // Get all tasks in the project to determine the fallback priority
-            const projectTasks = todos.filter(t => !t.completed && t.projectId === newProject); // Changed todo.project to todo.projectId
+            const projectTasks = todos.filter(t => !t.completed && t.project === newProject);
             newPriority = projectTasks.length > 0 ? projectTasks[0].priority : 0;
             console.log('Using fallback priority:', newPriority);
         }
@@ -832,7 +832,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         // If dropping at the end of a project
         const projectTasks = todos.filter(t => 
             !t.completed && 
-            t.projectId === newProject && // Changed todo.project to todo.projectId
+            t.project === newProject && 
             t.id !== todoId
         );
         newPriority = projectTasks.length;
@@ -843,12 +843,12 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     if (originalProject !== newProject) {
         console.log('Project changed from', originalProject, 'to', newProject);
         // Update the task's project
-        draggedTask.projectId = newProject; // Changed todo.project to todo.projectId
+        draggedTask.project = newProject;
         
         // Adjust priorities in the original project
         todos.filter(t => 
             !t.completed && 
-            t.projectId === originalProject && // Changed todo.project to todo.projectId
+            t.project === originalProject && 
             t.priority > originalPriority
         ).forEach(t => {
             t.priority--;
@@ -858,7 +858,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         // Adjust priorities in the new project to make room for the new task
         todos.filter(t => 
             !t.completed && 
-            t.projectId === newProject && // Changed todo.project to todo.projectId
+            t.project === newProject && 
             t.priority >= newPriority && 
             t.id !== todoId
         ).forEach(t => {
@@ -871,7 +871,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         // Adjust tasks between the original position and new position
         todos.filter(t => 
             !t.completed && 
-            t.projectId === newProject && // Changed todo.project to todo.projectId
+            t.project === newProject && 
             t.priority > originalPriority && 
             t.priority <= newPriority && 
             t.id !== todoId
@@ -889,7 +889,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         // Adjust tasks between the new position and original position
         todos.filter(t => 
             !t.completed && 
-            t.projectId === newProject && // Changed todo.project to todo.projectId
+            t.project === newProject && 
             t.priority >= newPriority && 
             t.priority < originalPriority && 
             t.id !== todoId
@@ -904,7 +904,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     console.log('Final priority for dragged task:', draggedTask.id, draggedTask.priority);
     
     // Recalculate priorities for all tasks in the project to ensure consistency
-    const projectTasks = todos.filter(t => !t.completed && t.projectId === newProject); // Changed todo.project to todo.projectId
+    const projectTasks = todos.filter(t => !t.completed && t.project === newProject);
     projectTasks.sort((a, b) => a.priority - b.priority);
     
     // Reassign priorities to ensure they are sequential and without gaps
@@ -1281,7 +1281,7 @@ function renderAll() {
     projects.forEach(project => {
         if (!hiddenProjects.has(project)) {
             // Render visible project
-            const projectTodos = todos.filter(todo => !todo.completed && todo.projectId === project) // Changed todo.project to todo.projectId
+            const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
                 .sort((a, b) => a.priority - b.priority);
             
             const column = document.createElement('div');
@@ -1385,7 +1385,7 @@ function renderCompletedTasks() {
     
     // Apply project filter if not "all"
     if (projectFilter !== 'all') {
-        completedTodos = completedTodos.filter(todo => todo.projectId === projectFilter);
+        completedTodos = completedTodos.filter(todo => todo.project === projectFilter);
     }
     
     // Sort by completion date (newest first)
@@ -1633,7 +1633,7 @@ function renderCompletedTasks() {
     
     // Apply project filter if not "all"
     if (projectFilter !== 'all') {
-        completedTodos = completedTodos.filter(todo => todo.projectId === projectFilter);
+        completedTodos = completedTodos.filter(todo => todo.project === projectFilter);
     }
     
     // Sort by completion date (newest first)
