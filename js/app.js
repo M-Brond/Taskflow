@@ -949,8 +949,8 @@ function toggleDarkMode() {
 }
 
 function initDarkMode() {
-    const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
-    if (darkModeEnabled) {
+    const darkModeEnabled = localStorage.getItem('darkMode');
+    if (darkModeEnabled === 'true') {
         document.body.classList.add('dark-mode');
         document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i>';
     }
@@ -965,10 +965,14 @@ function initDarkMode() {
 // Tutorial functions
 function initTutorial() {
     const tutorialKey = 'taskflow_tutorial_completed';
-    const tutorialCompleted = localStorage.getItem(tutorialKey) === 'true';
+    const tutorialCompleted = localStorage.getItem(tutorialKey);
     
-    if (!tutorialCompleted) {
+    // Show tutorial if the key doesn't exist or is not set to 'true'
+    if (tutorialCompleted !== 'true') {
+        console.log('Tutorial not completed, showing tutorial');
         showTutorial();
+    } else {
+        console.log('Tutorial already completed, not showing');
     }
     
     // Set up tutorial navigation
