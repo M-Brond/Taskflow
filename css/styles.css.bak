@@ -1147,2067 +1147,14 @@ body.dark-mode .project-todos.scrollable::after {
 }
 
 .project-todos::-webkit-scrollbar-track {
-    background: var(--color-bg);
-    border-radius: 4px;
+    background: transparent;
 }
 
 .project-todos::-webkit-scrollbar-thumb {
     background-color: var(--color-primary);
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
-.project-todos::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-        max-width: 100%;
-    }
-    
-    .projects-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        width: 100%;
-        overflow-x: hidden;
-    }
-    
-    .project-column {
-        min-width: auto;
-        width: 100%;
-        margin-right: 0;
-        transform: none !important; /* Prevent transform on mobile to avoid overflow */
-    }
-    
-    .project-column:hover {
-        transform: none !important; /* Disable the transform on hover for mobile */
-        box-shadow: var(--shadow-sm);
-        border-top-width: 4px; /* Keep original border width */
-    }
-    
-    .input-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .input-container input,
-    .input-container select,
-    .input-container button {
-        margin-bottom: 0.5rem;
-        width: 100%;
-    }
-    
-    .todo-item {
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .todo-item:hover {
-        transform: none; /* Disable transform on hover for mobile */
-    }
-    
-    .project-header {
-        flex-wrap: wrap;
-    }
-    
-    .project-title {
-        font-size: 1rem;
-    }
-}
-
-/* Improve focus styles for better accessibility */
-:focus {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-}
-
-/* Add a subtle transition to all interactive elements */
-button,
-input,
-select,
-.todo-item,
-.project-column {
-    transition: all 0.2s ease;
-}
-
-/* Scrollbar styling */
-.projects-container::-webkit-scrollbar {
-    height: 8px;
-}
-
-.projects-container::-webkit-scrollbar-track {
-    background: var(--color-bg);
-    border-radius: 4px;
-}
-
-.projects-container::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-
-.projects-container::-webkit-scrollbar-thumb:hover {
-    background: #999;
-}
-
-/* Add smooth scrolling for the whole page */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Additional mobile fixes */
-@media (max-width: 480px) {
-    body {
-        overflow-x: hidden; /* Prevent horizontal scrolling */
-    }
-    
-    .container {
-        padding: 0.75rem;
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-    
-    .project-column {
-        padding: 0.75rem;
-        border-radius: var(--radius-sm);
-    }
-    
-    .project-tag {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.4rem;
-    }
-    
-    .todo-text {
-        font-size: 0.9rem;
-        max-width: 60%; /* Limit width to prevent overflow */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .delete-btn, 
-    .project-remove-btn, 
-    .project-visibility-toggle {
-        padding: 0.15rem;
-        font-size: 0.9rem;
-    }
-    
-    .color-picker {
-        width: 18px;
-        height: 18px;
-    }
-    
-    /* Fix for completed tasks section */
-    .completed-container {
-        width: 100%;
-        overflow-x: hidden;
-    }
-}
-
-/* Data Storage Notice */
-.data-storage-notice {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background-color: var(--color-bg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    z-index: 1000;
-    max-width: 400px;
-    animation: slideIn 0.3s ease-out;
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
-    overflow: hidden;
-    opacity: 1;
-}
-
-.data-storage-notice.hiding {
-    opacity: 0;
-    transform: translateX(-100px) scale(0.8);
-    transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
-}
-
-.data-storage-notice.showing {
-    animation: slideInFromLeft 0.3s ease-out;
-}
-
-.minimized-notice.hiding {
-    opacity: 0;
-    transform: translateX(20px) scale(0.8);
-    transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
-}
-
-.minimized-notice.showing {
-    animation: slideInFromButton 0.3s ease-out;
-}
-
-.notice-content {
-    display: flex;
-    align-items: flex-start;
-    padding: 16px;
-    gap: 16px;
-}
-
-.notice-icon {
-    flex-shrink: 0;
-}
-
-.notice-icon i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background-color: rgba(59, 130, 246, 0.1);
-    color: var(--color-primary);
-    font-size: 1rem;
-    border-radius: 50%;
-}
-
-.notice-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.notice-title {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--color-text-dark);
-    margin: 0;
-}
-
-.notice-text p {
-    font-size: 0.85rem;
-    color: var(--color-text);
-    margin: 0;
-    line-height: 1.4;
-}
-
-.data-action-btn {
-    background-color: transparent;
-    color: var(--color-primary);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.data-action-btn:hover {
-    background-color: rgba(59, 130, 246, 0.05);
-    border-color: rgba(59, 130, 246, 0.5);
-}
-
-.data-action-btn:hover {
-    background-color: var(--color-primary);
-    color: #f0f0f0; /* Light grey instead of white */
-}
-
-.minimize-notice-btn {
-    background: none;
-    border: none;
-    color: var(--color-text-light);
-    cursor: pointer;
-    padding: 0.25rem;
-    margin-left: 0.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    position: relative;
-    z-index: 1001; /* Ensure it's above other elements */
-    opacity: 0.5;
-}
-
-.minimize-notice-btn:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: var(--color-primary);
-}
-
-.minimize-notice-btn:active {
-    transform: scale(0.95);
-}
-
-/* Minimized Notice Button */
-.minimized-notice {
-    position: fixed;
-    left: 20px;
-    bottom: 20px;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 1;
-    visibility: visible;
-}
-
-.minimized-notice button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    box-shadow: var(--shadow-md);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    position: relative;
-    z-index: 1001; /* Ensure it's above other elements */
-}
-
-.minimized-notice button:hover {
-    transform: scale(1.05);
-}
-
-.minimized-notice button:active {
-    transform: scale(0.95);
-}
-
-/* Dark mode adjustments */
-body.dark-mode .minimized-notice button {
-    background-color: var(--color-primary);
-}
-
-body.dark-mode .minimize-notice-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Modal Styles */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1001;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: var(--color-bg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    padding: 20px 30px 30px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-}
-
-body.dark-mode .modal-content {
-    background-color: #333;
-    color: #f0f0f0;
-}
-
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-text-light);
-    transition: color 0.2s;
-}
-
-.close-modal:hover {
-    color: var(--color-danger);
-}
-
-/* Export/Import Modal Styles */
-.modal-section {
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.modal-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.modal-section h3 {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.modal-section p {
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-    margin-bottom: 15px;
-}
-
-.action-btn {
-    padding: 8px 16px;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-}
-
-.export-btn {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.export-btn:hover {
-    background-color: var(--color-primary-dark);
-    color: #f0f0f0; /* Light grey instead of white */
-}
-
-.import-btn {
-    background-color: var(--color-secondary);
-    color: white;
-}
-
-.import-btn:hover {
-    background-color: var(--color-secondary-dark);
-    color: #f0f0f0; /* Light grey instead of white */
-}
-
-.import-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.import-status {
-    margin-top: 10px;
-    font-size: 0.9rem;
-}
-
-.import-status.success {
-    color: var(--color-success);
-}
-
-.import-status.error {
-    color: var(--color-danger);
-}
-
-/* Dark mode adjustments */
-body.dark-mode .data-storage-notice {
-    background-color: #2d2d2d;
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-body.dark-mode .notice-title {
-    color: #f0f0f0;
-}
-
-body.dark-mode .notice-text p {
-    color: #b0b0b0;
-}
-
-body.dark-mode .notice-icon i {
-    background-color: rgba(59, 130, 246, 0.15);
-}
-
-body.dark-mode .data-action-btn {
-    border-color: rgba(59, 130, 246, 0.4);
-}
-
-body.dark-mode .data-action-btn:hover {
-    background-color: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.6);
-}
-
-body.dark-mode .modal-section {
-    border-bottom-color: #444;
-}
-
-body.dark-mode .modal-section p {
-    color: #b0b0b0;
-}
-
-/* Animation classes for data storage notice */
-.data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
-}
-
-/* Responsive adjustments for the notice */
-@media (max-width: 480px) {
-    .data-storage-notice {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        max-width: calc(100% - 20px);
-    }
-    
-    .notice-content {
-        font-size: 0.8rem;
-        padding: 10px 12px;
-    }
-}
-
-/* Empty State Styles */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    text-align: center;
-    color: var(--color-text-light);
-    height: 100%;
-    min-height: 150px;
-}
-
-.empty-state i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: var(--color-primary-light);
-}
-
-.empty-state h3 {
-    margin: 0.5rem 0;
-    font-weight: 500;
-    color: var(--color-text);
-}
-
-.empty-state p {
-    margin: 0.5rem 0 1rem;
-    font-size: 0.9rem;
-}
-
-.empty-state-action {
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background-color 0.2s;
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-}
-
-.empty-state-action:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.todo-actions {
-    display: flex;
-    margin-left: auto;
-    gap: 0.25rem;
-    align-items: center;
-    align-self: flex-start;
-    margin-top: 0.2rem;
-}
-
-.todo-action-btn {
-    background: none;
-    border: none;
-    color: var(--color-text-light);
-    cursor: pointer;
-    padding: 0.2rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-}
-
-.todo-action-btn:hover {
-    background-color: var(--color-bg-hover);
-    color: var(--color-primary);
-}
-
-.comments-btn {
-    position: relative;
-}
-
-.comments-count {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    background-color: var(--color-primary);
-    color: white;
-    font-size: 0.65rem;
-    width: 0.9rem;
-    height: 0.9rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Fullscreen project styling */
-.fullscreen-project .project-column {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 150px); /* Adjust for header and other elements */
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.fullscreen-project .project-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Prevent content from overflowing */
-}
-
-.fullscreen-project .project-todos {
-    flex: 1;
-    max-height: none; /* Override the default max-height */
-    overflow-y: auto;
-    padding-bottom: 20px; /* Add some padding at the bottom */
-}
-
-/* Ensure the empty state is centered in fullscreen mode */
-.fullscreen-project .empty-state {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Hide project placeholders when in fullscreen mode */
-.fullscreen-project .project-placeholder {
-    display: none;
-}
-
-/* Add a back button to exit fullscreen mode */
-.project-back-btn {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 10px;
-    padding: 5px 10px;
-    background-color: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    color: var(--color-text);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.project-back-btn:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.project-back-btn i {
-    margin-right: 5px;
-}
-
-body.dark-mode .project-back-btn {
-    background-color: #444;
-    border-color: #555;
-    color: #eee;
-}
-
-body.dark-mode .project-back-btn:hover {
-    background-color: #555;
-}
-
-/* Fullscreen button */
-.project-fullscreen-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    margin-left: 5px;
-    background-color: transparent;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.project-fullscreen-btn:hover {
-    background-color: var(--color-bg-hover);
-    color: var(--color-text);
-}
-
-body.dark-mode .project-fullscreen-btn {
-    border-color: #555;
-    color: #aaa;
-}
-
-body.dark-mode .project-fullscreen-btn:hover {
-    background-color: #444;
-    color: #eee;
-}
-
-/* Header controls */
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: absolute;
-    top: 20px;
-    left: 20px;
-}
-
-/* Make all project color markers round */
-.project-color {
-    border-radius: 50%;
-}
-
-/* Ensure project select options have round color indicators */
-#projectSelect option {
-    background-color: transparent !important;
-    color: var(--color-text) !important;
-    padding-left: 25px; /* Space for the color indicator */
-    position: relative;
-}
-
-.project-color-indicator {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 8px;
-}
-
-.project-select-container {
-    position: relative;
-    display: inline-block;
-}
-
-.project-color-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 8px;
-    vertical-align: middle;
-}
-
-.project-column-color {
-    width: 100%;
-    height: 5px;
-    border-radius: 5px 5px 0 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-/* Pickr component styling */
-.pcr-app {
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-}
-
-body.dark-mode .pcr-app {
-    background-color: #333;
-    color: #f0f0f0;
-}
-
-body.dark-mode .pcr-interaction input {
-    color: #f0f0f0;
-    background-color: #444;
-    border-color: #555;
-}
-
-body.dark-mode .pcr-button {
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
-}
-
-/* Override Pickr button styles to make color pickers round */
-.pickr .pcr-button {
-    border-radius: 50% !important;
-    width: 2em !important;
-    height: 2em !important;
-}
-
-.pickr .pcr-button::before {
-    border-radius: 50% !important;
-}
-
-.pickr .pcr-button::after {
-    border-radius: 50% !important;
-}
-
-/* Ensure our own color pickers are also round */
-.color-picker {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.color-picker:hover {
-    transform: scale(1.1);
-}
-
-.color-picker-large {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s;
-}
-
-.color-picker-large:hover {
-    transform: scale(1.05);
-}
-
-body.dark-mode .color-picker,
-body.dark-mode .color-picker-large {
-    border-color: #444;
-}
-
-/* Tutorial Styles */
-.tutorial-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tutorial-container {
-    position: relative;
-    width: 90%;
-    max-width: 500px;
-    background-color: var(--color-bg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-}
-
-.tutorial-header {
-    background-color: var(--color-primary);
-    color: white;
-    padding: 1rem;
-    text-align: center;
-}
-
-.tutorial-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.tutorial-content {
-    padding: 1.5rem;
-}
-
-.tutorial-step {
-    display: none;
-    animation: fadeIn 0.5s;
-}
-
-.tutorial-step.active {
-    display: block;
-}
-
-.tutorial-step h3 {
-    margin-top: 0;
-    color: var(--color-primary);
-}
-
-.tutorial-step p {
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-}
-
-.tutorial-step img {
-    max-width: 100%;
-    border-radius: var(--radius-sm);
-    margin-bottom: 1rem;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: block;
-    height: auto;
-}
-
-body.dark-mode .tutorial-step img {
-    border-color: #444;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.tutorial-navigation {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-    border-top: 1px solid var(--color-border);
-}
-
-.tutorial-btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.tutorial-prev {
-    background-color: var(--color-bg-light);
-    color: var(--color-text);
-}
-
-.tutorial-skip {
-    background-color: var(--color-bg-light);
-    color: var(--color-text-light);
-}
-
-.tutorial-next, .tutorial-finish {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-body.dark-mode .tutorial-prev,
-body.dark-mode .tutorial-skip {
-    background-color: #444;
-    color: #eee;
-}
-
-body.dark-mode .tutorial-prev:hover,
-body.dark-mode .tutorial-skip:hover {
-    background-color: #555;
-}
-
-body.dark-mode .tutorial-next:hover, .tutorial-finish:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.tutorial-progress {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
-.tutorial-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--color-border);
-    margin: 0 4px;
-    transition: background-color 0.2s;
-    cursor: pointer;
-}
-
-.tutorial-dot.active {
-    background-color: var(--color-primary);
-}
-
-/* Confirmation Dialog Styles */
-.confirm-dialog {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1001;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.2s ease-out;
-}
-
-.confirm-dialog-content {
-    background-color: var(--color-bg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    padding: 20px;
-    max-width: 400px;
-    width: 90%;
-    position: relative;
-    animation: scaleIn 0.2s ease-out;
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.confirm-dialog-close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-text-light);
-    transition: color 0.2s;
-}
-
-.confirm-dialog-close:hover {
-    color: var(--color-danger);
-}
-
-.confirm-dialog-header {
-    margin-bottom: 15px;
-}
-
-.confirm-dialog-header h3 {
-    margin: 0 0 5px 0;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--color-text);
-}
-
-.confirm-dialog-body {
-    margin-bottom: 20px;
-}
-
-.confirm-dialog-body p {
-    margin: 0;
-    line-height: 1.5;
-    color: var(--color-text-light);
-    font-size: 0.95rem;
-}
-
-.confirm-dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.confirm-dialog-btn {
-    padding: 8px 16px;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-}
-
-.confirm-cancel-btn {
-    background-color: var(--color-bg-light);
-    color: var(--color-text);
-}
-
-.confirm-delete-btn {
-    background-color: var(--color-danger);
-    color: white;
-}
-
-.confirm-cancel-btn:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.confirm-delete-btn:hover {
-    background-color: #c9302c; /* Darker red */
-}
-
-body.dark-mode .confirm-dialog-content {
-    background-color: #333;
-    color: #f0f0f0;
-}
-
-body.dark-mode .confirm-dialog-header h3 {
-    color: #f0f0f0;
-}
-
-body.dark-mode .confirm-dialog-body p {
-    color: #b0b0b0;
-}
-
-body.dark-mode .confirm-cancel-btn {
-    background-color: #444;
-    color: #f0f0f0;
-}
-
-body.dark-mode .confirm-cancel-btn:hover {
-    background-color: #555;
-}
-
-.tutorial-prev:hover {
-    background-color: var(--color-border);
-}
-
-.tutorial-skip:hover {
-    background-color: var(--color-border);
-    color: var(--color-text);
-}
-
-.tutorial-next:hover, .tutorial-finish:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.tutorial-progress {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
-.tutorial-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--color-border);
-    margin: 0 4px;
-    transition: background-color 0.2s;
-    cursor: pointer;
-}
-
-.tutorial-dot.active {
-    background-color: var(--color-primary);
-}
-
-/* Tooltip Styles */
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip .tooltip-icon {
-    cursor: pointer;
-    color: var(--color-text-light);
-    font-size: 0.85rem;
-    margin-left: 0.25rem;
-}
-
-.tooltip .tooltip-text {
-    visibility: hidden;
-    width: 200px;
-    background-color: var(--color-bg-dark);
-    color: white;
-    text-align: center;
-    border-radius: var(--radius-sm);
-    padding: 0.5rem;
-    position: absolute;
-    z-index: 100;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-size: 0.8rem;
-    box-shadow: var(--shadow-md);
-    pointer-events: none;
-}
-
-.tooltip .tooltip-text::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--color-bg-dark) transparent transparent transparent;
-}
-
-.tooltip:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Dark mode adjustments */
-body.dark-mode .tutorial-container {
-    background-color: #333;
-}
-
-body.dark-mode .tooltip .tooltip-text {
-    background-color: #555;
-}
-
-body.dark-mode .tooltip .tooltip-text::after {
-    border-color: #555 transparent transparent transparent;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(100%); opacity: 0; }
-}
-
-.data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
-}
-
-/* Responsive adjustments for the notice */
-@media (max-width: 480px) {
-    .data-storage-notice {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        max-width: calc(100% - 20px);
-    }
-    
-    .notice-content {
-        font-size: 0.8rem;
-        padding: 10px 12px;
-    }
-}
-
-/* Empty State Styles */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    text-align: center;
-    color: var(--color-text-light);
-    height: 100%;
-    min-height: 150px;
-}
-
-.empty-state i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: var(--color-primary-light);
-}
-
-.empty-state h3 {
-    margin: 0.5rem 0;
-    font-weight: 500;
-    color: var(--color-text);
-}
-
-.empty-state p {
-    margin: 0.5rem 0 1rem;
-    font-size: 0.9rem;
-}
-
-.empty-state-action {
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background-color 0.2s;
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-}
-
-.empty-state-action:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.todo-actions {
-    display: flex;
-    margin-left: auto;
-    gap: 0.25rem;
-    align-items: center;
-    align-self: flex-start;
-    margin-top: 0.2rem;
-}
-
-.todo-action-btn {
-    background: none;
-    border: none;
-    color: var(--color-text-light);
-    cursor: pointer;
-    padding: 0.2rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-}
-
-.todo-action-btn:hover {
-    background-color: var(--color-bg-hover);
-    color: var(--color-primary);
-}
-
-.comments-btn {
-    position: relative;
-}
-
-.comments-count {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    background-color: var(--color-primary);
-    color: white;
-    font-size: 0.65rem;
-    width: 0.9rem;
-    height: 0.9rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Fullscreen project styling */
-.fullscreen-project .project-column {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 150px); /* Adjust for header and other elements */
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.fullscreen-project .project-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Prevent content from overflowing */
-}
-
-.fullscreen-project .project-todos {
-    flex: 1;
-    max-height: none; /* Override the default max-height */
-    overflow-y: auto;
-    padding-bottom: 20px; /* Add some padding at the bottom */
-}
-
-/* Ensure the empty state is centered in fullscreen mode */
-.fullscreen-project .empty-state {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Hide project placeholders when in fullscreen mode */
-.fullscreen-project .project-placeholder {
-    display: none;
-}
-
-/* Add a back button to exit fullscreen mode */
-.project-back-btn {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 10px;
-    padding: 5px 10px;
-    background-color: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    color: var(--color-text);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.project-back-btn:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.project-back-btn i {
-    margin-right: 5px;
-}
-
-body.dark-mode .project-back-btn {
-    background-color: #444;
-    border-color: #555;
-    color: #eee;
-}
-
-body.dark-mode .project-back-btn:hover {
-    background-color: #555;
-}
-
-/* Fullscreen button */
-.project-fullscreen-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    margin-left: 5px;
-    background-color: transparent;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.project-fullscreen-btn:hover {
-    background-color: var(--color-bg-hover);
-    color: var(--color-text);
-}
-
-body.dark-mode .project-fullscreen-btn {
-    border-color: #555;
-    color: #aaa;
-}
-
-body.dark-mode .project-fullscreen-btn:hover {
-    background-color: #444;
-    color: #eee;
-}
-
-/* Header controls */
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: absolute;
-    top: 20px;
-    left: 20px;
-}
-
-/* Make all project color markers round */
-.project-color {
-    border-radius: 50%;
-}
-
-/* Ensure project select options have round color indicators */
-#projectSelect option {
-    background-color: transparent !important;
-    color: var(--color-text) !important;
-    padding-left: 25px; /* Space for the color indicator */
-    position: relative;
-}
-
-.project-color-indicator {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 8px;
-}
-
-.project-select-container {
-    position: relative;
-    display: inline-block;
-}
-
-.project-color-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 8px;
-    vertical-align: middle;
-}
-
-.project-column-color {
-    width: 100%;
-    height: 5px;
-    border-radius: 5px 5px 0 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-/* Pickr component styling */
-.pcr-app {
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-}
-
-body.dark-mode .pcr-app {
-    background-color: #333;
-    color: #f0f0f0;
-}
-
-body.dark-mode .pcr-interaction input {
-    color: #f0f0f0;
-    background-color: #444;
-    border-color: #555;
-}
-
-body.dark-mode .pcr-button {
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
-}
-
-/* Override Pickr button styles to make color pickers round */
-.pickr .pcr-button {
-    border-radius: 50% !important;
-    width: 2em !important;
-    height: 2em !important;
-}
-
-.pickr .pcr-button::before {
-    border-radius: 50% !important;
-}
-
-.pickr .pcr-button::after {
-    border-radius: 50% !important;
-}
-
-/* Ensure our own color pickers are also round */
-.color-picker {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.color-picker:hover {
-    transform: scale(1.1);
-}
-
-.color-picker-large {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s;
-}
-
-.color-picker-large:hover {
-    transform: scale(1.05);
-}
-
-body.dark-mode .color-picker,
-body.dark-mode .color-picker-large {
-    border-color: #444;
-}
-
-/* Tutorial Styles */
-.tutorial-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tutorial-container {
-    position: relative;
-    width: 90%;
-    max-width: 500px;
-    background-color: var(--color-bg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-}
-
-.tutorial-header {
-    background-color: var(--color-primary);
-    color: white;
-    padding: 1rem;
-    text-align: center;
-}
-
-.tutorial-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.tutorial-content {
-    padding: 1.5rem;
-}
-
-.tutorial-step {
-    display: none;
-    animation: fadeIn 0.5s;
-}
-
-.tutorial-step.active {
-    display: block;
-}
-
-.tutorial-step h3 {
-    margin-top: 0;
-    color: var(--color-primary);
-}
-
-.tutorial-step p {
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-}
-
-.tutorial-step img {
-    max-width: 100%;
-    border-radius: var(--radius-sm);
-    margin-bottom: 1rem;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: block;
-    height: auto;
-}
-
-body.dark-mode .tutorial-step img {
-    border-color: #444;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.tutorial-navigation {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-    border-top: 1px solid var(--color-border);
-}
-
-.tutorial-btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.tutorial-prev {
-    background-color: var(--color-bg-light);
-    color: var(--color-text);
-}
-
-.tutorial-skip {
-    background-color: var(--color-bg-light);
-    color: var(--color-text-light);
-}
-
-.tutorial-next, .tutorial-finish {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-body.dark-mode .tutorial-prev,
-body.dark-mode .tutorial-skip {
-    background-color: #444;
-    color: #eee;
-}
-
-body.dark-mode .tutorial-prev:hover,
-body.dark-mode .tutorial-skip:hover {
-    background-color: #555;
-}
-
-body.dark-mode .tutorial-next:hover, .tutorial-finish:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.tutorial-progress {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
-.tutorial-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--color-border);
-    margin: 0 4px;
-    transition: background-color 0.2s;
-    cursor: pointer;
-}
-
-.tutorial-dot.active {
-    background-color: var(--color-primary);
-}
-
-/* Confirmation Dialog Styles */
-.confirm-dialog {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1001;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.2s ease-out;
-}
-
-.confirm-dialog-content {
-    background-color: var(--color-bg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    padding: 20px;
-    max-width: 400px;
-    width: 90%;
-    position: relative;
-    animation: scaleIn 0.2s ease-out;
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.confirm-dialog-close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-text-light);
-    transition: color 0.2s;
-}
-
-.confirm-dialog-close:hover {
-    color: var(--color-danger);
-}
-
-.confirm-dialog-header {
-    margin-bottom: 15px;
-}
-
-.confirm-dialog-header h3 {
-    margin: 0 0 5px 0;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--color-text);
-}
-
-.confirm-dialog-body {
-    margin-bottom: 20px;
-}
-
-.confirm-dialog-body p {
-    margin: 0;
-    line-height: 1.5;
-    color: var(--color-text-light);
-    font-size: 0.95rem;
-}
-
-.confirm-dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.confirm-dialog-btn {
-    padding: 8px 16px;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-}
-
-.confirm-cancel-btn {
-    background-color: var(--color-bg-light);
-    color: var(--color-text);
-}
-
-.confirm-delete-btn {
-    background-color: var(--color-danger);
-    color: white;
-}
-
-.confirm-cancel-btn:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.confirm-delete-btn:hover {
-    background-color: #c9302c; /* Darker red */
-}
-
-body.dark-mode .confirm-dialog-content {
-    background-color: #333;
-    color: #f0f0f0;
-}
-
-body.dark-mode .confirm-dialog-header h3 {
-    color: #f0f0f0;
-}
-
-body.dark-mode .confirm-dialog-body p {
-    color: #b0b0b0;
-}
-
-body.dark-mode .confirm-cancel-btn {
-    background-color: #444;
-    color: #f0f0f0;
-}
-
-body.dark-mode .confirm-cancel-btn:hover {
-    background-color: #555;
-}
-
-.tutorial-prev:hover {
-    background-color: var(--color-border);
-}
-
-.tutorial-skip:hover {
-    background-color: var(--color-border);
-    color: var(--color-text);
-}
-
-.tutorial-next:hover, .tutorial-finish:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.tutorial-progress {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
-.tutorial-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--color-border);
-    margin: 0 4px;
-    transition: background-color 0.2s;
-    cursor: pointer;
-}
-
-.tutorial-dot.active {
-    background-color: var(--color-primary);
-}
-
-/* Tooltip Styles */
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip .tooltip-icon {
-    cursor: pointer;
-    color: var(--color-text-light);
-    font-size: 0.85rem;
-    margin-left: 0.25rem;
-}
-
-.tooltip .tooltip-text {
-    visibility: hidden;
-    width: 200px;
-    background-color: var(--color-bg-dark);
-    color: white;
-    text-align: center;
-    border-radius: var(--radius-sm);
-    padding: 0.5rem;
-    position: absolute;
-    z-index: 100;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-size: 0.8rem;
-    box-shadow: var(--shadow-md);
-    pointer-events: none;
-}
-
-.tooltip .tooltip-text::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--color-bg-dark) transparent transparent transparent;
-}
-
-.tooltip:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Dark mode adjustments */
-body.dark-mode .tutorial-container {
-    background-color: #333;
-}
-
-body.dark-mode .tooltip .tooltip-text {
-    background-color: #555;
-}
-
-body.dark-mode .tooltip .tooltip-text::after {
-    border-color: #555 transparent transparent transparent;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(100%); opacity: 0; }
-}
-
-.data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
-}
-
-/* Responsive adjustments for the notice */
-@media (max-width: 480px) {
-    .data-storage-notice {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        max-width: calc(100% - 20px);
-    }
-    
-    .notice-content {
-        font-size: 0.8rem;
-        padding: 10px 12px;
-    }
-}
-
-/* Empty State Styles */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    text-align: center;
-    color: var(--color-text-light);
-    height: 100%;
-    min-height: 150px;
-}
-
-.empty-state i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: var(--color-primary-light);
-}
-
-.empty-state h3 {
-    margin: 0.5rem 0;
-    font-weight: 500;
-    color: var(--color-text);
-}
-
-.empty-state p {
-    margin: 0.5rem 0 1rem;
-    font-size: 0.9rem;
-}
-
-.empty-state-action {
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background-color 0.2s;
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-}
-
-.empty-state-action:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.todo-actions {
-    display: flex;
-    margin-left: auto;
-    gap: 0.25rem;
-    align-items: center;
-    align-self: flex-start;
-    margin-top: 0.2rem;
-}
-
-.todo-action-btn {
-    background: none;
-    border: none;
-    color: var(--color-text-light);
-    cursor: pointer;
-    padding: 0.2rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-}
-
-.todo-action-btn:hover {
-    background-color: var(--color-bg-hover);
-    color: var(--color-primary);
-}
-
-.comments-btn {
-    position: relative;
-}
-
-.comments-count {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    background-color: var(--color-primary);
-    color: white;
-    font-size: 0.65rem;
-    width: 0.9rem;
-    height: 0.9rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Project title and controls */
 .project-title {
     margin: 0;
     font-size: 1.2rem;
@@ -3291,7 +1238,7 @@ body.dark-mode .project-remove-btn:hover {
     display: flex;
     align-items: flex-start;
     padding: 0.65rem 0.75rem; /* Reduced vertical padding from 0.75rem to 0.65rem */
-    background-color: #ffffff; /* Changed to white background */
+    background-color: var(--color-bg);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-xs);
     transition: all 0.2s ease;
@@ -3302,7 +1249,6 @@ body.dark-mode .project-remove-btn:hover {
     box-sizing: border-box;
     z-index: 1;
     flex-wrap: wrap;
-    margin-bottom: 12px; /* Added space between tasks */
 }
 
 .todo-item:hover {
@@ -3359,6 +1305,12 @@ body.dark-mode .checkbox-wrapper:hover {
     width: 100%;
     position: relative;
     padding: 0.05rem 0; /* Added minimal vertical padding */
+}
+
+.todo-checkbox {
+    width: 1.1rem;
+    height: 1.1rem;
+    cursor: pointer;
 }
 
 .todo-text {
@@ -3808,7 +1760,7 @@ body.dark-mode .minimize-notice-btn:hover {
     background-color: var(--color-bg);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
-    padding: 20px 30px 30px;
+    padding: 20px;
     max-width: 500px;
     width: 90%;
     max-height: 90vh;
@@ -3823,8 +1775,8 @@ body.dark-mode .modal-content {
 
 .close-modal {
     position: absolute;
-    top: 15px;
-    right: 20px;
+    top: 10px;
+    right: 15px;
     font-size: 1.5rem;
     cursor: pointer;
     color: var(--color-text-light);
@@ -4058,125 +2010,723 @@ body.dark-mode .modal-section p {
     justify-content: center;
 }
 
-/* Comments Section Styles */
-.comments-section {
-    display: none;
-    background-color: var(--color-bg-light);
-    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-    margin-top: -5px;
-    padding: 0;
-    overflow: hidden;
-    box-shadow: var(--shadow-xs);
-    transition: all 0.2s ease;
-    max-height: 0;
-}
-
-.comments-section.show-comments {
-    display: block;
-    padding: 0.75rem;
-    max-height: 300px;
-    margin-bottom: var(--todo-item-margin);
-}
-
-.comments-list {
-    margin-bottom: 0.75rem;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.comment-item {
+/* Fullscreen project styling */
+.fullscreen-project .project-column {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 0.5rem;
+    height: calc(100vh - 150px); /* Adjust for header and other elements */
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.fullscreen-project .project-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent content from overflowing */
+}
+
+.fullscreen-project .project-todos {
+    flex: 1;
+    max-height: none; /* Override the default max-height */
+    overflow-y: auto;
+    padding-bottom: 20px; /* Add some padding at the bottom */
+}
+
+/* Ensure the empty state is centered in fullscreen mode */
+.fullscreen-project .empty-state {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Hide project placeholders when in fullscreen mode */
+.fullscreen-project .project-placeholder {
+    display: none;
+}
+
+/* Add a back button to exit fullscreen mode */
+.project-back-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 10px;
+    padding: 5px 10px;
     background-color: var(--color-bg);
-    border-radius: var(--radius-xs);
-    margin-bottom: 0.5rem;
-    box-shadow: var(--shadow-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.comment-text {
-    font-size: 0.85rem;
-    margin-bottom: 0.25rem;
-    word-break: break-word;
-    line-height: 1.3;
+.project-back-btn:hover {
+    background-color: var(--color-bg-hover);
 }
 
-.comment-meta {
+.project-back-btn i {
+    margin-right: 5px;
+}
+
+body.dark-mode .project-back-btn {
+    background-color: #444;
+    border-color: #555;
+    color: #eee;
+}
+
+body.dark-mode .project-back-btn:hover {
+    background-color: #555;
+}
+
+/* Fullscreen button */
+.project-fullscreen-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: 5px;
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.project-fullscreen-btn:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text);
+}
+
+body.dark-mode .project-fullscreen-btn {
+    border-color: #555;
+    color: #aaa;
+}
+
+body.dark-mode .project-fullscreen-btn:hover {
+    background-color: #444;
+    color: #eee;
+}
+
+/* Header controls */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+/* Make all project color markers round */
+.project-color {
+    border-radius: 50%;
+}
+
+/* Ensure project select options have round color indicators */
+#projectSelect option {
+    background-color: transparent !important;
+    color: var(--color-text) !important;
+    padding-left: 25px; /* Space for the color indicator */
+    position: relative;
+}
+
+.project-color-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.project-select-container {
+    position: relative;
+    display: inline-block;
+}
+
+.project-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.project-column-color {
+    width: 100%;
+    height: 5px;
+    border-radius: 5px 5px 0 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Pickr component styling */
+.pcr-app {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+}
+
+body.dark-mode .pcr-app {
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+body.dark-mode .pcr-interaction input {
+    color: #f0f0f0;
+    background-color: #444;
+    border-color: #555;
+}
+
+body.dark-mode .pcr-button {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Override Pickr button styles to make color pickers round */
+.pickr .pcr-button {
+    border-radius: 50% !important;
+    width: 2em !important;
+    height: 2em !important;
+}
+
+.pickr .pcr-button::before {
+    border-radius: 50% !important;
+}
+
+.pickr .pcr-button::after {
+    border-radius: 50% !important;
+}
+
+/* Ensure our own color pickers are also round */
+.color-picker {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.color-picker:hover {
+    transform: scale(1.1);
+}
+
+.color-picker-large {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+.color-picker-large:hover {
+    transform: scale(1.05);
+}
+
+body.dark-mode .color-picker,
+body.dark-mode .color-picker-large {
+    border-color: #444;
+}
+
+/* Tutorial Styles */
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tutorial-container {
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.tutorial-header {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.tutorial-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.tutorial-content {
+    padding: 1.5rem;
+}
+
+.tutorial-step {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.tutorial-step.active {
+    display: block;
+}
+
+.tutorial-step h3 {
+    margin-top: 0;
+    color: var(--color-primary);
+}
+
+.tutorial-step p {
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.tutorial-step img {
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: block;
+    height: auto;
+}
+
+body.dark-mode .tutorial-step img {
+    border-color: #444;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tutorial-navigation {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem;
+    padding: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.tutorial-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tutorial-prev {
+    background-color: var(--color-bg-light);
+    color: var(--color-text);
+}
+
+.tutorial-skip {
+    background-color: var(--color-bg-light);
     color: var(--color-text-light);
 }
 
-.comment-date {
-    font-style: italic;
+.tutorial-next, .tutorial-finish {
+    background-color: var(--color-primary);
+    color: white;
 }
 
-.delete-comment-btn {
+body.dark-mode .tutorial-prev,
+body.dark-mode .tutorial-skip {
+    background-color: #444;
+    color: #eee;
+}
+
+body.dark-mode .tutorial-prev:hover,
+body.dark-mode .tutorial-skip:hover {
+    background-color: #555;
+}
+
+body.dark-mode .tutorial-next:hover, .tutorial-finish:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.tutorial-progress {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.tutorial-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-border);
+    margin: 0 4px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.tutorial-dot.active {
+    background-color: var(--color-primary);
+}
+
+/* Confirmation Dialog Styles */
+.confirm-dialog {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.confirm-dialog-content {
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 20px;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.confirm-dialog-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-light);
+    transition: color 0.2s;
+}
+
+.confirm-dialog-close:hover {
+    color: var(--color-danger);
+}
+
+.confirm-dialog-header {
+    margin-bottom: 15px;
+}
+
+.confirm-dialog-header h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.confirm-dialog-body {
+    margin-bottom: 20px;
+}
+
+.confirm-dialog-body p {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+}
+
+.confirm-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.confirm-dialog-btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.confirm-cancel-btn {
+    background-color: var(--color-bg-light);
+    color: var(--color-text);
+}
+
+.confirm-delete-btn {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+.confirm-cancel-btn:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.confirm-delete-btn:hover {
+    background-color: #c9302c; /* Darker red */
+}
+
+body.dark-mode .confirm-dialog-content {
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+body.dark-mode .confirm-dialog-header h3 {
+    color: #f0f0f0;
+}
+
+body.dark-mode .confirm-dialog-body p {
+    color: #b0b0b0;
+}
+
+body.dark-mode .confirm-cancel-btn {
+    background-color: #444;
+    color: #f0f0f0;
+}
+
+body.dark-mode .confirm-cancel-btn:hover {
+    background-color: #555;
+}
+
+.tutorial-prev:hover {
+    background-color: var(--color-border);
+}
+
+.tutorial-skip:hover {
+    background-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.tutorial-next:hover, .tutorial-finish:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.tutorial-progress {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.tutorial-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-border);
+    margin: 0 4px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.tutorial-dot.active {
+    background-color: var(--color-primary);
+}
+
+/* Tooltip Styles */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltip-icon {
+    cursor: pointer;
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+    margin-left: 0.25rem;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--color-bg-dark);
+    color: white;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+}
+
+.tooltip .tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--color-bg-dark) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .tutorial-container {
+    background-color: #333;
+}
+
+body.dark-mode .tooltip .tooltip-text {
+    background-color: #555;
+}
+
+body.dark-mode .tooltip .tooltip-text::after {
+    border-color: #555 transparent transparent transparent;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100%); opacity: 0; }
+}
+
+.data-storage-notice.hiding {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+/* Responsive adjustments for the notice */
+@media (max-width: 480px) {
+    .data-storage-notice {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .notice-content {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
+}
+
+/* Empty State Styles */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-text-light);
+    height: 100%;
+    min-height: 150px;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-primary-light);
+}
+
+.empty-state h3 {
+    margin: 0.5rem 0;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.empty-state p {
+    margin: 0.5rem 0 1rem;
+    font-size: 0.9rem;
+}
+
+.empty-state-action {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.empty-state-action:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.todo-actions {
+    display: flex;
+    margin-left: auto;
+    gap: 0.25rem;
+    align-items: center;
+    align-self: flex-start;
+    margin-top: 0.2rem;
+}
+
+.todo-action-btn {
     background: none;
     border: none;
     color: var(--color-text-light);
     cursor: pointer;
-    padding: 0.1rem 0.25rem;
-    border-radius: var(--radius-xs);
-    transition: all 0.2s;
-}
-
-.delete-comment-btn:hover {
-    color: var(--color-danger);
-}
-
-.comment-form {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.comment-input {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xs);
-    font-size: 0.85rem;
-}
-
-.add-comment-btn {
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-xs);
-    width: 2rem;
+    padding: 0.2rem;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
     transition: all 0.2s;
+    font-size: 0.9rem;
 }
 
-.add-comment-btn:hover {
-    background-color: var(--color-primary-dark);
+.todo-action-btn:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-primary);
 }
 
-.empty-comments {
-    text-align: center;
-    color: var(--color-text-light);
-    font-style: italic;
-    font-size: 0.85rem;
-    padding: 0.5rem;
+.comments-btn {
+    position: relative;
 }
 
-body.dark-mode .comments-section {
-    background-color: #2a2a2a;
-}
-
-body.dark-mode .comment-item {
-    background-color: #333;
-}
-
-body.dark-mode .comment-input {
-    background-color: #333;
-    color: #f0f0f0;
-    border-color: #444;
+.comments-count {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 0.65rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Modal Form Styles */
@@ -4293,9 +2843,4 @@ body.dark-mode .cancel-btn {
 
 body.dark-mode .cancel-btn:hover {
     background-color: #555;
-}
-
-/* Update dark mode for todo items */
-body.dark-mode .todo-item {
-    background-color: #2a2a2a; /* Dark background for dark mode */
 }
