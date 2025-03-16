@@ -967,12 +967,16 @@ function initTutorial() {
     const tutorialKey = 'taskflow_tutorial_completed';
     const tutorialCompleted = localStorage.getItem(tutorialKey);
     
-    // Show tutorial if the key doesn't exist or is not set to 'true'
-    if (tutorialCompleted !== 'true') {
-        console.log('Tutorial not completed, showing tutorial');
-        showTutorial();
+    console.log('Initializing tutorial, completed status:', tutorialCompleted);
+    
+    // Hide tutorial if it has been completed
+    if (tutorialCompleted === 'true') {
+        console.log('Tutorial already completed, hiding tutorial');
+        closeTutorial();
     } else {
-        console.log('Tutorial already completed, not showing');
+        console.log('Tutorial not completed, tutorial should be visible');
+        // The tutorial is now visible by default in the HTML
+        // Set up the navigation for the tutorial
     }
     
     // Set up tutorial navigation
@@ -1042,11 +1046,21 @@ function initTutorial() {
 }
 
 function showTutorial() {
-    document.getElementById('tutorialOverlay').style.display = 'flex';
+    console.log('showTutorial called, displaying tutorial overlay');
+    const tutorialOverlay = document.getElementById('tutorialOverlay');
+    if (tutorialOverlay) {
+        tutorialOverlay.style.display = 'flex';
+    } else {
+        console.error('Tutorial overlay element not found!');
+    }
 }
 
 function closeTutorial() {
-    document.getElementById('tutorialOverlay').style.display = 'none';
+    console.log('closeTutorial called, hiding tutorial overlay');
+    const tutorialOverlay = document.getElementById('tutorialOverlay');
+    if (tutorialOverlay) {
+        tutorialOverlay.style.display = 'none';
+    }
 }
 
 // Export/Import functions - moved to backup-restore.js
