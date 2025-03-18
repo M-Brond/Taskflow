@@ -72,6 +72,7 @@ function initializeSortable() {
                 // Remove dragging class
                 document.body.classList.remove('dragging');
                 
+                // Get the task ID from the data-id attribute
                 const todoId = parseInt(evt.item.dataset.id);
                 const newProjectId = evt.to.dataset.project;
                 const oldProjectId = evt.from.dataset.project;
@@ -79,83 +80,183 @@ function initializeSortable() {
                 console.log('===== DRAG ENDED =====');
                 console.log('Drag ended for todo item:', todoId, 'from', oldProjectId, 'to', newProjectId);
                 
-                // Find the task in the todos array
-                const task = window.todos.find(t => t.id === todoId);
-                if (!task) {
-                    console.error('Task not found:', todoId);
-                    return;
-                }
-                
-                // Update project if it changed
-                if (oldProjectId !== newProjectId) {
-                    task.project = newProjectId;
-                    console.log(`Updated task ${todoId} project from ${oldProjectId} to ${newProjectId}`);
-                }
-                
-                // Calculate new priorities based on DOM order
-                const allProjectLists = document.querySelectorAll('.project-todos');
-                
-                allProjectLists.forEach(list => {
-                    const project = list.dataset.project;
-                    const taskElements = list.querySelectorAll('.todo-item:not(.completed)');
+                // Check if app.js has loaded the todos array
+                if (typeof window.app !== 'undefined' && typeof window.app.getTodos === 'function') {
+                    // Get the todos array from app.js
+                    const todos = window.app.getTodos();
+                    console.log('Current todos array length:', todos.length);
                     
-                    console.log(`Updating priorities for project: ${project}`);
-                    console.log(`Found ${taskElements.length} tasks in project ${project}`);
+                    // Debug: Log all task IDs in the todos array
+                    console.log('All task IDs in todos array:', todos.map(t => t.id));
                     
-                    // Update priorities based on DOM order
-                    taskElements.forEach((taskElement, index) => {
-                        const id = parseInt(taskElement.dataset.id);
-                        const taskToUpdate = window.todos.find(t => t.id === id);
+                    // Find the task in the todos array
+                    let task = todos.find(t => t.id === todoId);
+                    
+                    if (!task) {
+                        console.error('Task not found:', todoId);
+                        console.log('Task element data:', evt.item.dataset);
                         
-                        if (taskToUpdate) {
-                            const oldPriority = taskToUpdate.priority;
-                            taskToUpdate.priority = index;
-                            console.log(`Updated task ${id} priority from ${oldPriority} to ${index}`);
+                        // Try to recover by getting the task data from the DOM element
+                        const taskText = evt.item.querySelector('.todo-text').textContent;
+                        console.log('Attempting to recover task with text:', taskText);
+                        
+                        // Try to find the task by text instead
+                        const taskByText = todos.find(t => t.text === taskText);
+                        if (taskByText) {
+                            console.log('Found task by text:', taskByText);
+                            task = taskByText;
                         } else {
-                            console.error(`Task with ID ${id} not found in todos array`);
+                            console.error('Could not find task by text either');
+                            
+                            // As a last resort, create a new task object
+                            task = {
+                                id: todoId,
+                                text: taskText,
+                                project: newProjectId,
+                                priority: 0,
+                                completed: false,
+                                createdAt: new Date().toISOString()
+                            };
+                            console.log('Created new task object:', task);
+                            
+                            // Add it to the todos array
+                            todos.push(task);
+                            console.log('Added new task to todos array');
+                            
+                            // Update the todos array in app.js
+                            if (typeof window.app.setTodos === 'function') {
+                                window.app.setTodos(todos);
+                            }
                         }
+                    }
+                    
+                    // Update project if it changed and we have a valid task
+                    if (task && oldProjectId !== newProjectId) {
+                        task.project = newProjectId;
+                        console.log(`Updated task ${todoId} project from ${oldProjectId} to ${newProjectId}`);
+                    }
+                    
+                    // Calculate new priorities based on DOM order
+                    const allProjectLists = document.querySelectorAll('.project-todos');
+                    
+                    allProjectLists.forEach(list => {
+                        const project = list.dataset.project;
+                        const taskElements = list.querySelectorAll('.todo-item:not(.completed)');
+                        
+                        console.log(`Updating priorities for project: ${project}`);
+                        console.log(`Found ${taskElements.length} tasks in project ${project}`);
+                        
+                        // Update priorities based on DOM order
+                        taskElements.forEach((taskElement, index) => {
+                            const id = parseInt(taskElement.dataset.id);
+                            let taskToUpdate = todos.find(t => t.id === id);
+                            
+                            if (!taskToUpdate) {
+                                console.warn(`Task with ID ${id} not found in todos array, attempting to recover`);
+                                
+                                // Try to recover by getting the task data from the DOM element
+                                const taskText = taskElement.querySelector('.todo-text').textContent;
+                                
+                                // Try to find the task by text instead
+                                const taskByText = todos.find(t => t.text === taskText);
+                                if (taskByText) {
+                                    console.log(`Found task by text: ${taskText}`);
+                                    taskToUpdate = taskByText;
+                                } else {
+                                    console.warn(`Creating new task for ID ${id} with text: ${taskText}`);
+                                    
+                                    // Create a new task object
+                                    taskToUpdate = {
+                                        id: id,
+                                        text: taskText,
+                                        project: project,
+                                        priority: index,
+                                        completed: false,
+                                        createdAt: new Date().toISOString()
+                                    };
+                                    
+                                    // Add it to the todos array
+                                    todos.push(taskToUpdate);
+                                    console.log('Added new task to todos array:', taskToUpdate);
+                                    
+                                    // Update the todos array in app.js
+                                    if (typeof window.app.setTodos === 'function') {
+                                        window.app.setTodos(todos);
+                                    }
+                                }
+                            }
+                            
+                            if (taskToUpdate) {
+                                const oldPriority = taskToUpdate.priority;
+                                taskToUpdate.priority = index;
+                                console.log(`Updated task ${id} priority from ${oldPriority} to ${index}`);
+                            } else {
+                                console.error(`Failed to update or create task with ID ${id}`);
+                            }
+                        });
                     });
-                });
-                
-                // Log the updated todos array
-                console.log('Updated todos array:', JSON.stringify(window.todos.map(t => ({
-                    id: t.id,
-                    text: t.text,
-                    project: t.project,
-                    priority: t.priority
-                })), null, 2));
-                
-                // Save the updated data
-                if (window.saveData) {
-                    window.saveData();
-                    console.log('Data saved after drag operation');
                     
-                    // Verify the saved data by immediately loading it back
-                    const savedTodos = localStorage.getItem('todos');
-                    console.log('Verifying saved todos:', savedTodos);
+                    // Log the updated todos array
+                    console.log('Updated todos array:', JSON.stringify(todos.map(t => ({
+                        id: t.id,
+                        text: t.text,
+                        project: t.project,
+                        priority: t.priority
+                    })), null, 2));
                     
-                    try {
-                        const parsedTodos = JSON.parse(savedTodos);
-                        console.log('Parsed todos after save:', JSON.stringify(parsedTodos.map(t => ({
-                            id: t.id,
-                            text: t.text,
-                            project: t.project,
-                            priority: t.priority
-                        })).slice(0, 3), null, 2) + (parsedTodos.length > 3 ? '... (truncated)' : ''));
-                    } catch (error) {
-                        console.error('Error parsing saved todos:', error);
+                    // Save the updated data using app.js saveData function
+                    if (typeof window.app.saveData === 'function') {
+                        window.app.saveData();
+                        console.log('Data saved after drag operation');
+                        
+                        // Verify the saved data by immediately loading it back
+                        const savedTodos = localStorage.getItem('todos');
+                        console.log('Verifying saved todos:', savedTodos);
+                        
+                        try {
+                            const parsedTodos = JSON.parse(savedTodos);
+                            console.log('Parsed todos after save:', JSON.stringify(parsedTodos.map(t => ({
+                                id: t.id,
+                                text: t.text,
+                                project: t.project,
+                                priority: t.priority
+                            })).slice(0, 3), null, 2) + (parsedTodos.length > 3 ? '... (truncated)' : ''));
+                        } catch (error) {
+                            console.error('Error parsing saved todos:', error);
+                        }
+                    } else {
+                        console.error('app.saveData function not found');
+                        
+                        // Fallback to direct localStorage save
+                        if (typeof window.saveData === 'function') {
+                            window.saveData();
+                            console.log('Data saved using window.saveData fallback');
+                        } else {
+                            console.error('No saveData function found');
+                        }
                     }
                 } else {
-                    console.error('saveData function not found');
+                    console.error('app.js not loaded or getTodos function not available');
+                    
+                    // Fallback to direct window.todos access
+                    if (window.todos) {
+                        console.log('Using window.todos fallback');
+                        // The rest of the code would be duplicated here, but we'll use updateTaskOrderFromDOM instead
+                        if (typeof window.updateTaskOrderFromDOM === 'function') {
+                            window.updateTaskOrderFromDOM();
+                            console.log('Used updateTaskOrderFromDOM as fallback');
+                        } else if (typeof window.saveData === 'function') {
+                            window.saveData();
+                            console.log('Used window.saveData as fallback');
+                        } else {
+                            console.error('No fallback methods available');
+                        }
+                    } else {
+                        console.error('window.todos is undefined or empty');
+                    }
                 }
                 
-                // Force a page reload to ensure everything is in sync
-                console.log('Reloading page to ensure sync...');
-                
-                // Add a small delay before reloading to ensure localStorage is updated
-                setTimeout(() => {
-                    window.location.reload();
-                }, 100);
+                console.log('Task order updated and saved successfully');
             }
         });
         

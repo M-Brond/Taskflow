@@ -39,6 +39,9 @@ function loadData() {
             fixTaskPriorities();
             
             console.log('Todos after fixing priorities:', JSON.stringify(todos, null, 2));
+            
+            // Debug: Log localStorage after loading and fixing priorities
+            debugLogLocalStorage();
         } catch (error) {
             console.error('Error parsing saved todos:', error);
             todos = [];
@@ -172,26 +175,25 @@ function fixTaskPriorities() {
     // Log the grouped todos
     console.log('Active todos by project before sorting:', JSON.stringify(activeByProject, null, 2));
     
-    // Sort and reassign priorities for active todos in each project
+    // We're no longer sorting by existing priority to preserve the order from drag operations
+    // Instead, we'll just reassign sequential priorities based on the current order
+    
     Object.keys(activeByProject).forEach(project => {
         console.log(`Fixing priorities for project: ${project}`);
         
-        // Sort by existing priority
-        activeByProject[project].sort((a, b) => {
-            // Ensure we're comparing numbers
-            const aPriority = typeof a.priority === 'number' ? a.priority : 0;
-            const bPriority = typeof b.priority === 'number' ? b.priority : 0;
-            return aPriority - bPriority;
-        });
-        
-        console.log(`Sorted todos for project ${project}:`, 
+        console.log(`Todos for project ${project}:`, 
             JSON.stringify(activeByProject[project].map(t => ({ id: t.id, text: t.text, priority: t.priority })), null, 2));
         
-        // Reassign sequential priorities
+        // We're no longer reassigning priorities here to preserve the order from drag operations
+        // The priorities will be updated by the drag-drop.js module when tasks are reordered
+        
+        // Only fix priorities if they're invalid (undefined, null, NaN)
         activeByProject[project].forEach((todo, index) => {
-            const oldPriority = todo.priority;
-            todo.priority = index;
-            console.log(`Reassigned priority for task ${todo.id} (${todo.text}): ${oldPriority} -> ${index}`);
+            if (todo.priority === undefined || todo.priority === null || isNaN(todo.priority)) {
+                const oldPriority = todo.priority;
+                todo.priority = index;
+                console.log(`Fixed invalid priority for task ${todo.id} (${todo.text}): ${oldPriority} -> ${index}`);
+            }
         });
     });
     
@@ -801,7 +803,9 @@ function toggleComments(todoId) {
 function renderProjectHeader(project) {
     const header = document.createElement('div');
     header.className = 'project-header';
+    
     const projectTodos = todos.filter(todo => !todo.completed && todo.project === project);
+    
     // Check if we're in fullscreen mode
     const isFullscreen = document.getElementById('projectsContainer').classList.contains('fullscreen-project');
     
@@ -1861,8 +1865,71 @@ function updateTaskOrderFromDOM() {
     // Render to ensure UI is consistent
     renderAll();
     
+    // Debug: Log localStorage after saving
+    debugLogLocalStorage();
+    
     console.log('Task priorities updated from DOM order');
 }
 
-// Make the function available globally
+// Debug function to log localStorage contents
+function debugLogLocalStorage() {
+    console.log('===== DEBUG: LOCALSTORAGE CONTENTS =====');
+    const savedTodos = localStorage.getItem('todos');
+    if (savedTodos) {
+        try {
+            const parsedTodos = JSON.parse(savedTodos);
+            console.log('Parsed todos from localStorage:', 
+                JSON.stringify(parsedTodos.map(t => ({
+                    id: t.id,
+                    text: t.text.substring(0, 20) + (t.text.length > 20 ? '...' : ''),
+                    project: t.project,
+                    priority: t.priority
+                })), null, 2)
+            );
+            
+            // Group by project to check order
+            const byProject = {};
+            parsedTodos.forEach(todo => {
+                if (!todo.completed) {
+                    if (!byProject[todo.project]) byProject[todo.project] = [];
+                    byProject[todo.project].push(todo);
+                }
+            });
+            
+            // Log each project's tasks in order
+            Object.keys(byProject).forEach(project => {
+                byProject[project].sort((a, b) => a.priority - b.priority);
+                console.log(`Project ${project} tasks in priority order:`, 
+                    JSON.stringify(byProject[project].map(t => ({
+                        id: t.id,
+                        text: t.text.substring(0, 20) + (t.text.length > 20 ? '...' : ''),
+                        priority: t.priority
+                    })), null, 2)
+                );
+            });
+        } catch (error) {
+            console.error('Error parsing saved todos:', error);
+        }
+    } else {
+        console.log('No saved todos found in localStorage');
+    }
+    console.log('===== END DEBUG =====');
+}
+
+// Make the functions available globally
 window.updateTaskOrderFromDOM = updateTaskOrderFromDOM;
+window.debugLogLocalStorage = debugLogLocalStorage;
+
+// Create a global app object to expose the todos array and related functions
+window.app = {
+    getTodos: function() {
+        return todos;
+    },
+    setTodos: function(newTodos) {
+        todos = newTodos;
+    },
+    saveData: saveData,
+    loadData: loadData,
+    fixTaskPriorities: fixTaskPriorities,
+    updateTaskOrderFromDOM: updateTaskOrderFromDOM
+};
