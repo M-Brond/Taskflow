@@ -2,7 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>TaskFlow Social Share Image</title>
+    <title>TaskFlow Social Preview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -24,6 +25,29 @@
             overflow: hidden;
             position: relative;
         }
+        /* Add subtle background elements */
+        .preview-container::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(30, 136, 229, 0.05);
+            z-index: 0;
+        }
+        .preview-container::after {
+            content: '';
+            position: absolute;
+            bottom: -70px;
+            right: -70px;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: rgba(0, 168, 132, 0.05);
+            z-index: 0;
+        }
         .content {
             flex: 1;
             padding: 60px;
@@ -32,6 +56,8 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
         .logo {
             font-size: 72px;
@@ -40,6 +66,18 @@
             margin: 0 0 20px;
             line-height: 1;
             text-align: center;
+            position: relative;
+            display: inline-block;
+        }
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #1e88e5, transparent);
+            border-radius: 3px;
         }
         .tagline {
             font-size: 32px;
@@ -64,6 +102,35 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             flex: 1;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #1e88e5;
+        }
+        .feature:nth-child(2)::before {
+            background: #00a884;
+        }
+        .feature:nth-child(3)::before {
+            background: #ff9800;
+        }
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #1e88e5;
+        }
+        .feature:nth-child(2) .feature-icon {
+            color: #00a884;
+        }
+        .feature:nth-child(3) .feature-icon {
+            color: #ff9800;
         }
         .feature-title {
             font-size: 24px;
@@ -95,6 +162,21 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position: relative;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.03);
+            z-index: 1;
+        }
+        .demo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><rect width="1" height="1" fill="rgba(0,0,0,0.02)"/></svg>');
+            background-size: 20px 20px;
+            opacity: 0.5;
+            z-index: -1;
         }
         .project {
             width: 90%;
@@ -103,6 +185,40 @@
             padding: 15px;
             margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        .task {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .work-project .task {
+            border-left-color: rgba(30, 136, 229, 0.3);
+        }
+        .personal-project .task {
+            border-left-color: rgba(0, 168, 132, 0.3);
+        }
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .work-project .task-checkbox {
+            border-color: rgba(30, 136, 229, 0.5);
+        }
+        .personal-project .task-checkbox {
+            border-color: rgba(0, 168, 132, 0.5);
         }
         .project-header {
             display: flex;
@@ -118,22 +234,6 @@
         .project-title {
             font-weight: 600;
             font-size: 18px;
-        }
-        .task {
-            background: white;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-        }
-        .task-checkbox {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
         }
         .task-text {
             font-size: 16px;
@@ -151,14 +251,17 @@
             
             <div class="features">
                 <div class="feature">
+                    <i class="feature-icon fas fa-tasks"></i>
                     <h3 class="feature-title">Project-based</h3>
                     <p class="feature-desc">Organize tasks by customizable projects</p>
                 </div>
                 <div class="feature">
+                    <i class="feature-icon fas fa-lock"></i>
                     <h3 class="feature-title">Privacy-focused</h3>
                     <p class="feature-desc">No login, no tracking. Data stays local</p>
                 </div>
                 <div class="feature">
+                    <i class="feature-icon fas fa-cloud-download-alt"></i>
                     <h3 class="feature-title">Backup & Restore</h3>
                     <p class="feature-desc">Export tasks as JSON files</p>
                 </div>
@@ -168,7 +271,7 @@
         </div>
         
         <div class="demo">
-            <div class="project">
+            <div class="project work-project">
                 <div class="project-header">
                     <div class="project-color work-color"></div>
                     <div class="project-title">Work</div>
@@ -183,7 +286,7 @@
                 </div>
             </div>
             
-            <div class="project">
+            <div class="project personal-project">
                 <div class="project-header">
                     <div class="project-color personal-color"></div>
                     <div class="project-title">Personal</div>
