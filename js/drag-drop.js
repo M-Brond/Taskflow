@@ -51,52 +51,115 @@ function initializeSortable() {
         const projectId = taskList.dataset.project;
         
         const sortable = new Sortable(taskList, {
-            group: 'tasks',  // This allows dragging between different lists
-            animation: 150,  // Animation speed in ms
-            ghostClass: 'sortable-ghost',  // Class for the dragged item
-            chosenClass: 'sortable-chosen',  // Class for the chosen item
-            dragClass: 'sortable-drag',  // Class for the dragging item
-            handle: '.todo-item',  // Drag handle
-            filter: '.completed',  // Don't allow dragging completed items
-            preventOnFilter: true,  // Prevent default action on filtered elements
+            group: 'shared',
+            animation: 150,
+            ghostClass: 'todo-ghost',
+            chosenClass: 'todo-chosen',
+            dragClass: 'todo-drag',
+            filter: '.completed, .comments-container', // Prevent dragging completed items and comments
+            preventOnFilter: true,
             onStart: function(evt) {
-                // Close any open comments for this item
-                const todoId = evt.item.dataset.id;
-                const commentsSection = document.getElementById(`comments-${todoId}`);
-                if (commentsSection && commentsSection.classList.contains('show-comments')) {
-                    commentsSection.classList.remove('show-comments');
-                }
+                // Add dragging class to body to apply special styles
+                document.body.classList.add('dragging');
                 
-                console.log('Drag started for todo item:', todoId);
+                // Close any open comments section
+                const commentsContainers = document.querySelectorAll('.comments-container.show-comments');
+                commentsContainers.forEach(container => {
+                    container.classList.remove('show-comments');
+                });
             },
             onEnd: function(evt) {
+                // Remove dragging class
+                document.body.classList.remove('dragging');
+                
                 const todoId = parseInt(evt.item.dataset.id);
                 const newProjectId = evt.to.dataset.project;
                 const oldProjectId = evt.from.dataset.project;
                 
+                console.log('===== DRAG ENDED =====');
                 console.log('Drag ended for todo item:', todoId, 'from', oldProjectId, 'to', newProjectId);
                 
-                // Find the next sibling to determine position
-                let nextElement = evt.item.nextElementSibling;
-                while (nextElement && nextElement.classList.contains('completed')) {
-                    nextElement = nextElement.nextElementSibling;
+                // Find the task in the todos array
+                const task = window.todos.find(t => t.id === todoId);
+                if (!task) {
+                    console.error('Task not found:', todoId);
+                    return;
                 }
                 
-                // Call the app's updateTaskPosition function to update the data model
-                window.updateTaskPosition(todoId, newProjectId, nextElement);
+                // Update project if it changed
+                if (oldProjectId !== newProjectId) {
+                    task.project = newProjectId;
+                    console.log(`Updated task ${todoId} project from ${oldProjectId} to ${newProjectId}`);
+                }
                 
-                // Force a refresh of the page to ensure all changes are applied
-                // This is a temporary fix to ensure task order is preserved
+                // Calculate new priorities based on DOM order
+                const allProjectLists = document.querySelectorAll('.project-todos');
+                
+                allProjectLists.forEach(list => {
+                    const project = list.dataset.project;
+                    const taskElements = list.querySelectorAll('.todo-item:not(.completed)');
+                    
+                    console.log(`Updating priorities for project: ${project}`);
+                    console.log(`Found ${taskElements.length} tasks in project ${project}`);
+                    
+                    // Update priorities based on DOM order
+                    taskElements.forEach((taskElement, index) => {
+                        const id = parseInt(taskElement.dataset.id);
+                        const taskToUpdate = window.todos.find(t => t.id === id);
+                        
+                        if (taskToUpdate) {
+                            const oldPriority = taskToUpdate.priority;
+                            taskToUpdate.priority = index;
+                            console.log(`Updated task ${id} priority from ${oldPriority} to ${index}`);
+                        } else {
+                            console.error(`Task with ID ${id} not found in todos array`);
+                        }
+                    });
+                });
+                
+                // Log the updated todos array
+                console.log('Updated todos array:', JSON.stringify(window.todos.map(t => ({
+                    id: t.id,
+                    text: t.text,
+                    project: t.project,
+                    priority: t.priority
+                })), null, 2));
+                
+                // Save the updated data
+                if (window.saveData) {
+                    window.saveData();
+                    console.log('Data saved after drag operation');
+                    
+                    // Verify the saved data by immediately loading it back
+                    const savedTodos = localStorage.getItem('todos');
+                    console.log('Verifying saved todos:', savedTodos);
+                    
+                    try {
+                        const parsedTodos = JSON.parse(savedTodos);
+                        console.log('Parsed todos after save:', JSON.stringify(parsedTodos.map(t => ({
+                            id: t.id,
+                            text: t.text,
+                            project: t.project,
+                            priority: t.priority
+                        })).slice(0, 3), null, 2) + (parsedTodos.length > 3 ? '... (truncated)' : ''));
+                    } catch (error) {
+                        console.error('Error parsing saved todos:', error);
+                    }
+                } else {
+                    console.error('saveData function not found');
+                }
+                
+                // Force a page reload to ensure everything is in sync
+                console.log('Reloading page to ensure sync...');
+                
+                // Add a small delay before reloading to ensure localStorage is updated
                 setTimeout(() => {
                     window.location.reload();
-                }, 500);
+                }, 100);
             }
         });
         
-        // Store the instance for cleanup
         sortableInstances.push(sortable);
-        
-        console.log('Sortable initialized for project:', projectId);
     });
 }
 
@@ -137,22 +200,22 @@ function addDragAndDropStyles() {
     
     // Add styles for SortableJS
     styleEl.textContent = `
-        .sortable-ghost {
+        .todo-ghost {
             opacity: 0.4;
             background-color: #f0f0f0;
             border: 2px dashed #aaa !important;
         }
         
-        .dark-mode .sortable-ghost {
+        .dark-mode .todo-ghost {
             background-color: #333;
             border: 2px dashed #666 !important;
         }
         
-        .sortable-chosen {
+        .todo-chosen {
             cursor: grabbing;
         }
         
-        .sortable-drag {
+        .todo-drag {
             opacity: 0.8;
             cursor: grabbing;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
