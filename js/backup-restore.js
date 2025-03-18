@@ -184,7 +184,7 @@ function exportData() {
         projects: projects,
         hiddenProjects: Array.from(hiddenProjects),
         projectColors: projectColors,
-        version: '1.0' // For future compatibility checks
+        version: '1.1' // Updated version for priority support
     };
     
     // Convert to JSON string
@@ -240,7 +240,13 @@ function handleFileImport(e) {
             }
             
             // Update app data
-            todos = importedData.todos;
+            todos = importedData.todos.map(todo => ({
+                ...todo,
+                completedAt: todo.completedAt ? new Date(todo.completedAt) : null,
+                comments: todo.comments || [], // Ensure comments array exists
+                priority: todo.priority !== undefined ? todo.priority : 0 // Ensure priority exists
+            }));
+            
             projects = importedData.projects;
             
             // Handle hidden projects (convert from array to Set)
@@ -251,6 +257,11 @@ function handleFileImport(e) {
             // Handle project colors
             if (importedData.projectColors) {
                 projectColors = importedData.projectColors;
+            }
+            
+            // Fix task priorities to ensure they're sequential and without gaps
+            if (typeof window.fixTaskPriorities === 'function') {
+                window.fixTaskPriorities();
             }
             
             // Save to localStorage

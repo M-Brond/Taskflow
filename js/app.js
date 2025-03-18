@@ -11,17 +11,31 @@ let selectedProjectColor = null;
 
 // Load data from localStorage
 function loadData() {
+    console.log('Loading data from localStorage...');
+    
     const savedTodos = localStorage.getItem('todos');
     const savedProjects = localStorage.getItem('projects');
     const savedHiddenProjects = localStorage.getItem('hiddenProjects');
     const savedProjectColors = localStorage.getItem('projectColors');
     
     if (savedTodos) {
+        console.log('Saved todos found:', savedTodos);
+        
         todos = JSON.parse(savedTodos).map(todo => ({
             ...todo,
             completedAt: todo.completedAt ? new Date(todo.completedAt) : null,
-            comments: todo.comments || [] // Ensure comments array exists
+            comments: todo.comments || [], // Ensure comments array exists
+            priority: todo.priority !== undefined ? todo.priority : 0 // Ensure priority exists
         }));
+        
+        console.log('Todos after parsing:', JSON.parse(JSON.stringify(todos)));
+        
+        // Validate and fix priorities if needed
+        fixTaskPriorities();
+        
+        console.log('Todos after fixing priorities:', JSON.parse(JSON.stringify(todos)));
+    } else {
+        console.log('No saved todos found');
     }
     
     if (savedProjects) {
@@ -66,10 +80,105 @@ function loadData() {
 
 // Save data to localStorage
 function saveData() {
+    console.log('Saving data to localStorage...');
+    
+    // Log the todos before fixing priorities
+    console.log('Todos before fixing priorities:', JSON.parse(JSON.stringify(todos)));
+    
+    // Ensure all tasks have their priorities set correctly before saving
+    fixTaskPriorities();
+    
+    // Log the todos after fixing priorities
+    console.log('Todos after fixing priorities:', JSON.parse(JSON.stringify(todos)));
+    
     localStorage.setItem('todos', JSON.stringify(todos));
     localStorage.setItem('projects', JSON.stringify(projects));
     localStorage.setItem('hiddenProjects', JSON.stringify(Array.from(hiddenProjects)));
     localStorage.setItem('projectColors', JSON.stringify(projectColors));
+    
+    console.log('Data saved to localStorage');
+}
+
+/**
+ * Ensure task priorities are sequential and without gaps for each project
+ * This fixes any issues with priorities after import or if there are any inconsistencies
+ */
+function fixTaskPriorities() {
+    console.log('Fixing task priorities...');
+    
+    // Group todos by project and completion status
+    const activeByProject = {};
+    const completedByProject = {};
+    
+    // Initialize project groups
+    projects.forEach(project => {
+        activeByProject[project] = [];
+        completedByProject[project] = [];
+    });
+    
+    // Group todos
+    todos.forEach(todo => {
+        if (!todo.project) {
+            console.log('Skipping todo without project:', todo);
+            return; // Skip invalid todos
+        }
+        
+        // Ensure priority is a number
+        if (todo.priority === undefined || todo.priority === null) {
+            todo.priority = 0;
+        }
+        
+        if (todo.completed) {
+            if (!completedByProject[todo.project]) {
+                completedByProject[todo.project] = [];
+            }
+            completedByProject[todo.project].push(todo);
+        } else {
+            if (!activeByProject[todo.project]) {
+                activeByProject[todo.project] = [];
+            }
+            activeByProject[todo.project].push(todo);
+        }
+    });
+    
+    // Log the grouped todos
+    console.log('Active todos by project:', JSON.parse(JSON.stringify(activeByProject)));
+    
+    // Sort and reassign priorities for active todos in each project
+    Object.keys(activeByProject).forEach(project => {
+        console.log(`Fixing priorities for project: ${project}`);
+        
+        // Sort by existing priority
+        activeByProject[project].sort((a, b) => {
+            // Ensure we're comparing numbers
+            const aPriority = typeof a.priority === 'number' ? a.priority : 0;
+            const bPriority = typeof b.priority === 'number' ? b.priority : 0;
+            return aPriority - bPriority;
+        });
+        
+        console.log(`Sorted todos for project ${project}:`, 
+            activeByProject[project].map(t => ({ id: t.id, text: t.text, priority: t.priority })));
+        
+        // Reassign sequential priorities
+        activeByProject[project].forEach((todo, index) => {
+            const oldPriority = todo.priority;
+            todo.priority = index;
+            console.log(`Reassigned priority for task ${todo.id} (${todo.text}): ${oldPriority} -> ${index}`);
+        });
+    });
+    
+    // Sort completed todos by completion date (newest first)
+    Object.keys(completedByProject).forEach(project => {
+        completedByProject[project].sort((a, b) => {
+            // Sort by completedAt date if available
+            if (a.completedAt && b.completedAt) {
+                return new Date(b.completedAt) - new Date(a.completedAt);
+            }
+            return 0;
+        });
+    });
+    
+    console.log('Fixed task priorities');
 }
 
 function toggleProjectVisibility(project) {
@@ -223,13 +332,19 @@ function addTodo() {
     }
     
     if (text) {
+        // Calculate the highest priority for this project
+        const projectTodos = todos.filter(t => !t.completed && t.project === project);
+        const highestPriority = projectTodos.length > 0 
+            ? Math.max(...projectTodos.map(t => t.priority || 0)) + 1 
+            : 0;
+            
         const newTodo = {
             id: Date.now().toString(),
             text: text,
             completed: false,
             project: project,
             createdAt: new Date(),
-            priority: 0, // Default priority
+            priority: highestPriority, // Set priority based on existing tasks
             comments: [] // Initialize empty comments array
         };
         
@@ -784,6 +899,7 @@ function updateTodoPriorities(project) {
  * @param {HTMLElement} dropTarget - The task element that was the drop target (if any)
  */
 function updateTaskPosition(todoId, newProject, dropTarget) {
+    console.log('===== UPDATING TASK POSITION =====');
     console.log('Updating task position:', todoId, newProject, dropTarget ? dropTarget.dataset.id : 'end');
     
     // Ensure todoId is an integer
@@ -801,6 +917,7 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
     const originalPriority = draggedTask.priority;
     
     console.log('Original position:', originalProject, originalPriority);
+    console.log('Dragged task:', JSON.stringify(draggedTask));
     
     // Close any open comments section for this task
     const commentsSection = document.getElementById(`comments-${todoId}`);
@@ -913,14 +1030,30 @@ function updateTaskPosition(todoId, newProject, dropTarget) {
         console.log(`Reassigned priority for task ${task.id}: ${index}`);
     });
     
+    // If we changed projects, also fix the original project's priorities
+    if (originalProject !== newProject) {
+        const originalProjectTasks = todos.filter(t => !t.completed && t.project === originalProject);
+        originalProjectTasks.sort((a, b) => a.priority - b.priority);
+        
+        // Reassign priorities to ensure they are sequential and without gaps
+        originalProjectTasks.forEach((task, index) => {
+            task.priority = index;
+            console.log(`Reassigned priority for task ${task.id} in original project: ${index}`);
+        });
+    }
+    
     // Save and render
+    console.log('About to save data after updating task position...');
     saveData();
+    console.log('About to render all after updating task position...');
     renderAll();
+    console.log('===== TASK POSITION UPDATE COMPLETE =====');
 }
 
 // Make functions available to the drag-drop module
 window.updateTaskPosition = updateTaskPosition;
 window.renderAll = renderAll;
+window.fixTaskPriorities = fixTaskPriorities; // Expose for backup-restore module
 
 // Add dark mode toggle functionality
 function toggleDarkMode() {
@@ -1279,6 +1412,8 @@ function setupEventListeners() {
 }
 
 function renderAll() {
+    console.log('===== RENDERING ALL =====');
+    
     const projectsContainer = document.getElementById('projectsContainer');
     projectsContainer.innerHTML = '';
     
@@ -1301,6 +1436,10 @@ function renderAll() {
             // Render visible project
             const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
                 .sort((a, b) => a.priority - b.priority);
+            
+            console.log(`Rendering project ${project} with ${projectTodos.length} todos`);
+            console.log(`Sorted todos for project ${project}:`, 
+                projectTodos.map(t => ({ id: t.id, text: t.text, priority: t.priority })));
             
             const column = document.createElement('div');
             column.className = `project-column ${project.toLowerCase()}`;

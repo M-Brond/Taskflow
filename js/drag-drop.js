@@ -85,13 +85,11 @@ function initializeSortable() {
                 // Call the app's updateTaskPosition function to update the data model
                 window.updateTaskPosition(todoId, newProjectId, nextElement);
                 
-                // No need to re-render all since Sortable already updates the DOM
-                // Just save the data
-                if (window.saveTodos) {
-                    window.saveTodos();
-                } else if (window.saveData) {
-                    window.saveData();
-                }
+                // Force a refresh of the page to ensure all changes are applied
+                // This is a temporary fix to ensure task order is preserved
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
             }
         });
         
