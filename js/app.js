@@ -989,10 +989,10 @@ function toggleDarkMode() {
     
     // Update icon if needed
     if (document.body.classList.contains('dark-mode')) {
-        // We're in dark mode now
-        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        // We're in dark mode now - yellow moon
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
     } else {
-        // We're in light mode now
+        // We're in light mode now - dark moon
         darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
     }
     
@@ -1004,7 +1004,7 @@ function initDarkMode() {
     const darkModeEnabled = localStorage.getItem('darkMode');
     if (darkModeEnabled === 'true') {
         document.body.classList.add('dark-mode');
-        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-moon"></i>';
     }
     
     // Add event listener to the dark mode toggle button
@@ -1343,7 +1343,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const darkModePreference = localStorage.getItem('darkMode');
     if (darkModePreference === 'true') {
         document.body.classList.add('dark-mode');
-        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-moon"></i>';
     }
 });
 

@@ -4324,13 +4324,10 @@ body.dark-mode .todo-item {
 }
 
 .dark-mode-toggle i.fa-moon {
-    color: #ffd700; /* Gold color for moon */
+    color: var(--color-text); /* Dark color for moon in light mode */
 }
 
-.dark-mode-toggle i.fa-sun {
-    color: #ffd700; /* Gold color for sun */
-}
-
-body.dark-mode .dark-mode-toggle i.fas.fa-moon {
+body.dark-mode .dark-mode-toggle i.fa-moon {
+    color: #ffd700; /* Gold color for moon in dark mode */
     transform: rotate(360deg);
 }
