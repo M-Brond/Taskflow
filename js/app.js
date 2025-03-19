@@ -988,13 +988,12 @@ function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     
     // Update icon if needed
-    const moonIcon = darkModeToggle.querySelector('i');
     if (document.body.classList.contains('dark-mode')) {
         // We're in dark mode now
-        moonIcon.classList.add('active');
+        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
     } else {
         // We're in light mode now
-        moonIcon.classList.remove('active');
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
     }
     
     // Save preference to localStorage
