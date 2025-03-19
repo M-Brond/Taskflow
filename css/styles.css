@@ -415,13 +415,16 @@ body.dark-mode .dark-mode-toggle:hover {
     display: inline-flex;
     align-items: center;
     margin-right: 10px;
-    padding: 5px 10px;
-    background-color: var(--color-bg);
+    padding: 6px 12px;
+    background-color: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     color: var(--color-text);
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
 }
 
 .project-back-btn:hover {
@@ -1839,13 +1842,16 @@ body.dark-mode .modal-section p {
     display: inline-flex;
     align-items: center;
     margin-right: 10px;
-    padding: 5px 10px;
-    background-color: var(--color-bg);
+    padding: 6px 12px;
+    background-color: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     color: var(--color-text);
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
 }
 
 .project-back-btn:hover {
@@ -2558,13 +2564,16 @@ body.dark-mode .tooltip .tooltip-text::after {
     display: inline-flex;
     align-items: center;
     margin-right: 10px;
-    padding: 5px 10px;
-    background-color: var(--color-bg);
+    padding: 6px 12px;
+    background-color: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     color: var(--color-text);
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
 }
 
 .project-back-btn:hover {
