@@ -15,10 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
         minimizedNotice.style.display = 'block';
     }
 
-    // Minimize notice
+    // Minimize notice - with shorter animation times for mobile
     minimizeBtn.addEventListener('click', function() {
+        // Immediately set the minimized state to prevent UI blocking
+        localStorage.setItem('dataNoticeMinimized', 'true');
+        
         dataStorageNotice.classList.add('hiding');
         
+        // Reduced timeout for mobile
         setTimeout(() => {
             dataStorageNotice.style.display = 'none';
             minimizedNotice.style.display = 'block';
@@ -26,16 +30,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             setTimeout(() => {
                 minimizedNotice.classList.remove('showing');
-            }, 300);
-        }, 300);
-        
-        localStorage.setItem('dataNoticeMinimized', 'true');
+            }, 200); // Reduced from 300ms
+        }, 200); // Reduced from 300ms
     });
 
-    // Expand notice
+    // Expand notice - with shorter animation times for mobile
     expandBtn.addEventListener('click', function() {
+        // Immediately set the expanded state to prevent UI blocking
+        localStorage.setItem('dataNoticeMinimized', 'false');
+        
         minimizedNotice.classList.add('hiding');
         
+        // Reduced timeout for mobile
         setTimeout(() => {
             minimizedNotice.style.display = 'none';
             dataStorageNotice.style.display = 'block';
@@ -43,10 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             setTimeout(() => {
                 dataStorageNotice.classList.remove('showing');
-            }, 300);
-        }, 300);
-        
-        localStorage.setItem('dataNoticeMinimized', 'false');
+            }, 200); // Reduced from 300ms
+        }, 200); // Reduced from 300ms
     });
 
     // Open export/import modal

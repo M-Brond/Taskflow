@@ -980,7 +980,7 @@ body.dark-mode .tooltip .tooltip-text::after {
 }
 
 .data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
+    animation: slideOut 0.2s ease-in forwards;
 }
 
 /* Responsive adjustments for the notice */
@@ -1356,10 +1356,10 @@ html {
     box-shadow: var(--shadow-md);
     z-index: 1000;
     max-width: 400px;
-    animation: slideIn 0.3s ease-out;
+    animation: slideIn 0.2s ease-out;
     border: 1px solid rgba(59, 130, 246, 0.2);
     transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.2s, transform 0.2s;
     overflow: hidden;
     opacity: 1;
 }
@@ -1368,22 +1368,22 @@ html {
     opacity: 0;
     transform: translateX(-100px) scale(0.8);
     transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .data-storage-notice.showing {
-    animation: slideInFromLeft 0.3s ease-out;
+    animation: slideInFromLeft 0.2s ease-out;
 }
 
 .minimized-notice.hiding {
     opacity: 0;
     transform: translateX(20px) scale(0.8);
     transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .minimized-notice.showing {
-    animation: slideInFromButton 0.3s ease-out;
+    animation: slideInFromButton 0.2s ease-out;
 }
 
 .notice-content {
@@ -1492,6 +1492,9 @@ html {
     justify-content: center;
     opacity: 1;
     visibility: visible;
+    width: 40px;
+    height: 40px;
+    pointer-events: none; /* This ensures it doesn't block interactions */
 }
 
 .minimized-notice button {
@@ -1509,6 +1512,7 @@ html {
     transition: all 0.2s;
     position: relative;
     z-index: 1001; /* Ensure it's above other elements */
+    pointer-events: auto; /* Re-enable pointer events just for the button */
 }
 
 .minimized-notice button:hover {
@@ -1685,7 +1689,7 @@ body.dark-mode .modal-section p {
 
 /* Animation classes for data storage notice */
 .data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
+    animation: slideOut 0.2s ease-in forwards;
 }
 
 /* Responsive adjustments for the notice */
@@ -2407,7 +2411,7 @@ body.dark-mode .tooltip .tooltip-text::after {
 }
 
 .data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
+    animation: slideOut 0.2s ease-in forwards;
 }
 
 /* Responsive adjustments for the notice */
@@ -3129,7 +3133,7 @@ body.dark-mode .tooltip .tooltip-text::after {
 }
 
 .data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
+    animation: slideOut 0.2s ease-in forwards;
 }
 
 /* Responsive adjustments for the notice */
@@ -3650,10 +3654,10 @@ html {
     box-shadow: var(--shadow-md);
     z-index: 1000;
     max-width: 400px;
-    animation: slideIn 0.3s ease-out;
+    animation: slideIn 0.2s ease-out;
     border: 1px solid rgba(59, 130, 246, 0.2);
     transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.2s, transform 0.2s;
     overflow: hidden;
     opacity: 1;
 }
@@ -3662,22 +3666,22 @@ html {
     opacity: 0;
     transform: translateX(-100px) scale(0.8);
     transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .data-storage-notice.showing {
-    animation: slideInFromLeft 0.3s ease-out;
+    animation: slideInFromLeft 0.2s ease-out;
 }
 
 .minimized-notice.hiding {
     opacity: 0;
     transform: translateX(20px) scale(0.8);
     transform-origin: bottom left;
-    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .minimized-notice.showing {
-    animation: slideInFromButton 0.3s ease-out;
+    animation: slideInFromButton 0.2s ease-out;
 }
 
 .notice-content {
@@ -3786,6 +3790,9 @@ html {
     justify-content: center;
     opacity: 1;
     visibility: visible;
+    width: 40px;
+    height: 40px;
+    pointer-events: none; /* This ensures it doesn't block interactions */
 }
 
 .minimized-notice button {
@@ -3803,6 +3810,7 @@ html {
     transition: all 0.2s;
     position: relative;
     z-index: 1001; /* Ensure it's above other elements */
+    pointer-events: auto; /* Re-enable pointer events just for the button */
 }
 
 .minimized-notice button:hover {
@@ -3979,7 +3987,7 @@ body.dark-mode .modal-section p {
 
 /* Animation classes for data storage notice */
 .data-storage-notice.hiding {
-    animation: slideOut 0.3s ease-in forwards;
+    animation: slideOut 0.2s ease-in forwards;
 }
 
 /* Responsive adjustments for the notice */
@@ -4339,4 +4347,16 @@ body.dark-mode .todo-item {
 body.dark-mode .dark-mode-toggle i.fa-moon {
     color: #ffd700; /* Gold color for moon in dark mode */
     transform: rotate(360deg);
+}
+
+.data-storage-notice.showing {
+    animation: slideIn 0.2s ease-out forwards;
+}
+
+.minimized-notice.hiding {
+    animation: fadeOut 0.2s ease-in forwards;
+}
+
+.minimized-notice.showing {
+    animation: fadeIn 0.2s ease-out forwards;
 }
