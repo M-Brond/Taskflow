@@ -58,6 +58,10 @@ function initializeSortable() {
             dragClass: 'todo-drag',
             filter: '.completed, .comments-container', // Prevent dragging completed items and comments
             preventOnFilter: true,
+            delayOnTouchOnly: true, // Add delay for touch devices only
+            delay: 300, // Add delay before drag starts (ms)
+            touchStartThreshold: 5, // Pixels to move before drag starts on touch
+            fallbackTolerance: 10, // Increase tolerance for touch devices
             onStart: function(evt) {
                 // Add dragging class to body to apply special styles
                 document.body.classList.add('dragging');
