@@ -1494,7 +1494,6 @@ html {
     width: 40px;
     height: 40px;
     pointer-events: none; /* This ensures it doesn't block interactions */
-    touch-action: none; /* Prevent touch events from being captured */
 }
 
 .minimized-notice button {
@@ -1513,7 +1512,6 @@ html {
     position: relative;
     z-index: 1001; /* Ensure it's above other elements */
     pointer-events: auto; /* Re-enable pointer events just for the button */
-    touch-action: manipulation; /* Optimize for touch */
 }
 
 .minimized-notice button:hover {
@@ -3793,7 +3791,6 @@ html {
     width: 40px;
     height: 40px;
     pointer-events: none; /* This ensures it doesn't block interactions */
-    touch-action: none; /* Prevent touch events from being captured */
 }
 
 .minimized-notice button {
@@ -3812,7 +3809,6 @@ html {
     position: relative;
     z-index: 1001; /* Ensure it's above other elements */
     pointer-events: auto; /* Re-enable pointer events just for the button */
-    touch-action: manipulation; /* Optimize for touch */
 }
 
 .minimized-notice button:hover {

@@ -30,19 +30,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             setTimeout(() => {
                 minimizedNotice.classList.remove('showing');
-                // Ensure body scrolling is enabled
-                document.body.style.overflow = '';
-                document.body.style.touchAction = '';
-            }, 200); // Reduced from 300ms
-        }, 200); // Reduced from 300ms
+            }, 200);
+        }, 200);
     });
 
     // Expand notice - with shorter animation times for mobile
-    expandBtn.addEventListener('click', function(e) {
-        // Prevent any default behavior
-        e.preventDefault();
-        e.stopPropagation();
-        
+    expandBtn.addEventListener('click', function() {
         // Immediately set the expanded state to prevent UI blocking
         localStorage.setItem('dataNoticeMinimized', 'false');
         
@@ -56,25 +49,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             setTimeout(() => {
                 dataStorageNotice.classList.remove('showing');
-                // Ensure body scrolling is enabled
-                document.body.style.overflow = '';
-                document.body.style.touchAction = '';
-            }, 200); // Reduced from 300ms
-        }, 200); // Reduced from 300ms
+            }, 200);
+        }, 200);
     });
 
     // Open export/import modal
     exportImportBtn.addEventListener('click', function() {
         openExportImportModal();
-    });
-    
-    // Add a click handler to the document to ensure scrolling works
-    document.addEventListener('click', function(e) {
-        // If we're not clicking on the minimized notice or its children
-        if (!minimizedNotice.contains(e.target)) {
-            // Ensure body scrolling is enabled
-            document.body.style.overflow = '';
-            document.body.style.touchAction = '';
-        }
     });
 });
