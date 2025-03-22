@@ -1346,6 +1346,7 @@ html {
         max-width: 100%; /* Allow text to use full width */
         overflow-wrap: break-word;
         word-wrap: break-word;
+        hyphens: auto; /* Add hyphenation for long words */
     }
     
     .delete-btn, 
@@ -1361,19 +1362,26 @@ html {
     }
     
     /* Fix for completed tasks section */
-    .completed-container {
+    .completed-tasks-section {
         width: 100%;
         overflow-x: hidden;
         box-sizing: border-box;
     }
     
+    .completed-tasks {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
     /* Ensure input fits on screen */
     #todoInput, 
     #projectSelect,
-    #addBtn {
+    .add-btn,
+    .add-project-btn {
         width: 100%;
         box-sizing: border-box;
         max-width: 100%;
+        margin-bottom: 0.5rem;
     }
     
     /* Ensure the header fits */
@@ -1600,6 +1608,26 @@ body.dark-mode .minimize-notice-btn:hover {
     position: relative;
 }
 
+/* Mobile adjustments for modal */
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 15px 20px 25px;
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .modal h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        padding-right: 30px; /* Make room for the close button */
+    }
+    
+    .close-modal {
+        top: 12px;
+        right: 15px;
+    }
+}
+
 body.dark-mode .modal-content {
     background-color: #333;
     color: #f0f0f0;
@@ -1651,8 +1679,8 @@ body.dark-mode .modal-content {
     border-radius: var(--radius-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
     border: none;
+    transition: all 0.2s;
 }
 
 .export-btn {
@@ -3686,6 +3714,7 @@ html {
         max-width: 100%; /* Allow text to use full width */
         overflow-wrap: break-word;
         word-wrap: break-word;
+        hyphens: auto; /* Add hyphenation for long words */
     }
     
     .delete-btn, 
@@ -3701,19 +3730,26 @@ html {
     }
     
     /* Fix for completed tasks section */
-    .completed-container {
+    .completed-tasks-section {
         width: 100%;
         overflow-x: hidden;
         box-sizing: border-box;
     }
     
+    .completed-tasks {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
     /* Ensure input fits on screen */
     #todoInput, 
     #projectSelect,
-    #addBtn {
+    .add-btn,
+    .add-project-btn {
         width: 100%;
         box-sizing: border-box;
         max-width: 100%;
+        margin-bottom: 0.5rem;
     }
     
     /* Ensure the header fits */
@@ -3991,8 +4027,8 @@ body.dark-mode .modal-content {
     border-radius: var(--radius-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
     border: none;
+    transition: all 0.2s;
 }
 
 .export-btn {
