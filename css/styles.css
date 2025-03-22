@@ -1204,6 +1204,9 @@ body.dark-mode .project-todos.scrollable::after {
     .container {
         padding: 1rem;
         max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
     }
     
     .projects-container {
@@ -1211,13 +1214,17 @@ body.dark-mode .project-todos.scrollable::after {
         flex-direction: column;
         gap: 1rem;
         margin-bottom: 1.5rem;
-        padding: 0 0.5rem;
+        padding: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .project-column {
         margin-bottom: 1rem;
         width: 100%;
         min-width: unset;
+        max-width: 100%;
+        box-sizing: border-box;
     }
     
     .project-column:hover {
@@ -1229,6 +1236,8 @@ body.dark-mode .project-todos.scrollable::after {
     .input-container {
         flex-direction: column;
         align-items: stretch;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .input-container input,
@@ -1236,11 +1245,20 @@ body.dark-mode .project-todos.scrollable::after {
     .input-container button {
         margin-bottom: 0.5rem;
         width: 100%;
+        box-sizing: border-box;
+    }
+    
+    #todoInput {
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
     }
     
     .todo-item {
         padding: 0.5rem;
         margin-bottom: 0.5rem;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .todo-item:hover {
@@ -1299,8 +1317,7 @@ html {
 @media (max-width: 480px) {
     body {
         overflow-x: hidden; /* Prevent horizontal scrolling */
-        touch-action: pan-y; /* Enable vertical touch scrolling */
-        -webkit-overflow-scrolling: touch; /* Enable momentum scrolling on iOS */
+        width: 100%;
     }
     
     .container {
@@ -1308,11 +1325,15 @@ html {
         width: 100%;
         max-width: 100%;
         overflow-x: hidden;
+        box-sizing: border-box;
     }
     
     .project-column {
         padding: 0.75rem;
         border-radius: var(--radius-sm);
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0 0 1rem 0;
     }
     
     .project-tag {
@@ -1322,10 +1343,9 @@ html {
     
     .todo-text {
         font-size: 0.9rem;
-        max-width: 60%; /* Limit width to prevent overflow */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        max-width: 100%; /* Allow text to use full width */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
     }
     
     .delete-btn, 
@@ -1344,6 +1364,27 @@ html {
     .completed-container {
         width: 100%;
         overflow-x: hidden;
+        box-sizing: border-box;
+    }
+    
+    /* Ensure input fits on screen */
+    #todoInput, 
+    #projectSelect,
+    #addBtn {
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+    
+    /* Ensure the header fits */
+    .header {
+        padding: 1rem 0.75rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
     }
 }
 
@@ -3503,6 +3544,9 @@ body.dark-mode .completion-date {
     .container {
         padding: 1rem;
         max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
     }
     
     .projects-container {
@@ -3510,13 +3554,17 @@ body.dark-mode .completion-date {
         flex-direction: column;
         gap: 1rem;
         margin-bottom: 1.5rem;
-        padding: 0 0.5rem;
+        padding: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .project-column {
         margin-bottom: 1rem;
         width: 100%;
         min-width: unset;
+        max-width: 100%;
+        box-sizing: border-box;
     }
     
     .project-column:hover {
@@ -3528,6 +3576,8 @@ body.dark-mode .completion-date {
     .input-container {
         flex-direction: column;
         align-items: stretch;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .input-container input,
@@ -3535,11 +3585,20 @@ body.dark-mode .completion-date {
     .input-container button {
         margin-bottom: 0.5rem;
         width: 100%;
+        box-sizing: border-box;
+    }
+    
+    #todoInput {
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
     }
     
     .todo-item {
         padding: 0.5rem;
         margin-bottom: 0.5rem;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .todo-item:hover {
@@ -3598,8 +3657,7 @@ html {
 @media (max-width: 480px) {
     body {
         overflow-x: hidden; /* Prevent horizontal scrolling */
-        touch-action: pan-y; /* Enable vertical touch scrolling */
-        -webkit-overflow-scrolling: touch; /* Enable momentum scrolling on iOS */
+        width: 100%;
     }
     
     .container {
@@ -3607,11 +3665,15 @@ html {
         width: 100%;
         max-width: 100%;
         overflow-x: hidden;
+        box-sizing: border-box;
     }
     
     .project-column {
         padding: 0.75rem;
         border-radius: var(--radius-sm);
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0 0 1rem 0;
     }
     
     .project-tag {
@@ -3621,10 +3683,9 @@ html {
     
     .todo-text {
         font-size: 0.9rem;
-        max-width: 60%; /* Limit width to prevent overflow */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        max-width: 100%; /* Allow text to use full width */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
     }
     
     .delete-btn, 
@@ -3643,6 +3704,27 @@ html {
     .completed-container {
         width: 100%;
         overflow-x: hidden;
+        box-sizing: border-box;
+    }
+    
+    /* Ensure input fits on screen */
+    #todoInput, 
+    #projectSelect,
+    #addBtn {
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+    
+    /* Ensure the header fits */
+    .header {
+        padding: 1rem 0.75rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
     }
 }
 
