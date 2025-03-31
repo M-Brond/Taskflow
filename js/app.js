@@ -353,8 +353,10 @@ function updateProjectSelect() {
 function addTodo() {
     const input = document.getElementById('todoInput');
     const projectSelect = document.getElementById('projectSelect');
+    const prioritySelect = document.getElementById('prioritySelect');
     const text = input.value.trim();
     const project = projectSelect.value;
+    const priorityValue = prioritySelect.value;
     
     if (!project) {
         alert('Please select a project first');
@@ -365,9 +367,45 @@ function addTodo() {
     if (text) {
         // Calculate the highest priority for this project
         const projectTodos = todos.filter(t => !t.completed && t.project === project);
-        const highestPriority = projectTodos.length > 0 
-            ? Math.max(...projectTodos.map(t => t.priority || 0)) + 1 
-            : 0;
+        
+        // Set numeric priority based on selected value
+        // Lower number = higher priority (appears at top)
+        let numericPriority;
+        
+        if (priorityValue === 'high') {
+            // High priority tasks go to the top
+            numericPriority = -1; // Lower than any existing task
+            
+            // If there are existing tasks, shift them down
+            if (projectTodos.length > 0) {
+                // Shift all other tasks down by 1
+                projectTodos.forEach(todo => {
+                    todo.priority += 1;
+                });
+            }
+        } else if (priorityValue === 'medium') {
+            // Medium priority tasks go in the middle
+            if (projectTodos.length > 0) {
+                // Find the middle position
+                const middleIndex = Math.floor(projectTodos.length / 2);
+                const sortedTodos = [...projectTodos].sort((a, b) => a.priority - b.priority);
+                numericPriority = sortedTodos[middleIndex]?.priority || 0;
+                
+                // Shift tasks below the middle point down
+                projectTodos.forEach(todo => {
+                    if (todo.priority >= numericPriority) {
+                        todo.priority += 1;
+                    }
+                });
+            } else {
+                numericPriority = 0;
+            }
+        } else {
+            // Low priority tasks go to the bottom (existing behavior)
+            numericPriority = projectTodos.length > 0 
+                ? Math.max(...projectTodos.map(t => t.priority || 0)) + 1 
+                : 0;
+        }
             
         const newTodo = {
             id: Date.now().toString(),
@@ -375,7 +413,7 @@ function addTodo() {
             completed: false,
             project: project,
             createdAt: new Date(),
-            priority: highestPriority, // Set priority based on existing tasks
+            priority: numericPriority,
             comments: [] // Initialize empty comments array
         };
         
@@ -804,7 +842,12 @@ function renderProjectHeader(project) {
     const header = document.createElement('div');
     header.className = 'project-header';
     
-    const projectTodos = todos.filter(todo => !todo.completed && todo.project === project);
+    const projectTodos = todos.filter(todo => !todo.completed && todo.project === project)
+        .sort((a, b) => a.priority - b.priority);
+    
+    console.log(`Rendering project ${project} with ${projectTodos.length} todos`);
+    console.log(`Sorted todos for project ${project}:`, 
+        projectTodos.map(t => ({ id: t.id, text: t.text, priority: t.priority })));
     
     // Check if we're in fullscreen mode
     const isFullscreen = document.getElementById('projectsContainer').classList.contains('fullscreen-project');

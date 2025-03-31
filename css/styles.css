@@ -65,7 +65,8 @@ body.dark-mode .todo-item {
 }
 
 body.dark-mode #todoInput,
-body.dark-mode #projectSelect {
+body.dark-mode #projectSelect,
+body.dark-mode #prioritySelect {
     background-color: #444;
     color: #f0f0f0;
     border-color: #555;
@@ -302,7 +303,7 @@ body.dark-mode .dark-mode-toggle:hover {
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
-#projectSelect {
+#projectSelect, #prioritySelect {
     min-width: 150px;
     padding: 0.8rem 1rem;
     border: 2px solid var(--color-border);
@@ -315,7 +316,7 @@ body.dark-mode .dark-mode-toggle:hover {
     padding-right: 2rem;
 }
 
-#projectSelect:focus {
+#projectSelect:focus, #prioritySelect:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
