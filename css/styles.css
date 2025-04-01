@@ -4481,3 +4481,33 @@ body.dark-mode .dark-mode-toggle i.fa-moon {
 .minimized-notice.showing {
     animation: fadeIn 0.2s ease-out forwards;
 }
+
+/* Copyright Footer */
+.copyright-footer {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.copyright-footer a {
+    color: var(--color-text-light);
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.copyright-footer a:hover {
+    color: var(--color-primary);
+    opacity: 1;
+}
+
+body.dark-mode .copyright-footer a {
+    color: #b0b0b0;
+}
+
+body.dark-mode .copyright-footer a:hover {
+    color: var(--color-primary);
+}
